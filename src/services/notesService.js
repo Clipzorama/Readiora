@@ -57,7 +57,14 @@ export async function createNote({ userId, subjectId, title, content }) {
       title,
       content,
     })
-    .select()
+    .select(`
+      *,
+      subjects (
+        id,
+        name,
+        color
+      )
+    `)
     .single();
 
   if (error) throw error;
@@ -65,20 +72,41 @@ export async function createNote({ userId, subjectId, title, content }) {
 }
 
 export async function updateNote(noteId, updates) {
+  const payload = {
+    title: updates.title,
+    content: updates.content,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (updates.subjectId) {
+    payload.subject_id = updates.subjectId;
+  }
+
   const { data, error } = await supabase
     .from("notes")
-    .update({
-      title: updates.title,
-      content: updates.content,
-      ai_summary: updates.aiSummary,
-      updated_at: new Date().toISOString(),
-    })
+    .update(payload)
     .eq("id", noteId)
-    .select()
+    .select(`
+      *,
+      subjects (
+        id,
+        name,
+        color
+      )
+    `)
     .single();
 
   if (error) throw error;
   return data;
+}
+
+export async function deleteNotesBySubject(subjectId) {
+  const { error } = await supabase
+    .from("notes")
+    .delete()
+    .eq("subject_id", subjectId);
+
+  if (error) throw error;
 }
 
 export async function deleteNote(noteId) {
