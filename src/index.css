@@ -1,0 +1,139 @@
+/* Inter for headings */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* DM Sans - For paragraphs, Nav, Buttons */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+
+
+@import "tailwindcss";
+
+
+@theme {
+
+  --font-inter: Inter, sans-serif;
+  --font-dm: DM Sans, sans-serif;
+
+  --color-background: hsl(var(--background));
+
+  --color-background: hsl(var(--background));
+
+  --color-card: hsl(var(--card));
+
+  --color-card-hover: hsl(var(--card-hovers));
+
+  --color-button: hsl(var(--button));
+
+  --color-button-hover: hsl(var(--buttonh));
+
+  --color-border: hsl(var(--border));
+
+  --color-strong-border: hsl(var(--strong-border));
+
+  --color-primary: hsl(var(--primary));
+
+  --color-secondary: hsl(var(--secondary));
+
+  --color-muted: hsl(var(--muted));
+
+
+
+  /* STATUS COLORS */
+
+  --color-success: hsl(var(--emerald));
+
+  --color-warning: hsl(var(--warning));
+
+  --color-danger: hsl(var(--danger));
+  --animate-fade-in: fade-in 0.7s ease-out forwards;
+  --animate-fade-in-delay-1: fade-in 0.7s ease-out 0.2s forwards;
+  --animate-fade-in-delay-2: fade-in 0.7s ease-out 0.4s forwards;
+  --animate-fade-in-delay-3: fade-in 0.7s ease-out 0.6s forwards;
+  --animate-fade-in-delay-4: fade-in 0.7s ease-out 0.8s forwards;
+  --animate-fade-in-delay-5: fade-in 0.7s ease-out 1.0s forwards;
+  --animate-fade-in-delay-6: fade-in 0.7s ease-out 1.2s forwards;
+  --animate-fade-in-delay-7: fade-in 0.7s ease-out 1.4s forwards;
+}
+
+@layer base {
+  :root {
+    --background: 0, 43%, 4%;
+
+    --card: 0, 42%, 7%;
+    --card-hovers: 0, 41%, 11%;
+    /* Button,active tabs, ai strategist glow, chart-accents */
+    --button: 0, 100%, 20%;
+    /* Chart Hover points, button hovers, alert glows */
+    --buttonh: 0, 100%, 27%;
+    /* card and input borders */
+    --border: 0, 28%, 17%;
+    /* focused inputs and selected cards, active missions */
+    --strong-border: 0, 54%, 23%;
+    /* text primary color, headings, important metrics and dashboard titles */
+    --primary: 0, 29%, 94%;
+    /* labels, paragpraph text, descriptions */
+    --secondary: 0, 12%, 69%;
+    /* disabled texts and placeholders */
+    --muted: 0, 9%, 44%;
+
+
+    /* Status Colors */
+    --emerald: 156, 50%, 23%;
+
+    --warning: 36, 76%, 31%;
+
+    --danger: 0, 100%, 24%;
+
+    --animate-fade-in: fade-in 0.7s ease-out forwards;
+    --animate-fade-in-delay-1: fade-in 0.7s ease-out 0.2s forwards;
+    --animate-fade-in-delay-2: fade-in 0.7s ease-out 0.4s forwards;
+    --animate-fade-in-delay-3: fade-in 0.7s ease-out 0.6s forwards;
+    --animate-fade-in-delay-4: fade-in 0.7s ease-out 0.8s forwards;
+    --animate-fade-in-delay-5: fade-in 0.7s ease-out 1.0s forwards;
+    --animate-fade-in-delay-6: fade-in 0.7s ease-out 1.2s forwards;
+    --animate-fade-in-delay-7: fade-in 0.7s ease-out 1.4s forwards;
+
+   }
+}
+
+html {
+    @apply scroll-smooth;
+}
+
+@layer utilities {
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+
+/* Styling the entire scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Styling the scrollbar track */
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+/* Styling the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  @apply bg-primary;
+  border-radius: 5px;
+}
+
+/* Styling the scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/80;
+
+
+}
