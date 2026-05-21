@@ -138,16 +138,16 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
   }
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-background text-primary">
+    <main className="min-h-screen overflow-x-clip bg-background text-primary">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-24 top-[-10rem] h-80 w-80 rounded-full bg-button/20 blur-3xl" />
         <div className="absolute right-[-8rem] top-24 h-96 w-96 rounded-full bg-warning/10 blur-3xl" />
-        <div className="absolute bottom-[-12rem] left-1/3 h-96 w-96 rounded-full bg-success/10 blur-3xl" />
+        <div className="absolute bottom-[-12rem] left-1/3 h-96 w-96 rounded-full bg-warning/10 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.025)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.025)_1px,transparent_1px)] bg-[size:44px_44px]" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-[1560px] gap-6 px-4 pb-28 pt-4 md:pb-8 lg:px-8 xl:px-10">
-        <aside className="sticky top-5 hidden h-[calc(100vh-2.5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden rounded-[1.75rem] border border-border bg-card/70 p-4 shadow-2xl shadow-black/35 backdrop-blur-xl lg:flex">
+      <div className="relative mx-auto flex w-full max-w-[1560px] gap-6 px-4 pb-32 pt-6 sm:pt-8 md:pb-12 lg:px-8 lg:py-10 xl:px-10">
+        <aside className="sticky top-5 z-20 hidden h-[calc(100dvh-2.5rem)] max-h-[calc(100dvh-2.5rem)] w-72 shrink-0 self-start overflow-y-auto rounded-[1.75rem] border border-border bg-card/70 p-4 shadow-2xl shadow-black/35 backdrop-blur-xl lg:flex lg:flex-col lg:justify-between">
           <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-strong-border to-transparent" />
           <div>
             <div className="rounded-3xl border border-strong-border/70 bg-background/65 p-4 shadow-inner shadow-black/25">
@@ -172,7 +172,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
               <div>
                 <p className="text-sm font-semibold text-primary">Secure Workspace</p>
                 <p className="mt-1 text-sm leading-6 text-secondary">
-                  Supabase auth and row-level security are active.
+                  Account protection and workspace security are active.
                 </p>
               </div>
             </div>
@@ -319,7 +319,7 @@ export function CardHeader({ eyebrow, title, icon: Icon = Sparkles }) {
             {eyebrow}
           </p>
         )}
-        <h2 className="mt-1 text-lg font-semibold leading-tight text-primary">
+        <h2 className="mt-3 text-lg font-semibold leading-tight text-primary">
           {title}
         </h2>
       </div>
