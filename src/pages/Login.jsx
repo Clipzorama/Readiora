@@ -1,7 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import xevaroLogo from "../assets/xevarologo.webp";
-import xevaroSymbol from "../assets/xfavi.webp";
 
 import {
   signInWithEmail,
@@ -122,7 +120,7 @@ export default function Login() {
         variants={panelVariants}
         initial="hidden"
         animate="visible"
-        className="hidden lg:flex relative overflow-hidden border-r border-border bg-card p-10"
+        className="relative hidden overflow-hidden border-r border-border bg-card p-8 lg:flex xl:p-10"
       >
         <motion.div
           animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
@@ -137,22 +135,20 @@ export default function Login() {
 
         <div className="relative z-10 flex w-full flex-col justify-between">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
-            <img
-              src={xevaroLogo}
-              alt="Xevaro"
-              className="h-14 w-auto object-contain"
-            />
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-secondary">
+              Xevaro
+            </p>
 
             <motion.h1
               variants={itemVariants}
-              className="mt-8 max-w-xl text-6xl font-bold leading-tight"
+              className="mt-7 max-w-xl text-5xl font-bold leading-tight xl:text-6xl"
             >
               Your tactical AI learning operating system.
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
-              className="mt-6 max-w-lg text-lg leading-8 text-secondary"
+              className="mt-6 max-w-lg text-base leading-8 text-secondary xl:text-lg"
             >
               Transform notes into missions, flashcards, quizzes, and focused
               study workflows built for serious exam preparation.
@@ -168,7 +164,7 @@ export default function Login() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -4, borderColor: "hsl(var(--strong-border))" }}
-              className="rounded-2xl border border-border bg-background/70 p-5 backdrop-blur"
+              className="rounded-2xl border border-border bg-background/70 p-4 backdrop-blur xl:p-5"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary">
                 AI Generated
@@ -182,7 +178,7 @@ export default function Login() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -4, borderColor: "hsl(var(--strong-border))" }}
-              className="rounded-2xl border border-border bg-background/70 p-5 backdrop-blur"
+              className="rounded-2xl border border-border bg-background/70 p-4 backdrop-blur xl:p-5"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary">
                 Mission System
@@ -198,7 +194,7 @@ export default function Login() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -4, borderColor: "hsl(var(--strong-border))" }}
-              className="rounded-2xl border border-border bg-background/70 p-5 backdrop-blur"
+              className="rounded-2xl border border-border bg-background/70 p-4 backdrop-blur xl:p-5"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary">
                 Analytics
@@ -222,14 +218,6 @@ export default function Login() {
           animate="visible"
           className="w-full max-w-sm rounded-3xl border border-border bg-card/95 p-5 shadow-2xl shadow-black/30 backdrop-blur sm:max-w-md sm:p-8"
         >
-          <motion.div variants={itemVariants} className="mb-6 flex justify-center">
-            <img
-              src={xevaroSymbol}
-              alt="Xevaro"
-              className="h-12 w-auto max-w-[220px] object-contain"
-            />
-          </motion.div>
-
           <motion.div
             variants={itemVariants}
             className="mb-6 border-b border-border pb-5 lg:hidden"
@@ -266,6 +254,9 @@ export default function Login() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
+            <p className="text-sm uppercase tracking-[0.3em] text-secondary">
+              Xevaro Access
+            </p>
             <h2 className="mt-3 text-2xl font-bold sm:text-4xl">Sign in</h2>
 
             <p className="mt-3 text-secondary">

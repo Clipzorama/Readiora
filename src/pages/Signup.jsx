@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import xevaroLogo from "../assets/xevarologo.webp";
+
 import {
   signUpWithEmail,
   signInWithGoogle,
@@ -124,14 +124,6 @@ export default function Signup() {
           animate="visible"
           className="w-full max-w-sm rounded-3xl border border-border bg-card/95 p-5 shadow-2xl shadow-black/30 backdrop-blur sm:max-w-md sm:p-8"
         >
-          <motion.div variants={itemVariants} className="mb-6 flex justify-center">
-            <img
-              src={xevaroLogo}
-              alt="Xevaro"
-              className="h-12 w-auto max-w-[220px] object-contain"
-            />
-          </motion.div>
-
           <motion.div
             variants={itemVariants}
             className="mb-6 border-b border-border pb-5 lg:hidden"
@@ -268,7 +260,7 @@ export default function Signup() {
         variants={panelVariants}
         initial="hidden"
         animate="visible"
-        className="hidden lg:flex relative overflow-hidden border-l border-border bg-card p-10"
+        className="relative hidden overflow-hidden border-l border-border bg-card p-8 lg:flex xl:p-10"
       >
         <motion.div
           animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
@@ -283,22 +275,20 @@ export default function Signup() {
 
         <div className="relative z-10 flex w-full flex-col justify-between">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
-            <img
-              src={xevaroLogo}
-              alt="Xevaro"
-              className="h-14 w-auto object-contain"
-            />
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-secondary">
+              Xevaro
+            </p>
 
             <motion.h1
               variants={itemVariants}
-              className="mt-8 max-w-xl text-6xl font-bold leading-tight"
+              className="mt-7 max-w-xl text-5xl font-bold leading-tight xl:text-6xl"
             >
               Study with structure, strategy, and intelligent feedback.
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
-              className="mt-6 max-w-lg text-lg leading-8 text-secondary"
+              className="mt-6 max-w-lg text-base leading-8 text-secondary xl:text-lg"
             >
               Xevaro helps students move from scattered notes to organized
               missions, AI-generated practice, and measurable progress.
@@ -314,7 +304,7 @@ export default function Signup() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -4, borderColor: "hsl(var(--strong-border))" }}
-              className="rounded-2xl border border-border bg-background/70 p-5 backdrop-blur"
+              className="rounded-2xl border border-border bg-background/70 p-4 backdrop-blur xl:p-5"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary">
                 Organize
@@ -330,7 +320,7 @@ export default function Signup() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -4, borderColor: "hsl(var(--strong-border))" }}
-              className="rounded-2xl border border-border bg-background/70 p-5 backdrop-blur"
+              className="rounded-2xl border border-border bg-background/70 p-4 backdrop-blur xl:p-5"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary">
                 Generate
@@ -346,7 +336,7 @@ export default function Signup() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -4, borderColor: "hsl(var(--strong-border))" }}
-              className="rounded-2xl border border-border bg-background/70 p-5 backdrop-blur"
+              className="rounded-2xl border border-border bg-background/70 p-4 backdrop-blur xl:p-5"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary">
                 Improve
