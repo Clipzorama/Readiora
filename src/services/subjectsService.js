@@ -30,7 +30,7 @@ export async function createSubject({ userId, name, description, examDate, color
       name,
       description,
       exam_date: examDate || null,
-      color: color || "blue",
+      color: color || "#9f1239",
     })
     .select()
     .single();
@@ -40,7 +40,7 @@ export async function createSubject({ userId, name, description, examDate, color
 }
 
 export async function updateSubject(subjectId, updates) {
-  const { data, error } = await supabase
+  let query = supabase
     .from("subjects")
     .update({
       name: updates.name,
@@ -48,7 +48,13 @@ export async function updateSubject(subjectId, updates) {
       exam_date: updates.examDate || null,
       color: updates.color,
     })
-    .eq("id", subjectId)
+    .eq("id", subjectId);
+
+  if (updates.userId) {
+    query = query.eq("user_id", updates.userId);
+  }
+
+  const { data, error } = await query
     .select()
     .single();
 
@@ -56,11 +62,17 @@ export async function updateSubject(subjectId, updates) {
   return data;
 }
 
-export async function deleteSubject(subjectId) {
-  const { error } = await supabase
+export async function deleteSubject(subjectId, userId) {
+  let query = supabase
     .from("subjects")
     .delete()
     .eq("id", subjectId);
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { error } = await query;
 
   if (error) throw error;
 }

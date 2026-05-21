@@ -82,10 +82,16 @@ export async function updateNote(noteId, updates) {
     payload.subject_id = updates.subjectId;
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("notes")
     .update(payload)
-    .eq("id", noteId)
+    .eq("id", noteId);
+
+  if (updates.userId) {
+    query = query.eq("user_id", updates.userId);
+  }
+
+  const { data, error } = await query
     .select(`
       *,
       subjects (
@@ -100,20 +106,32 @@ export async function updateNote(noteId, updates) {
   return data;
 }
 
-export async function deleteNotesBySubject(subjectId) {
-  const { error } = await supabase
+export async function deleteNotesBySubject(subjectId, userId) {
+  let query = supabase
     .from("notes")
     .delete()
     .eq("subject_id", subjectId);
 
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { error } = await query;
+
   if (error) throw error;
 }
 
-export async function deleteNote(noteId) {
-  const { error } = await supabase
+export async function deleteNote(noteId, userId) {
+  let query = supabase
     .from("notes")
     .delete()
     .eq("id", noteId);
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { error } = await query;
 
   if (error) throw error;
 }
