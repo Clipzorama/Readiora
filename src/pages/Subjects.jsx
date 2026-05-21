@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { HexColorPicker } from "react-colorful";
 import {
   BookOpen,
   CalendarClock,
@@ -30,14 +31,27 @@ const emptyForm = {
   name: "",
   description: "",
   examDate: "",
-  color: "blue",
+  color: "#9f1239",
 };
 
-const accentByColor = {
-  blue: "from-button/40 to-danger/20",
-  red: "from-danger/35 to-button/20",
-  green: "from-success/30 to-button/20",
-  yellow: "from-warning/35 to-button/20",
+const colorPresets = [
+  "#9f1239",
+  "#dc2626",
+  "#ea580c",
+  "#d97706",
+  "#16a34a",
+  "#0891b2",
+  "#2563eb",
+  "#7c3aed",
+  "#c026d3",
+  "#475569",
+];
+
+const legacyColors = {
+  blue: "#2563eb",
+  red: "#dc2626",
+  green: "#16a34a",
+  yellow: "#d97706",
 };
 
 function SubjectStat({ icon: Icon, label, value }) {
@@ -61,6 +75,12 @@ function formatExamDate(value) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(`${value}T00:00:00`));
+}
+
+function normalizeColor(value) {
+  if (!value) return emptyForm.color;
+  if (legacyColors[value]) return legacyColors[value];
+  return /^#[0-9a-f]{6}$/i.test(value) ? value : emptyForm.color;
 }
 
 export default function Subjects() {
@@ -123,7 +143,7 @@ export default function Subjects() {
       name: subject.name,
       description: subject.description ?? "",
       examDate: subject.exam_date ?? "",
-      color: subject.color ?? "blue",
+      color: normalizeColor(subject.color),
     });
     setShowForm(true);
     setError("");
@@ -136,13 +156,15 @@ export default function Subjects() {
     try {
       setSaving(true);
       setError("");
+      const subjectColor = normalizeColor(form.color);
 
       if (editingId) {
         const updated = await updateSubject(editingId, {
+          userId: user.id,
           name: form.name.trim(),
           description: form.description.trim() || null,
           examDate: form.examDate || null,
-          color: form.color,
+          color: subjectColor,
         });
         setSubjects((current) =>
           current.map((subject) => (subject.id === editingId ? updated : subject)),
@@ -153,7 +175,7 @@ export default function Subjects() {
           name: form.name.trim(),
           description: form.description.trim() || null,
           examDate: form.examDate || null,
-          color: form.color,
+          color: subjectColor,
         });
         setSubjects((current) => [created, ...current]);
       }
@@ -180,8 +202,8 @@ export default function Subjects() {
 
     try {
       setError("");
-      await deleteNotesBySubject(subject.id);
-      await deleteSubject(subject.id);
+      await deleteNotesBySubject(subject.id, user.id);
+      await deleteSubject(subject.id, user.id);
       setSubjects((current) => current.filter((item) => item.id !== subject.id));
       setNotes((current) => current.filter((note) => note.subject_id !== subject.id));
     } catch (deleteError) {
@@ -221,51 +243,140 @@ export default function Subjects() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid gap-4 lg:grid-cols-4">
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                placeholder="Subject name"
-                className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
-              />
-              <input
-                type="text"
-                value={form.description}
-                onChange={(event) =>
-                  setForm({ ...form, description: event.target.value })
-                }
-                placeholder="Description"
-                className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border lg:col-span-2"
-              />
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <input
-                  type="date"
-                  value={form.examDate}
-                  onChange={(event) =>
-                    setForm({ ...form, examDate: event.target.value })
-                  }
-                  className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
-                />
-                <select
-                  value={form.color}
-                  onChange={(event) => setForm({ ...form, color: event.target.value })}
-                  className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
-                >
-                  <option value="blue">Blue</option>
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="yellow">Yellow</option>
-                </select>
+            <form onSubmit={handleSubmit} className="grid gap-5">
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.5fr)_16rem]">
+                <label className="grid gap-2">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                    Subject
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={form.name}
+                    onChange={(event) =>
+                      setForm({ ...form, name: event.target.value })
+                    }
+                    placeholder="New subject name"
+                    className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                    Description
+                  </span>
+                  <input
+                    type="text"
+                    value={form.description}
+                    onChange={(event) =>
+                      setForm({ ...form, description: event.target.value })
+                    }
+                    placeholder="What this subject covers"
+                    className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                    Exam Date
+                  </span>
+                  <input
+                    type="date"
+                    value={form.examDate}
+                    onChange={(event) =>
+                      setForm({ ...form, examDate: event.target.value })
+                    }
+                    className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
+                  />
+                </label>
               </div>
-              <button
-                type="submit"
-                disabled={saving}
-                className="rounded-2xl border border-strong-border bg-button px-5 py-3 font-semibold text-white shadow-lg shadow-button/20 transition hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60 lg:col-start-4"
-              >
-                {saving ? "Saving..." : editingId ? "Save Changes" : "Create Subject"}
-              </button>
+
+              <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
+                <div className="rounded-2xl border border-border bg-background/70 p-4">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                      Subject Color
+                    </span>
+                    <span
+                      className="h-6 w-6 rounded-full border border-strong-border"
+                      style={{ backgroundColor: normalizeColor(form.color) }}
+                    />
+                  </div>
+                  <HexColorPicker
+                    color={normalizeColor(form.color)}
+                    onChange={(color) => setForm({ ...form, color })}
+                    className="!h-44 !w-full"
+                  />
+                </div>
+
+                <div className="grid content-between gap-4">
+                  <label className="grid gap-2">
+                    <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                      Hex Value
+                    </span>
+                    <input
+                      type="text"
+                      value={form.color}
+                      onChange={(event) => {
+                        const nextColor = event.target.value.trim();
+                        setForm({ ...form, color: nextColor });
+                      }}
+                      onBlur={() =>
+                        setForm((current) => ({
+                          ...current,
+                          color: normalizeColor(current.color),
+                        }))
+                      }
+                      placeholder="#9f1239"
+                      className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 font-mono text-sm uppercase text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+                    />
+                  </label>
+                  <div className="grid grid-cols-5 gap-2 sm:grid-cols-10 lg:grid-cols-5 xl:grid-cols-10">
+                    {colorPresets.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setForm({ ...form, color })}
+                        className={`h-10 rounded-xl border transition hover:scale-105 ${
+                          normalizeColor(form.color).toLowerCase() === color
+                            ? "border-primary"
+                            : "border-border"
+                        }`}
+                        style={{ backgroundColor: color }}
+                        title={color}
+                        aria-label={`Use ${color}`}
+                      />
+                    ))}
+                  </div>
+                  <div
+                    className="min-h-24 rounded-2xl border border-border p-4"
+                    style={{
+                      background: `linear-gradient(135deg, ${normalizeColor(
+                        form.color,
+                      )}, hsl(var(--card)))`,
+                    }}
+                  >
+                    <p className="text-sm font-semibold text-primary">
+                      {form.name.trim() || "Subject preview"}
+                    </p>
+                    <p className="mt-2 text-xs leading-5 text-primary/80">
+                      {form.description.trim() || "No description added."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="w-full rounded-2xl border border-strong-border bg-button px-5 py-3 font-semibold text-white shadow-lg shadow-button/20 transition hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                >
+                  {saving
+                    ? "Saving..."
+                    : editingId
+                      ? "Save Changes"
+                      : "Create Subject"}
+                </button>
+              </div>
             </form>
           </CommandCard>
         )}
@@ -298,14 +409,22 @@ export default function Subjects() {
             {subjects.map((subject) => (
               <CommandCard key={subject.id} className="overflow-hidden p-0">
                 <div
-                  className={`h-2 bg-gradient-to-r ${
-                    accentByColor[subject.color] ?? accentByColor.blue
-                  }`}
+                  className="h-2"
+                  style={{
+                    background: `linear-gradient(90deg, ${normalizeColor(
+                      subject.color,
+                    )}, hsla(var(--button), 0.2))`,
+                  }}
                 />
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl border border-strong-border bg-button/20">
+                      <div
+                        className="mb-4 grid h-12 w-12 place-items-center rounded-2xl border border-strong-border"
+                        style={{
+                          backgroundColor: `${normalizeColor(subject.color)}33`,
+                        }}
+                      >
                         <BookOpen className="h-5 w-5" />
                       </div>
                       <h2 className="text-2xl font-bold leading-tight">

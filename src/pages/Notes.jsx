@@ -121,6 +121,7 @@ export default function Notes() {
 
       if (selectedNoteId) {
         const updated = await updateNote(selectedNoteId, {
+          userId: user.id,
           title: draft.title.trim(),
           subjectId: draft.subjectId,
           content: draft.content.trim(),
@@ -152,7 +153,7 @@ export default function Notes() {
 
     try {
       setError("");
-      await deleteNote(selectedNote.id);
+      await deleteNote(selectedNote.id, user.id);
       const remaining = notes.filter((note) => note.id !== selectedNote.id);
       setNotes(remaining);
 
