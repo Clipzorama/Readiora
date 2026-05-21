@@ -56,13 +56,13 @@ const legacyColors = {
 
 function SubjectStat({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
-      <div className="grid h-9 w-9 place-items-center rounded-xl bg-button/20 text-primary">
-        <Icon className="h-4 w-4" />
+    <div className="flex min-h-24 items-center gap-4 rounded-[1.25rem] border border-border bg-background/70 p-4">
+      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-button/20 text-primary">
+        <Icon className="h-5 w-5" />
       </div>
       <div>
-        <p className="text-sm font-semibold">{value}</p>
-        <p className="text-xs uppercase tracking-[0.16em] text-muted">{label}</p>
+        <p className="text-2xl font-bold leading-none">{value}</p>
+        <p className="mt-2 text-xs uppercase tracking-[0.2em] text-muted">{label}</p>
       </div>
     </div>
   );
@@ -244,7 +244,7 @@ export default function Subjects() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid gap-5">
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.5fr)_16rem]">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)_16rem]">
                 <label className="grid gap-2">
                   <span className="text-xs uppercase tracking-[0.18em] text-muted">
                     Subject
@@ -257,7 +257,7 @@ export default function Subjects() {
                       setForm({ ...form, name: event.target.value })
                     }
                     placeholder="New subject name"
-                    className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+                    className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-base font-semibold text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
                   />
                 </label>
                 <label className="grid gap-2">
@@ -271,7 +271,7 @@ export default function Subjects() {
                       setForm({ ...form, description: event.target.value })
                     }
                     placeholder="What this subject covers"
-                    className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+                    className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
                   />
                 </label>
                 <label className="grid gap-2">
@@ -284,12 +284,12 @@ export default function Subjects() {
                     onChange={(event) =>
                       setForm({ ...form, examDate: event.target.value })
                     }
-                    className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
+                    className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
                   />
                 </label>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
+              <div className="grid gap-4 xl:grid-cols-[18rem_minmax(0,1fr)]">
                 <div className="rounded-2xl border border-border bg-background/70 p-4">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <span className="text-xs uppercase tracking-[0.18em] text-muted">
@@ -326,7 +326,7 @@ export default function Subjects() {
                         }))
                       }
                       placeholder="#9f1239"
-                      className="min-h-12 rounded-2xl border border-border bg-background/70 px-4 py-3 font-mono text-sm uppercase text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+                      className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 font-mono text-sm uppercase text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
                     />
                   </label>
                   <div className="grid grid-cols-5 gap-2 sm:grid-cols-10 lg:grid-cols-5 xl:grid-cols-10">
@@ -405,40 +405,32 @@ export default function Subjects() {
             </p>
           </CommandCard>
         ) : (
-          <section className="grid gap-6 lg:grid-cols-2 2xl:grid-cols-4">
+          <section className="grid gap-6 xl:grid-cols-2">
             {subjects.map((subject) => (
               <CommandCard key={subject.id} className="overflow-hidden p-0">
                 <div
-                  className="h-2"
+                  className="h-3"
                   style={{
                     background: `linear-gradient(90deg, ${normalizeColor(
                       subject.color,
                     )}, hsla(var(--button), 0.2))`,
                   }}
                 />
-                <div className="p-5">
+                <div className="p-5 sm:p-7">
                   <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div
-                        className="mb-4 grid h-12 w-12 place-items-center rounded-2xl border border-strong-border"
-                        style={{
-                          backgroundColor: `${normalizeColor(subject.color)}33`,
-                        }}
-                      >
-                        <BookOpen className="h-5 w-5" />
-                      </div>
-                      <h2 className="text-2xl font-bold leading-tight">
-                        {subject.name}
-                      </h2>
-                      <p className="mt-3 min-h-14 text-sm leading-6 text-secondary">
-                        {subject.description || "No description added."}
-                      </p>
+                    <div
+                      className="grid h-16 w-16 place-items-center rounded-[1.35rem]"
+                      style={{
+                        backgroundColor: `${normalizeColor(subject.color)}33`,
+                      }}
+                    >
+                      <BookOpen className="h-7 w-7" />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3 lg:justify-end">
                       <button
                         type="button"
                         onClick={() => openEditForm(subject)}
-                        className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-background/70 text-secondary transition hover:border-strong-border hover:text-primary"
+                        className="grid h-12 w-12 place-items-center rounded-2xl border border-border bg-background/70 text-secondary transition hover:border-strong-border hover:text-primary"
                         title="Edit subject"
                       >
                         <Pencil className="h-4 w-4" />
@@ -446,7 +438,7 @@ export default function Subjects() {
                       <button
                         type="button"
                         onClick={() => handleDelete(subject)}
-                        className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-background/70 text-secondary transition hover:border-danger hover:text-danger"
+                        className="grid h-12 w-12 place-items-center rounded-2xl border border-border bg-background/70 text-secondary transition hover:border-danger hover:text-danger"
                         title="Delete subject"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -454,11 +446,20 @@ export default function Subjects() {
                     </div>
                   </div>
 
-                  <div className="mt-6">
+                  <div className="mt-6 min-w-0">
+                    <h2 className="break-words text-3xl font-bold leading-tight sm:text-4xl">
+                      {subject.name}
+                    </h2>
+                    <p className="mt-5 w-full text-base leading-8 text-secondary">
+                      {subject.description || "No description added."}
+                    </p>
+                  </div>
+
+                  <div className="mt-8">
                     <ProgressBar value={0} label="Exam readiness" />
                   </div>
 
-                  <div className="mt-5 grid gap-3">
+                  <div className="mt-7 grid gap-4 md:grid-cols-2">
                     <SubjectStat
                       icon={FileText}
                       label="Notes"
@@ -469,8 +470,8 @@ export default function Subjects() {
                     <SubjectStat icon={Target} label="Weak Topics" value={0} />
                   </div>
 
-                  <div className="mt-5 flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-4 text-sm text-secondary">
-                    <CalendarClock className="h-4 w-4 text-warning" />
+                  <div className="mt-7 flex min-h-16 items-center gap-4 rounded-[1.25rem] border border-border bg-background/70 p-4 text-base text-secondary">
+                    <CalendarClock className="h-5 w-5 text-warning" />
                     <span>{formatExamDate(subject.exam_date)}</span>
                   </div>
                 </div>
