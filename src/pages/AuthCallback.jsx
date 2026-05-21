@@ -2,10 +2,23 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
+const redirectDelay = 1400;
+
 export default function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let redirectTimer;
+    let active = true;
+
+    function queueRedirect(path) {
+      redirectTimer = window.setTimeout(() => {
+        if (active) {
+          navigate(path, { replace: true });
+        }
+      }, redirectDelay);
+    }
+
     async function handleAuthCallback() {
       try {
         const {
@@ -16,17 +29,22 @@ export default function AuthCallback() {
         if (error) throw error;
 
         if (session) {
-          navigate("/dashboard", { replace: true });
+          queueRedirect("/dashboard");
         } else {
-          navigate("/login", { replace: true });
+          queueRedirect("/login");
         }
       } catch (error) {
         console.error("OAuth callback error:", error.message);
-        navigate("/login", { replace: true });
+        queueRedirect("/login");
       }
     }
 
     handleAuthCallback();
+
+    return () => {
+      active = false;
+      window.clearTimeout(redirectTimer);
+    };
   }, [navigate]);
 
   return (
@@ -59,7 +77,7 @@ export default function AuthCallback() {
 
           {/* Progress Bar */}
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-background">
-            <div className="h-full w-1/2 animate-pulse rounded-full bg-button" />
+            <div className="h-full w-[95%] animate-pulse rounded-full bg-button" />
           </div>
         </div>
       </section>
