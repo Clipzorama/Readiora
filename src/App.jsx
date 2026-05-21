@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Login";
@@ -9,12 +10,33 @@ import Notes from "./pages/Notes";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
+const Landing = lazy(() => import("./pages/Landing"));
+
+function LandingFallback() {
+  return <main className="min-h-screen bg-background" />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Default route */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Public landing route */}
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<LandingFallback />}>
+              <Landing />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/playform"
+          element={
+            <Suspense fallback={<LandingFallback />}>
+              <Landing />
+            </Suspense>
+          }
+        />
 
         {/* Public auth routes */}
         <Route path="/login" element={<Login />} />
