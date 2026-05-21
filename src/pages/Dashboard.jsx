@@ -9,8 +9,11 @@ import {
   Flame,
   Layers3,
   LineChart,
+  LoaderCircle,
   Radar,
+  RadioTower,
   Target,
+  Unplug,
   Zap,
 } from "lucide-react";
 import {
@@ -44,6 +47,82 @@ function EmptyPanel({ children }) {
   );
 }
 
+function BackendStatusPill({ status }) {
+  const isConnected = status === "connected";
+  const isChecking = status === "checking";
+  const Icon = isConnected ? RadioTower : isChecking ? LoaderCircle : Unplug;
+  const bars = isConnected ? [38, 58, 82, 100] : isChecking ? [48, 72, 44, 66] : [18, 14, 24, 12];
+  const statusLabel = isConnected ? "Connected" : isChecking ? "Checking" : "Disconnected";
+  const statusDetail = isConnected
+    ? "Workspace sync is live"
+    : isChecking
+      ? "Scanning data channel"
+      : "Data channel offline";
+  const tone = isConnected
+    ? {
+        frame: "border-success/45 bg-[linear-gradient(135deg,hsl(var(--emerald)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.16))] text-[#49f3bd] shadow-success/10",
+        badge: "border-success/50 bg-success/20 text-[#6dffd0]",
+        beam: "from-[#4cffc3] via-[#17e6ad] to-[#d8fff1]",
+        dot: "bg-[#25f0b0]",
+        ring: "border-success/25",
+      }
+    : isChecking
+      ? {
+          frame: "border-warning/45 bg-[linear-gradient(135deg,hsl(var(--warning)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.14))] text-warning shadow-warning/10",
+          badge: "border-warning/50 bg-warning/15 text-warning",
+          beam: "from-warning via-[#f4c56b] to-[#fff4cf]",
+          dot: "bg-warning",
+          ring: "border-warning/25",
+        }
+      : {
+          frame: "border-danger/45 bg-[linear-gradient(135deg,hsl(var(--danger)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.12))] text-[#ff8585] shadow-danger/10",
+          badge: "border-danger/50 bg-danger/20 text-[#ff9a9a]",
+          beam: "from-danger via-[#ff6363] to-[#ffd1d1]",
+          dot: "bg-[#ff5656]",
+          ring: "border-danger/25",
+        };
+
+  return (
+    <div
+      className={[
+        "group relative min-w-[17rem] overflow-hidden rounded-[1.35rem] border p-3 shadow-2xl backdrop-blur-xl",
+        tone.frame,
+      ].join(" ")}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.08),transparent)] opacity-0 transition duration-300 group-hover:translate-x-8 group-hover:opacity-100" />
+      <div className="relative flex items-center gap-3">
+        <div className="relative grid h-12 w-12 shrink-0 place-items-center">
+          <span className={`absolute h-12 w-12 rounded-full border ${tone.ring}`} />
+          <span className={`absolute h-8 w-8 rounded-full border ${tone.ring}`} />
+          <span className={`grid h-10 w-10 place-items-center rounded-2xl border ${tone.badge}`}>
+            <Icon className={`h-5 w-5 ${isChecking ? "animate-spin" : ""}`} />
+          </span>
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className={`h-2 w-2 rounded-full ${tone.dot} shadow-[0_0_18px_currentColor]`} />
+            <p className="truncate text-sm font-bold">{statusLabel}</p>
+          </div>
+          <p className="mt-1 truncate text-xs font-medium text-secondary">
+            {statusDetail}
+          </p>
+        </div>
+
+        <div className="flex h-10 items-end gap-1.5 rounded-2xl border border-border/70 bg-background/55 px-2.5 py-2">
+          {bars.map((height, index) => (
+            <span
+              key={`${status}-${height}-${index}`}
+              className={`w-1.5 rounded-full bg-gradient-to-t ${tone.beam}`}
+              style={{ height: `${height}%`, opacity: isConnected ? 1 : 0.72 }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [subjects, setSubjects] = useState([]);
@@ -57,6 +136,7 @@ export default function Dashboard() {
     async function loadDashboard() {
       try {
         setLoading(true);
+        setError("");
         const [subjectRows, noteRows] = await Promise.all([
           getSubjects(user.id),
           getNotes(user.id),
@@ -81,6 +161,8 @@ export default function Dashboard() {
     );
   }, [user]);
 
+  const backendStatus = loading ? "checking" : error ? "disconnected" : "connected";
+
   const metrics = [
     {
       label: "Subjects",
@@ -92,7 +174,7 @@ export default function Dashboard() {
     {
       label: "Notes",
       value: notes.length,
-      detail: "Saved in Supabase",
+      detail: "Saved securely",
       icon: BookMarked,
       tone: "success",
     },
@@ -130,21 +212,8 @@ export default function Dashboard() {
     <WarRoomShell
       eyebrow="AI Study War Room"
       title="Command Center"
-      description="Track real workspace totals from Supabase. Advanced study systems remain empty until implemented."
-      action={
-        <div className="grid min-w-[260px] gap-3 rounded-2xl border border-strong-border bg-background/70 p-4">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-xs uppercase tracking-[0.22em] text-muted">
-              Readiness
-            </span>
-            <span className="text-3xl font-bold text-primary">0%</span>
-          </div>
-          <ProgressBar value={0} />
-          <p className="text-sm text-secondary">
-            No readiness data exists for this workspace.
-          </p>
-        </div>
-      }
+      description="Track real workspace totals from your account. Advanced study systems remain empty until implemented."
+      action={<BackendStatusPill status={backendStatus} />}
     >
       <div className="grid gap-6">
         {error && (
@@ -153,49 +222,38 @@ export default function Dashboard() {
           </div>
         )}
 
-        <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <CommandCard className="relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-40 w-40 rounded-bl-full bg-button/20 blur-2xl" />
-            <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+        <section>
+          <CommandCard className="relative min-h-[340px] overflow-hidden p-6 sm:p-8 xl:min-h-[440px] xl:p-10">
+            <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_top_right,hsl(var(--button)/0.18),transparent_48%)]" />
+            <div className="relative flex min-h-[292px] flex-col justify-between gap-10 xl:min-h-[360px]">
               <div>
-                <p className="text-sm uppercase tracking-[0.28em] text-secondary">
+                <p className="text-sm uppercase tracking-[0.34em] text-secondary">
                   {loading ? "Loading workspace" : `Good evening, ${displayName}`}
                 </p>
-                <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl">
+                <h2 className="mt-8 max-w-5xl text-4xl font-bold leading-none text-primary sm:text-6xl xl:text-7xl">
                   {subjects.length || notes.length
                     ? "Workspace data is live."
                     : "Your workspace is empty."}
                 </h2>
-                <p className="mt-4 max-w-2xl leading-7 text-secondary">
+                <p className="mt-8 max-w-4xl text-lg leading-8 text-secondary">
                   {subjects.length || notes.length
-                    ? "Dashboard counts are reading from your authenticated Supabase rows."
+                    ? "Dashboard counts are reading from your secure workspace data."
                     : "Create a subject and add notes to begin. New accounts include no sample study data."}
                 </p>
               </div>
-              <RingGauge value={0} label="Exam Readiness" />
-            </div>
-          </CommandCard>
 
-          <CommandCard>
-            <CardHeader eyebrow="Live Status" title="Current Streak" icon={Flame} />
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-border bg-background/70 p-4">
-                <p className="text-4xl font-bold">0</p>
-                <p className="mt-2 text-sm text-secondary">days active</p>
+              <div className="grid gap-6 md:grid-cols-[auto_1fr] md:items-center">
+                <RingGauge value={0} label="Exam Readiness" />
+                <div>
+                  <p className="text-sm uppercase tracking-[0.34em] text-muted">
+                    Exam Readiness
+                  </p>
+                  <p className="mt-4 max-w-4xl text-base leading-7 text-secondary sm:text-lg">
+                    Readiness is calculated from study hours, quiz accuracy,
+                    flashcard mastery, weak topics, and exam proximity.
+                  </p>
+                </div>
               </div>
-              <div className="rounded-2xl border border-border bg-background/70 p-4">
-                <p className="text-4xl font-bold">0</p>
-                <p className="mt-2 text-sm text-secondary">missions due</p>
-              </div>
-            </div>
-            <div className="mt-5 rounded-2xl border border-strong-border/70 bg-button/15 p-4">
-              <div className="flex items-center gap-2 text-primary">
-                <BrainCircuit className="h-4 w-4" />
-                <span className="text-sm font-semibold">AI Recommendation</span>
-              </div>
-              <p className="mt-3 text-sm leading-6 text-secondary">
-                No AI recommendation is available because generation is not enabled.
-              </p>
             </div>
           </CommandCard>
         </section>

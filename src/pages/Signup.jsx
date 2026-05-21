@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import xevaroLogo from "../assets/xevarologo.webp";
 import {
   signUpWithEmail,
   signInWithGoogle,
@@ -123,6 +124,14 @@ export default function Signup() {
           animate="visible"
           className="w-full max-w-sm rounded-3xl border border-border bg-card/95 p-5 shadow-2xl shadow-black/30 backdrop-blur sm:max-w-md sm:p-8"
         >
+          <motion.div variants={itemVariants} className="mb-6 flex justify-center">
+            <img
+              src={xevaroLogo}
+              alt="Xevaro"
+              className="h-12 w-auto max-w-[220px] object-contain"
+            />
+          </motion.div>
+
           <motion.div
             variants={itemVariants}
             className="mb-6 border-b border-border pb-5 lg:hidden"
@@ -274,9 +283,11 @@ export default function Signup() {
 
         <div className="relative z-10 flex w-full flex-col justify-between">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
-            <p className="text-sm uppercase tracking-[0.4em] text-secondary">
-              Xevaro System
-            </p>
+            <img
+              src={xevaroLogo}
+              alt="Xevaro"
+              className="h-14 w-auto object-contain"
+            />
 
             <motion.h1
               variants={itemVariants}

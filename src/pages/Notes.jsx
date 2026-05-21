@@ -92,10 +92,7 @@ export default function Notes() {
 
   function startNewNote() {
     setSelectedNoteId(null);
-    setDraft({
-      ...emptyDraft,
-      subjectId: subjects[0]?.id ?? "",
-    });
+    setDraft(emptyDraft);
     setError("");
   }
 
@@ -137,7 +134,8 @@ export default function Notes() {
           content: draft.content.trim(),
         });
         setNotes((current) => [created, ...current]);
-        setSelectedNoteId(created.id);
+        setSelectedNoteId(null);
+        setDraft(emptyDraft);
       }
     } catch (saveError) {
       setError(saveError.message);
@@ -190,12 +188,12 @@ export default function Notes() {
           <CommandCard>
             <CardHeader eyebrow="Setup Required" title="Create a Subject First" icon={BookOpen} />
             <p className="max-w-2xl leading-7 text-secondary">
-              Notes are linked to subjects in Supabase. Create a subject before
-              adding your first note.
+              Notes are linked to subjects in your workspace. Create a subject
+              before adding your first note.
             </p>
           </CommandCard>
         ) : (
-          <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
+          <div className="grid gap-6 xl:grid-cols-[minmax(240px,0.72fr)_minmax(0,1.45fr)_minmax(280px,0.82fr)]">
             <CommandCard className="xl:sticky xl:top-4 xl:self-start">
               <CardHeader eyebrow="Library" title="Recent Notes" icon={FileText} />
               {loading ? (
@@ -211,13 +209,15 @@ export default function Notes() {
                       key={note.id}
                       type="button"
                       onClick={() => selectNote(note)}
-                      className={`w-full rounded-2xl border p-4 text-left transition ${
+                      className={`w-full rounded-[1.25rem] border p-5 text-left transition ${
                         note.id === selectedNoteId
                           ? "border-strong-border bg-button/15"
                           : "border-border bg-background/70 hover:border-strong-border"
                       }`}
                     >
-                      <p className="font-semibold">{note.title}</p>
+                      <p className="break-words text-lg font-semibold leading-tight">
+                        {note.title}
+                      </p>
                       <p className="mt-2 text-sm text-secondary">
                         {note.subjects?.name ?? "Unlinked subject"}
                       </p>
@@ -234,11 +234,11 @@ export default function Notes() {
 
             <section className="grid gap-6">
               <CommandCard>
-                <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
-                  <div>
-                    <label className="text-xs uppercase tracking-[0.22em] text-muted">
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.78fr)]">
+                  <label className="grid gap-3">
+                    <span className="text-xs uppercase tracking-[0.22em] text-muted">
                       Note Title
-                    </label>
+                    </span>
                     <input
                       type="text"
                       value={draft.title}
@@ -246,45 +246,50 @@ export default function Notes() {
                         setDraft({ ...draft, title: event.target.value })
                       }
                       placeholder="Untitled note"
-                      className="mt-2 w-full rounded-2xl border border-border bg-background/70 px-4 py-4 text-xl font-semibold outline-none transition placeholder:text-muted focus:border-strong-border"
+                      className="min-h-16 w-full rounded-[1.35rem] border border-border bg-background/70 px-5 py-4 text-2xl font-bold leading-tight text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:text-3xl"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs uppercase tracking-[0.22em] text-muted">
+                  </label>
+                  <label className="grid gap-3">
+                    <span className="text-xs uppercase tracking-[0.22em] text-muted">
                       Subject
-                    </label>
-                    <select
-                      value={draft.subjectId}
-                      onChange={(event) =>
-                        setDraft({ ...draft, subjectId: event.target.value })
-                      }
-                      className="mt-2 w-full rounded-2xl border border-border bg-background/70 px-4 py-4 text-primary outline-none transition focus:border-strong-border"
-                    >
-                      <option value="" disabled>
-                        Select subject
-                      </option>
-                      {subjects.map((subject) => (
-                        <option key={subject.id} value={subject.id}>
-                          {subject.name}
+                    </span>
+                    <div className="relative">
+                      <select
+                        value={draft.subjectId}
+                        onChange={(event) =>
+                          setDraft({ ...draft, subjectId: event.target.value })
+                        }
+                        className="min-h-16 w-full appearance-none rounded-[1.35rem] border border-border bg-background/70 px-5 py-4 pr-12 text-lg font-semibold text-primary outline-none transition focus:border-strong-border"
+                      >
+                        <option value="" disabled>
+                          Select subject
                         </option>
-                      ))}
-                    </select>
-                  </div>
+                        {subjects.map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="pointer-events-none absolute right-5 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b-2 border-r-2 border-secondary" />
+                    </div>
+                  </label>
                 </div>
               </CommandCard>
 
               <CommandCard className="p-0">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-                  <div className="flex items-center gap-2 text-sm text-muted">
-                    <PenLine className="h-4 w-4" />
-                    Markdown editor
+                <div className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3 text-sm text-muted">
+                    <div className="grid h-10 w-10 place-items-center rounded-2xl border border-border bg-background/70">
+                      <PenLine className="h-4 w-4" />
+                    </div>
+                    <span className="font-medium">Markdown editor</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {selectedNote && (
                       <button
                         type="button"
                         onClick={handleDelete}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background/70 px-3 py-2 text-sm font-semibold text-secondary transition hover:border-danger hover:text-danger"
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-border bg-background/70 px-4 py-2 text-sm font-semibold text-secondary transition hover:border-danger hover:text-danger"
                       >
                         <Trash2 className="h-4 w-4" />
                         Delete
@@ -294,7 +299,7 @@ export default function Notes() {
                       type="button"
                       onClick={handleSave}
                       disabled={saving}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-strong-border bg-button px-3 py-2 text-sm font-semibold text-white transition hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-strong-border bg-button px-4 py-2 text-sm font-semibold text-white transition hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Save className="h-4 w-4" />
                       {saving ? "Saving..." : "Save"}
@@ -308,7 +313,7 @@ export default function Notes() {
                     setDraft({ ...draft, content: event.target.value })
                   }
                   placeholder="Start writing your note..."
-                  className="min-h-[520px] w-full resize-y bg-transparent px-5 py-5 font-dm text-base leading-8 text-primary outline-none placeholder:text-muted"
+                  className="min-h-[24rem] w-full resize-y bg-transparent px-5 py-6 font-dm text-base leading-8 text-primary outline-none placeholder:text-muted sm:min-h-[34rem] sm:px-7"
                 />
               </CommandCard>
             </section>
@@ -316,13 +321,13 @@ export default function Notes() {
             <aside className="grid gap-6 xl:sticky xl:top-4 xl:self-start">
               <CommandCard>
                 <CardHeader eyebrow="Save Target" title="Subject Link" icon={BookOpen} />
-                <div className="rounded-2xl border border-border bg-background/70 p-4">
-                  <p className="font-semibold">
+                <div className="rounded-[1.25rem] border border-border bg-background/70 p-5">
+                  <p className="break-words text-xl font-bold leading-tight">
                     {selectedSubject?.name ?? "No subject selected"}
                   </p>
-                  <p className="mt-2 text-sm text-secondary">
-                    This note will be stored with your authenticated Supabase user
-                    id and linked to the selected subject.
+                  <p className="mt-4 text-base leading-7 text-secondary">
+                    This note will be saved securely to your account and linked
+                    to the selected subject.
                   </p>
                 </div>
               </CommandCard>
@@ -330,13 +335,13 @@ export default function Notes() {
               <CommandCard>
                 <CardHeader eyebrow="Workspace" title="Empty Systems" icon={FileText} />
                 <div className="grid gap-3 text-sm text-secondary">
-                  <p className="rounded-2xl border border-border bg-background/70 p-4">
+                  <p className="rounded-[1.25rem] border border-border bg-background/70 p-5">
                     AI summaries: 0
                   </p>
-                  <p className="rounded-2xl border border-border bg-background/70 p-4">
+                  <p className="rounded-[1.25rem] border border-border bg-background/70 p-5">
                     Flashcards generated: 0
                   </p>
-                  <p className="rounded-2xl border border-border bg-background/70 p-4">
+                  <p className="rounded-[1.25rem] border border-border bg-background/70 p-5">
                     Quizzes generated: 0
                   </p>
                 </div>

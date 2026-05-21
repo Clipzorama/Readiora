@@ -1,5 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import xevaroLogo from "../assets/xevarologo.webp";
+import xevaroSymbol from "../assets/xfavi.webp";
+
 import {
   signInWithEmail,
   signInWithGoogle,
@@ -134,9 +137,11 @@ export default function Login() {
 
         <div className="relative z-10 flex w-full flex-col justify-between">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
-            <p className="text-sm uppercase tracking-[0.4em] text-secondary">
-              Xevaro
-            </p>
+            <img
+              src={xevaroLogo}
+              alt="Xevaro"
+              className="h-14 w-auto object-contain"
+            />
 
             <motion.h1
               variants={itemVariants}
@@ -217,6 +222,14 @@ export default function Login() {
           animate="visible"
           className="w-full max-w-sm rounded-3xl border border-border bg-card/95 p-5 shadow-2xl shadow-black/30 backdrop-blur sm:max-w-md sm:p-8"
         >
+          <motion.div variants={itemVariants} className="mb-6 flex justify-center">
+            <img
+              src={xevaroSymbol}
+              alt="Xevaro"
+              className="h-12 w-auto max-w-[220px] object-contain"
+            />
+          </motion.div>
+
           <motion.div
             variants={itemVariants}
             className="mb-6 border-b border-border pb-5 lg:hidden"
@@ -253,10 +266,6 @@ export default function Login() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <p className="text-sm uppercase tracking-[0.35em] text-secondary">
-              Welcome Back
-            </p>
-
             <h2 className="mt-3 text-2xl font-bold sm:text-4xl">Sign in</h2>
 
             <p className="mt-3 text-secondary">
