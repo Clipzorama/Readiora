@@ -112,6 +112,89 @@ html {
             transform: translateY(0);
         }
     }
+
+    @keyframes gradient-text-pan {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .rb-gradient-text {
+        display: inline-block;
+        background-image: linear-gradient(to right, var(--gradient-text-colors));
+        background-size: 260% 100%;
+        background-position: 0% 50%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        animation: gradient-text-pan var(--gradient-text-duration, 8s) ease-in-out infinite;
+    }
+
+    .rb-text-type {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .rb-text-type-cursor {
+        display: inline-block;
+        margin-left: 0.03em;
+        color: hsl(var(--primary));
+        animation: text-type-cursor 0.9s steps(2, start) infinite;
+    }
+
+    @keyframes text-type-cursor {
+        0%, 44% {
+            opacity: 1;
+        }
+        45%, 100% {
+            opacity: 0;
+        }
+    }
+
+    .rb-gradient-pause:hover {
+        animation-play-state: paused;
+    }
+
+    .rb-spotlight-card {
+        --spotlight-x: 50%;
+        --spotlight-y: 50%;
+    }
+
+    .rb-spotlight-glow {
+        opacity: 0;
+        transition: opacity 450ms ease;
+        background: radial-gradient(
+            circle at var(--spotlight-x) var(--spotlight-y),
+            var(--spotlight-color),
+            transparent 70%
+        );
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .rb-spotlight-card:hover .rb-spotlight-glow,
+        .rb-spotlight-card:focus-within .rb-spotlight-glow {
+            opacity: 0.65;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rb-gradient-text {
+            animation: none;
+            background-position: 50% 50%;
+        }
+
+        .rb-text-type-cursor {
+            animation: none;
+        }
+
+        .rb-spotlight-glow {
+            transition: none;
+        }
+    }
+
 }
 
 
