@@ -9,6 +9,11 @@ export async function getNotes(userId) {
         id,
         name,
         color
+      ),
+      note_attachments (
+        id,
+        file_type,
+        file_size
       )
     `)
     .eq("user_id", userId)
@@ -39,6 +44,11 @@ export async function getNoteById(noteId) {
         id,
         name,
         color
+      ),
+      note_attachments (
+        id,
+        file_type,
+        file_size
       )
     `)
     .eq("id", noteId)
@@ -63,6 +73,11 @@ export async function createNote({ userId, subjectId, title, content }) {
         id,
         name,
         color
+      ),
+      note_attachments (
+        id,
+        file_type,
+        file_size
       )
     `)
     .single();
@@ -98,6 +113,11 @@ export async function updateNote(noteId, updates) {
         id,
         name,
         color
+      ),
+      note_attachments (
+        id,
+        file_type,
+        file_size
       )
     `)
     .single();
