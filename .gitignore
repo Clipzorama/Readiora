@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 .env
 /playform
+AI_STACK_CONTEXT.md
