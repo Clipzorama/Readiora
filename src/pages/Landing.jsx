@@ -78,7 +78,7 @@ function AmbientSweep() {
       initial={{ x: "-45%", opacity: 0.18 }}
       animate={{ x: ["-45%", "15%", "-45%"], opacity: [0.16, 0.28, 0.16] }}
       transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
-      className="absolute left-0 top-0 hidden h-full w-[72rem] max-w-none rotate-[-12deg] bg-[linear-gradient(90deg,transparent,hsla(var(--button),0.2),hsla(var(--warning),0.08),transparent)] blur-xl md:block"
+      className="absolute left-0 top-0 hidden h-full w-[72rem] max-w-none rotate-[-12deg] bg-[linear-gradient(90deg,transparent,hsla(var(--button),0.2),hsla(var(--button-hover),0.12),transparent)] blur-xl md:block"
     />
   );
 }
@@ -144,7 +144,7 @@ export default function Landing() {
           >
             Command your study day with{" "}
             <GradientText
-              colors={["#f6eeee", "#f0b86a", "#b91c1c", "#f6eeee"]}
+              colors={["#e6fbff", "#7dd3fc", "#0eb6d3", "#e6fbff"]}
               animationSpeed={7}
               pauseOnHover
               className="block min-h-[1.08em] max-w-full overflow-hidden pb-1"
@@ -177,7 +177,7 @@ export default function Landing() {
               return (
                 <SpotlightCard
                   key={metric.label}
-                  spotlightColor="rgba(150, 36, 36, 0.28)"
+                  spotlightColor="rgba(14, 182, 211, 0.26)"
                   className="rounded-2xl border border-border bg-card/75 p-4 text-left transition hover:border-strong-border"
                 >
                   <div className="flex items-center gap-3">
@@ -206,7 +206,7 @@ export default function Landing() {
           className="mx-auto min-w-0 w-full max-w-xl lg:max-w-none"
         >
           <SpotlightCard
-            spotlightColor="rgba(185, 28, 28, 0.22)"
+            spotlightColor="rgba(14, 165, 200, 0.24)"
             className="rounded-[1.75rem] border border-border bg-card/90 p-3 shadow-2xl shadow-black/35 sm:p-4 lg:rounded-[2rem]"
           >
             <div className="overflow-hidden rounded-[1.35rem] border border-border bg-background/85">

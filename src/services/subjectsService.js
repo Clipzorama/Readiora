@@ -30,7 +30,7 @@ export async function createSubject({ userId, name, description, examDate, color
       name,
       description,
       exam_date: examDate || null,
-      color: color || "#9f1239",
+      color: color || "#0ea5c8",
     })
     .select()
     .single();

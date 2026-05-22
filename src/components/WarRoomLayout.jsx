@@ -141,8 +141,8 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
     <main className="min-h-screen overflow-x-clip bg-background text-primary">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-24 top-[-10rem] h-80 w-80 rounded-full bg-button/20 blur-3xl" />
-        <div className="absolute right-[-8rem] top-24 h-96 w-96 rounded-full bg-warning/10 blur-3xl" />
-        <div className="absolute bottom-[-12rem] left-1/3 h-96 w-96 rounded-full bg-warning/10 blur-3xl" />
+        <div className="absolute right-[-8rem] top-24 h-96 w-96 rounded-full bg-button-hover/10 blur-3xl" />
+        <div className="absolute bottom-[-12rem] left-1/3 h-96 w-96 rounded-full bg-strong-border/20 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.025)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.025)_1px,transparent_1px)] bg-[size:44px_44px]" />
       </div>
 
@@ -390,7 +390,7 @@ export function RingGauge({ value, label }) {
       <div
         className="grid h-28 w-28 shrink-0 place-items-center rounded-full p-2"
         style={{
-          background: `conic-gradient(hsl(var(--buttonh)) ${
+          background: `conic-gradient(hsl(var(--button-hover)) ${
             value * 3.6
           }deg, hsl(var(--border)) 0deg)`,
         }}

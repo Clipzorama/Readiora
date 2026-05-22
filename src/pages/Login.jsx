@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 
+import xfaviLogo from "../assets/xfavi.webp";
 import {
   signInWithEmail,
   signInWithGoogle,
@@ -211,67 +213,36 @@ export default function Login() {
       </motion.section>
 
       {/* Login Form */}
-      <section className="relative z-10 flex min-h-screen items-center justify-center px-5 py-8 sm:px-6 lg:min-h-0 lg:py-12">
+      <section className="relative z-10 flex min-h-screen items-center justify-center px-4 py-4 sm:px-6 sm:py-8 lg:min-h-0 lg:py-12">
         <motion.div
           variants={formVariants}
           initial="hidden"
           animate="visible"
-          className="w-full max-w-sm rounded-3xl border border-border bg-card/95 p-5 shadow-2xl shadow-black/30 backdrop-blur sm:max-w-md sm:p-8"
+          className="w-full max-w-sm rounded-2xl border border-border bg-card/95 p-4 shadow-2xl shadow-black/30 backdrop-blur sm:max-w-md sm:rounded-3xl sm:p-8"
         >
-          <motion.div
-            variants={itemVariants}
-            className="mb-6 border-b border-border pb-5 lg:hidden"
-          >
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-secondary">
-                Xevaro
-              </p>
-              <h1 className="mt-2 text-xl font-bold leading-tight">
-                Study command center
-              </h1>
-            </div>
+          <motion.div variants={itemVariants} className="text-center">
+            <img
+              src={xfaviLogo}
+              alt="Xevaro"
+              className="mx-auto h-14 w-auto object-contain sm:h-20"
+            />
+            <h2 className="mt-2 text-xl font-bold sm:mt-3 sm:text-4xl">
+              Sign in
+            </h2>
 
-            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-xl border border-border bg-background/70 px-2 py-2">
-                <p className="text-xs font-semibold">AI</p>
-                <p className="mt-1 text-[10px] uppercase tracking-widest text-muted">
-                  Notes
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-background/70 px-2 py-2">
-                <p className="text-xs font-semibold">Quiz</p>
-                <p className="mt-1 text-[10px] uppercase tracking-widest text-muted">
-                  Prep
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-background/70 px-2 py-2">
-                <p className="text-xs font-semibold">Focus</p>
-                <p className="mt-1 text-[10px] uppercase tracking-widest text-muted">
-                  Mode
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <p className="text-sm uppercase tracking-[0.3em] text-secondary">
-              Xevaro Access
-            </p>
-            <h2 className="mt-3 text-2xl font-bold sm:text-4xl">Sign in</h2>
-
-            <p className="mt-3 text-secondary">
+            <p className="mt-2 text-sm text-secondary sm:mt-3 sm:text-base">
               Continue your study mission inside Xevaro.
             </p>
           </motion.div>
 
-          <form onSubmit={handleEmailLogin} className="mt-6 space-y-4 sm:mt-8">
+          <form onSubmit={handleEmailLogin} className="mt-4 space-y-3 sm:mt-8 sm:space-y-4">
             <motion.input
               variants={itemVariants}
               name="email"
               type="email"
               placeholder="Email address"
               required
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
             />
 
             <motion.input
@@ -280,20 +251,20 @@ export default function Login() {
               type="password"
               placeholder="Password"
               required
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
             />
 
             <motion.button
               variants={itemVariants}
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full rounded-xl bg-button py-3 font-semibold text-white transition hover:bg-button-hover"
+              className="w-full rounded-xl bg-button py-2.5 font-semibold text-white transition hover:bg-button-hover sm:py-3"
             >
               Enter Command Center
             </motion.button>
           </form>
 
-          <motion.div variants={itemVariants} className="my-6 flex items-center gap-3">
+          <motion.div variants={itemVariants} className="my-4 flex items-center gap-3 sm:my-6">
             <div className="h-px flex-1 bg-border" />
             <span className="text-xs uppercase tracking-widest text-muted">
               or
@@ -301,13 +272,13 @@ export default function Login() {
             <div className="h-px flex-1 bg-border" />
           </motion.div>
 
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <motion.button
               variants={itemVariants}
               whileHover={{ y: -2, borderColor: "hsl(var(--strong-border))" }}
               whileTap={{ scale: 0.98 }}
               onClick={signInWithGoogle}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background py-3 font-medium transition hover:bg-card-hover"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background py-2.5 font-medium transition hover:bg-card-hover sm:py-3"
             >
               <GoogleIcon />
               Continue with Google
@@ -318,7 +289,7 @@ export default function Login() {
               whileHover={{ y: -2, borderColor: "hsl(var(--strong-border))" }}
               whileTap={{ scale: 0.98 }}
               onClick={signInWithGithub}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background py-3 font-medium transition hover:bg-card-hover"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background py-2.5 font-medium transition hover:bg-card-hover sm:py-3"
             >
               <GithubIcon />
               Continue with GitHub
@@ -327,13 +298,23 @@ export default function Login() {
 
           <motion.p
             variants={itemVariants}
-            className="mt-8 text-center text-sm text-secondary"
+            className="mt-5 text-center text-sm text-secondary sm:mt-8"
           >
             Don&apos;t have an account?{" "}
             <Link to="/signup" className="font-semibold text-button">
               Create one manually
             </Link>
           </motion.p>
+
+          <motion.div variants={itemVariants} className="mt-3 sm:mt-5">
+            <Link
+              to="/"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background py-2.5 font-medium text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary sm:py-3"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to home
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
     </main>

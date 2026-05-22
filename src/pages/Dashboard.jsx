@@ -70,7 +70,7 @@ function BackendStatusPill({ status }) {
       ? {
           frame: "border-warning/45 bg-[linear-gradient(135deg,hsl(var(--warning)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.14))] text-warning shadow-warning/10",
           badge: "border-warning/50 bg-warning/15 text-warning",
-          beam: "from-warning via-[#f4c56b] to-[#fff4cf]",
+          beam: "from-warning via-[#38c7ff] to-[#dff8ff]",
           dot: "bg-warning",
           ring: "border-warning/25",
         }

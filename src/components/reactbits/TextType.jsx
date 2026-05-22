@@ -20,9 +20,6 @@ export default function TextType({
 
   useEffect(() => {
     if (prefersReducedMotion || words.length === 0) {
-      setVisibleCount(words[0]?.length || 0);
-      setIsDeleting(false);
-      setWordIndex(0);
       return undefined;
     }
 
@@ -60,11 +57,12 @@ export default function TextType({
     words,
   ]);
 
-  const activeText = words[wordIndex] || "";
+  const activeText = words[prefersReducedMotion ? 0 : wordIndex] || "";
+  const displayCount = prefersReducedMotion ? activeText.length : visibleCount;
 
   return (
     <span className={`rb-text-type ${className}`} aria-label={activeText}>
-      <span aria-hidden="true">{activeText.slice(0, visibleCount)}</span>
+      <span aria-hidden="true">{activeText.slice(0, displayCount)}</span>
       <span className="rb-text-type-cursor" aria-hidden="true">
         {cursorCharacter}
       </span>

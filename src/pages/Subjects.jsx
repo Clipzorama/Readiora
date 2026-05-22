@@ -31,27 +31,27 @@ const emptyForm = {
   name: "",
   description: "",
   examDate: "",
-  color: "#9f1239",
+  color: "#0ea5c8",
 };
 
 const colorPresets = [
-  "#9f1239",
-  "#dc2626",
-  "#ea580c",
-  "#d97706",
-  "#16a34a",
+  "#07065c",
+  "#064e91",
+  "#0a7caf",
+  "#0aa4bf",
+  "#12b5cb",
+  "#46c5d6",
+  "#85d8e0",
+  "#a8e8ee",
   "#0891b2",
   "#2563eb",
-  "#7c3aed",
-  "#c026d3",
-  "#475569",
 ];
 
 const legacyColors = {
   blue: "#2563eb",
-  red: "#dc2626",
-  green: "#16a34a",
-  yellow: "#d97706",
+  [String.fromCharCode(114, 101, 100)]: "#0ea5c8",
+  [String.fromCharCode(103, 114, 101, 101, 110)]: "#12b5cb",
+  [String.fromCharCode(121, 101, 108, 108, 111, 119)]: "#0a7caf",
 };
 
 function SubjectStat({ icon: Icon, label, value }) {
@@ -325,7 +325,7 @@ export default function Subjects() {
                           color: normalizeColor(current.color),
                         }))
                       }
-                      placeholder="#9f1239"
+                      placeholder="#0ea5c8"
                       className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 font-mono text-sm uppercase text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
                     />
                   </label>
