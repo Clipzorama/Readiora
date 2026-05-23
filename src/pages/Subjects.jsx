@@ -3,6 +3,7 @@ import { HexColorPicker } from "react-colorful";
 import {
   BookOpen,
   CalendarClock,
+  Clock3,
   FileText,
   Layers3,
   MessageSquareText,
@@ -31,27 +32,28 @@ const emptyForm = {
   name: "",
   description: "",
   examDate: "",
+  examTime: "",
   color: "#0ea5c8",
 };
 
 const colorPresets = [
-  "#07065c",
-  "#064e91",
-  "#0a7caf",
-  "#0aa4bf",
-  "#12b5cb",
-  "#46c5d6",
-  "#85d8e0",
-  "#a8e8ee",
+  "#dc2626",
+  "#ea580c",
+  "#facc15",
+  "#16a34a",
+  "#0d9488",
   "#0891b2",
   "#2563eb",
+  "#4f46e5",
+  "#7c3aed",
+  "#db2777",
 ];
 
 const legacyColors = {
   blue: "#2563eb",
-  [String.fromCharCode(114, 101, 100)]: "#0ea5c8",
-  [String.fromCharCode(103, 114, 101, 101, 110)]: "#12b5cb",
-  [String.fromCharCode(121, 101, 108, 108, 111, 119)]: "#0a7caf",
+  red: "#dc2626",
+  green: "#16a34a",
+  yellow: "#facc15",
 };
 
 function SubjectStat({ icon: Icon, label, value }) {
@@ -75,6 +77,19 @@ function formatExamDate(value) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(`${value}T00:00:00`));
+}
+
+function formatExamTime(value) {
+  if (!value) return "No exam time";
+
+  const [hours = "00", minutes = "00"] = value.split(":");
+  const date = new Date();
+  date.setHours(Number(hours), Number(minutes), 0, 0);
+
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function normalizeColor(value) {
@@ -143,6 +158,7 @@ export default function Subjects() {
       name: subject.name,
       description: subject.description ?? "",
       examDate: subject.exam_date ?? "",
+      examTime: subject.exam_time?.slice(0, 5) ?? "",
       color: normalizeColor(subject.color),
     });
     setShowForm(true);
@@ -164,6 +180,7 @@ export default function Subjects() {
           name: form.name.trim(),
           description: form.description.trim() || null,
           examDate: form.examDate || null,
+          examTime: form.examTime || null,
           color: subjectColor,
         });
         setSubjects((current) =>
@@ -175,6 +192,7 @@ export default function Subjects() {
           name: form.name.trim(),
           description: form.description.trim() || null,
           examDate: form.examDate || null,
+          examTime: form.examTime || null,
           color: subjectColor,
         });
         setSubjects((current) => [created, ...current]);
@@ -244,7 +262,7 @@ export default function Subjects() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid gap-5">
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)_16rem]">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_13rem_11rem]">
                 <label className="grid gap-2">
                   <span className="text-xs uppercase tracking-[0.18em] text-muted">
                     Subject
@@ -283,6 +301,19 @@ export default function Subjects() {
                     value={form.examDate}
                     onChange={(event) =>
                       setForm({ ...form, examDate: event.target.value })
+                    }
+                    className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                    Exam Time
+                  </span>
+                  <input
+                    type="time"
+                    value={form.examTime}
+                    onChange={(event) =>
+                      setForm({ ...form, examTime: event.target.value })
                     }
                     className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
                   />
@@ -470,9 +501,15 @@ export default function Subjects() {
                     <SubjectStat icon={Target} label="Weak Topics" value={0} />
                   </div>
 
-                  <div className="mt-7 flex min-h-16 items-center gap-4 rounded-[1.25rem] border border-border bg-background/70 p-4 text-base text-secondary">
-                    <CalendarClock className="h-5 w-5 text-warning" />
-                    <span>{formatExamDate(subject.exam_date)}</span>
+                  <div className="mt-7 grid gap-3 rounded-[1.25rem] border border-border bg-background/70 p-4 text-base text-secondary sm:grid-cols-2">
+                    <span className="flex items-center gap-3">
+                      <CalendarClock className="h-5 w-5 text-warning" />
+                      {formatExamDate(subject.exam_date)}
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <Clock3 className="h-5 w-5 text-warning" />
+                      {formatExamTime(subject.exam_time)}
+                    </span>
                   </div>
                 </div>
               </CommandCard>

@@ -1,5 +1,10 @@
 import { supabase } from "../lib/supabase";
 
+function normalizeExamTime(value) {
+  if (!value) return null;
+  return value.length === 5 ? `${value}:00` : value;
+}
+
 export async function getSubjects(userId) {
   const { data, error } = await supabase
     .from("subjects")
@@ -22,7 +27,14 @@ export async function getSubjectById(subjectId) {
   return data;
 }
 
-export async function createSubject({ userId, name, description, examDate, color }) {
+export async function createSubject({
+  userId,
+  name,
+  description,
+  examDate,
+  examTime,
+  color,
+}) {
   const { data, error } = await supabase
     .from("subjects")
     .insert({
@@ -30,6 +42,7 @@ export async function createSubject({ userId, name, description, examDate, color
       name,
       description,
       exam_date: examDate || null,
+      exam_time: normalizeExamTime(examTime),
       color: color || "#0ea5c8",
     })
     .select()
@@ -46,6 +59,7 @@ export async function updateSubject(subjectId, updates) {
       name: updates.name,
       description: updates.description,
       exam_date: updates.examDate || null,
+      exam_time: normalizeExamTime(updates.examTime),
       color: updates.color,
     })
     .eq("id", subjectId);
