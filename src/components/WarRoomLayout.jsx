@@ -3,23 +3,26 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   BookOpen,
-  BrainCircuit,
   ChevronRight,
   FileText,
   LayoutDashboard,
   LogOut,
   Menu,
   Plus,
+  Settings,
   ShieldCheck,
   Sparkles,
   X,
 } from "lucide-react";
+import { useProfile } from "../context/ProfileContext";
 import { signOutUser } from "../services/authService";
+import UserAvatar from "./UserAvatar";
 
 const navItems = [
   { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
   { label: "Subjects", to: "/subjects", icon: BookOpen },
   { label: "Notes", to: "/notes", icon: FileText },
+  { label: "Settings", to: "/settings", icon: Settings },
 ];
 
 const pageVariants = {
@@ -35,23 +38,6 @@ const cardVariants = {
   hidden: { opacity: 0, y: 14 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
 };
-
-function BrandMark() {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="relative grid h-11 w-11 place-items-center rounded-2xl border border-strong-border bg-button text-white shadow-lg shadow-button/25">
-        <BrainCircuit className="h-5 w-5" />
-        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border border-background bg-success" />
-      </div>
-      <div>
-        <p className="text-sm font-semibold leading-none text-primary">Xevaro</p>
-        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted">
-          War Room
-        </p>
-      </div>
-    </div>
-  );
-}
 
 function SidebarNav({ onNavigate }) {
   return (
@@ -102,10 +88,35 @@ function SidebarNav({ onNavigate }) {
   );
 }
 
+function SidebarIdentity({ className = "" }) {
+  const { avatarUrl, displayName, initials, loading } = useProfile();
+
+  return (
+    <div
+      className={`flex min-w-0 items-center gap-3 rounded-3xl border border-border bg-background/55 p-3 ${className}`}
+    >
+      <UserAvatar
+        avatarUrl={avatarUrl}
+        initials={initials}
+        label={displayName}
+        size="sm"
+      />
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-primary">
+          {loading ? "Loading profile" : displayName}
+        </p>
+        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted">
+          Active operator
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function BottomNav() {
   return (
     <nav className="fixed inset-x-3 bottom-3 z-40 rounded-3xl border border-border bg-card/90 p-2 shadow-2xl shadow-black/45 backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-3 gap-1">
+      <div className="grid grid-cols-4 gap-1">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -151,7 +162,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
           <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-strong-border to-transparent" />
           <div>
             <div className="rounded-3xl border border-strong-border/70 bg-background/65 p-4 shadow-inner shadow-black/25">
-              <BrandMark />
+              <SidebarIdentity />
             </div>
 
             <div className="mt-8">
@@ -192,7 +203,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
         <div className="min-w-0 flex-1">
           <header className="sticky top-3 z-30 mb-5 rounded-3xl border border-border bg-card/85 p-3 shadow-xl shadow-black/25 backdrop-blur-xl lg:hidden">
             <div className="flex items-center justify-between gap-3">
-              <BrandMark />
+              <SidebarIdentity className="flex-1" />
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -261,7 +272,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
             >
               <div>
                 <div className="flex items-center justify-between gap-3 rounded-3xl border border-strong-border/70 bg-background/65 p-4">
-                  <BrandMark />
+                  <SidebarIdentity className="flex-1" />
                   <button
                     type="button"
                     onClick={() => setMobileOpen(false)}

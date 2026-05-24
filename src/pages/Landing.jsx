@@ -97,7 +97,7 @@ export default function Landing() {
         className="absolute inset-x-0 bottom-0 h-48 bg-[linear-gradient(to_top,hsl(var(--background)),transparent)]"
       />
 
-      <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-6 sm:px-6 sm:py-7 lg:px-8 lg:py-6">
+      <header className="relative z-20 mx-auto flex w-full max-w-[88rem] items-center justify-between px-3 py-6 sm:px-4 sm:py-7 lg:px-5 lg:py-6 xl:px-6">
         <Link to="/" className="flex min-w-0 items-center">
           <img
             src={xevaroLogo}
@@ -123,7 +123,7 @@ export default function Landing() {
         </nav>
       </header>
 
-      <section className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] w-full max-w-7xl items-start gap-8 px-4 pb-12 pt-16 sm:min-h-[calc(100vh-104px)] sm:px-6 sm:pb-16 sm:pt-20 md:pt-24 lg:min-h-[calc(100vh-88px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(26rem,0.95fr)] lg:items-center lg:gap-12 lg:px-8 lg:pt-16 xl:gap-16 xl:pt-20">
+      <section className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] w-full max-w-[88rem] items-start gap-8 px-3 pb-12 pt-16 sm:min-h-[calc(100vh-104px)] sm:px-4 sm:pb-16 sm:pt-20 md:pt-24 lg:min-h-[calc(100vh-88px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(26rem,0.95fr)] lg:items-center lg:gap-14 lg:px-5 lg:pt-16 xl:gap-20 xl:px-6 xl:pt-20">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -147,7 +147,7 @@ export default function Landing() {
               colors={["#e6fbff", "#7dd3fc", "#0eb6d3", "#e6fbff"]}
               animationSpeed={7}
               pauseOnHover
-              className="block min-h-[1.08em] max-w-full overflow-hidden pb-1"
+              className="block max-w-full overflow-hidden"
             >
               <TextType
                 text={["tactical AI.", "AI precision.", "exam prep."]}
