@@ -38,7 +38,7 @@ function Field({ label, helper, children }) {
   );
 }
 
-export default function ProfileSettingsForm() {
+export default function ProfileSettingsForm({ onSaved }) {
   const { user } = useAuth();
   const {
     profile,
@@ -142,6 +142,7 @@ export default function ProfileSettingsForm() {
         type: "success",
         message: "Profile settings saved.",
       });
+      onSaved?.();
     } catch (saveError) {
       setStatus({
         type: "error",

@@ -54,14 +54,14 @@ export default function LiveCommandSimulation() {
           <div className="relative overflow-hidden rounded-[1.35rem] border border-border bg-background/88">
             <motion.div
               aria-hidden="true"
-              animate={prefersReducedMotion ? undefined : { y: ["0%", "520%"] }}
+              animate={prefersReducedMotion ? undefined : { top: ["0%", "100%"] }}
               transition={{
-                duration: 4.2,
+                duration: 4.8,
                 repeat: Infinity,
                 ease: "linear",
-                repeatDelay: 0.35,
+                repeatDelay: 0.25,
               }}
-              className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-[linear-gradient(to_bottom,transparent,hsla(var(--button),0.18),transparent)]"
+              className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-button/70 shadow-[0_0_28px_8px_hsla(var(--button),0.18)]"
             />
             <div className="flex flex-col gap-4 border-b border-border px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0">
@@ -219,14 +219,12 @@ export default function LiveCommandSimulation() {
                             animate={
                               prefersReducedMotion
                                 ? { width: metric.progress }
-                                : { width: metric.liveProgress }
+                                : { width: metric.progress }
                             }
                             transition={{
-                              duration: 3.2,
+                              duration: 1.35,
                               delay: 0.18 + index * 0.08,
-                              repeat: prefersReducedMotion ? 0 : Infinity,
-                              repeatDelay: 0.45,
-                              ease: "easeInOut",
+                              ease: [0.22, 1, 0.36, 1],
                             }}
                             className="h-full rounded-full bg-button shadow-[0_0_18px_hsla(var(--button),0.55)]"
                           />
@@ -302,21 +300,12 @@ export default function LiveCommandSimulation() {
                               animate={
                                 prefersReducedMotion
                                   ? { width: topic.progress }
-                                  : {
-                                      width: [
-                                        "18%",
-                                        topic.progress,
-                                        "44%",
-                                        topic.progress,
-                                      ],
-                                    }
+                                  : { width: topic.progress }
                               }
                               transition={{
-                                duration: 3.6,
+                                duration: 1.25,
                                 delay: 0.24 + index * 0.08,
-                                repeat: prefersReducedMotion ? 0 : Infinity,
-                                repeatDelay: 0.35,
-                                ease: "easeInOut",
+                                ease: [0.22, 1, 0.36, 1],
                               }}
                               className="h-full rounded-full bg-button/85"
                             />

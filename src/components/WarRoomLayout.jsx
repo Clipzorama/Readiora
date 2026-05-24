@@ -9,20 +9,21 @@ import {
   LogOut,
   Menu,
   Plus,
-  Settings,
+  Settings as SettingsIcon,
   ShieldCheck,
   Sparkles,
   X,
 } from "lucide-react";
 import { useProfile } from "../context/ProfileContext";
 import { signOutUser } from "../services/authService";
+import SettingsModal from "../pages/Settings";
 import UserAvatar from "./UserAvatar";
 
 const navItems = [
   { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
   { label: "Subjects", to: "/subjects", icon: BookOpen },
   { label: "Notes", to: "/notes", icon: FileText },
-  { label: "Settings", to: "/settings", icon: Settings },
+  { label: "Settings", modal: "settings", icon: SettingsIcon },
 ];
 
 const pageVariants = {
@@ -39,51 +40,76 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
 };
 
-function SidebarNav({ onNavigate }) {
+function SidebarNav({ onNavigate, onOpenSettings }) {
   return (
     <nav className="grid gap-2">
-      {navItems.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            [
-              "group relative flex items-center justify-between overflow-hidden rounded-2xl border px-4 py-3 text-sm font-medium transition duration-200",
-              isActive
-                ? "border-strong-border bg-button/20 text-primary shadow-[0_0_30px_hsl(var(--button)/0.16)]"
-                : "border-transparent text-secondary hover:border-border hover:bg-card-hover/80 hover:text-primary",
-            ].join(" ")
-          }
-        >
-          {({ isActive }) => (
-            <>
-              <span
-                className={`absolute inset-y-2 left-0 w-1 rounded-r-full transition ${
-                  isActive ? "bg-button-hover" : "bg-transparent"
-                }`}
-              />
+      {navItems.map((item) => {
+        if (item.modal === "settings") {
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => {
+                onNavigate?.();
+                onOpenSettings?.();
+              }}
+              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-transparent px-4 py-3 text-left text-sm font-medium text-secondary transition duration-200 hover:border-border hover:bg-card-hover/80 hover:text-primary"
+            >
+              <span className="absolute inset-y-2 left-0 w-1 rounded-r-full bg-transparent transition" />
               <span className="flex min-w-0 items-center gap-3">
-                <span
-                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border transition ${
-                    isActive
-                      ? "border-strong-border bg-background/70 text-primary"
-                      : "border-border/70 bg-background/45 text-secondary group-hover:text-primary"
-                  }`}
-                >
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border/70 bg-background/45 text-secondary transition group-hover:text-primary">
                   <item.icon className="h-4 w-4" />
                 </span>
                 <span className="truncate">{item.label}</span>
               </span>
-              <ChevronRight
-                className={`h-4 w-4 transition ${
-                  isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                }`}
-              />
-            </>
-          )}
-        </NavLink>
-      ))}
+              <ChevronRight className="h-4 w-4 opacity-0 transition group-hover:opacity-100" />
+            </button>
+          );
+        }
+
+        return (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            onClick={onNavigate}
+            className={({ isActive }) =>
+              [
+                "group relative flex items-center justify-between overflow-hidden rounded-2xl border px-4 py-3 text-sm font-medium transition duration-200",
+                isActive
+                  ? "border-strong-border bg-button/20 text-primary shadow-[0_0_30px_hsl(var(--button)/0.16)]"
+                  : "border-transparent text-secondary hover:border-border hover:bg-card-hover/80 hover:text-primary",
+              ].join(" ")
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <span
+                  className={`absolute inset-y-2 left-0 w-1 rounded-r-full transition ${
+                    isActive ? "bg-button-hover" : "bg-transparent"
+                  }`}
+                />
+                <span className="flex min-w-0 items-center gap-3">
+                  <span
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border transition ${
+                      isActive
+                        ? "border-strong-border bg-background/70 text-primary"
+                        : "border-border/70 bg-background/45 text-secondary group-hover:text-primary"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                  </span>
+                  <span className="truncate">{item.label}</span>
+                </span>
+                <ChevronRight
+                  className={`h-4 w-4 transition ${
+                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  }`}
+                />
+              </>
+            )}
+          </NavLink>
+        );
+      })}
     </nav>
   );
 }
@@ -113,27 +139,43 @@ function SidebarIdentity({ className = "" }) {
   );
 }
 
-function BottomNav() {
+function BottomNav({ onOpenSettings }) {
   return (
     <nav className="fixed inset-x-3 bottom-3 z-40 rounded-3xl border border-border bg-card/90 p-2 shadow-2xl shadow-black/45 backdrop-blur-xl md:hidden">
       <div className="grid grid-cols-4 gap-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              [
-                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition",
-                isActive
-                  ? "bg-button/25 text-primary shadow-[0_0_22px_hsl(var(--button)/0.16)]"
-                  : "text-muted hover:bg-card-hover hover:text-primary",
-              ].join(" ")
-            }
-          >
-            <item.icon className="h-4 w-4" />
-            <span className="truncate">{item.label}</span>
-          </NavLink>
-        ))}
+        {navItems.map((item) => {
+          if (item.modal === "settings") {
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={onOpenSettings}
+                className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium text-muted transition hover:bg-card-hover hover:text-primary"
+              >
+                <item.icon className="h-4 w-4" />
+                <span className="truncate">{item.label}</span>
+              </button>
+            );
+          }
+
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                [
+                  "flex min-w-0 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition",
+                  isActive
+                    ? "bg-button/25 text-primary shadow-[0_0_22px_hsl(var(--button)/0.16)]"
+                    : "text-muted hover:bg-card-hover hover:text-primary",
+                ].join(" ")
+              }
+            >
+              <item.icon className="h-4 w-4" />
+              <span className="truncate">{item.label}</span>
+            </NavLink>
+          );
+        })}
       </div>
     </nav>
   );
@@ -142,10 +184,28 @@ function BottomNav() {
 export function WarRoomShell({ eyebrow, title, description, action, children }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   async function handleSignOut() {
     await signOutUser();
     navigate("/login", { replace: true });
+  }
+
+  function openSettings() {
+    setMobileOpen(false);
+    setSettingsSaved(false);
+    setSettingsOpen(true);
+  }
+
+  function closeSettings() {
+    setSettingsOpen(false);
+  }
+
+  function handleSettingsSaved() {
+    setSettingsOpen(false);
+    setSettingsSaved(true);
+    window.setTimeout(() => setSettingsSaved(false), 3200);
   }
 
   return (
@@ -170,7 +230,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
                 Navigation
               </p>
               <div className="mt-3">
-                <SidebarNav />
+                <SidebarNav onOpenSettings={openSettings} />
               </div>
             </div>
           </div>
@@ -251,7 +311,30 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
         </div>
       </div>
 
-      <BottomNav />
+      <BottomNav onOpenSettings={openSettings} />
+
+      <AnimatePresence>
+        {settingsSaved && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            className="fixed bottom-24 left-1/2 z-[80] w-[min(calc(100vw-2rem),26rem)] -translate-x-1/2 rounded-2xl border border-success/40 bg-card/95 px-4 py-3 text-sm font-semibold text-primary shadow-2xl shadow-black/40 backdrop-blur-xl md:bottom-6"
+          >
+            Profile settings saved.
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {settingsOpen && (
+          <SettingsModal
+            open={settingsOpen}
+            onClose={closeSettings}
+            onSaved={handleSettingsSaved}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {mobileOpen && (
@@ -288,7 +371,10 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
                     Navigation
                   </p>
                   <div className="mt-3">
-                    <SidebarNav onNavigate={() => setMobileOpen(false)} />
+                    <SidebarNav
+                      onNavigate={() => setMobileOpen(false)}
+                      onOpenSettings={openSettings}
+                    />
                   </div>
                 </div>
               </div>
