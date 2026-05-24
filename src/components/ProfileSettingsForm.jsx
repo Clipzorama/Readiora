@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
+  ChevronDown,
   ImagePlus,
   LoaderCircle,
   Save,
@@ -256,19 +257,22 @@ export default function ProfileSettingsForm() {
       <div className="grid gap-2">
         <span className="text-sm font-semibold text-primary">Phone number</span>
         <div className="grid gap-3 sm:grid-cols-[minmax(13rem,0.44fr)_1fr]">
-          <select
-            value={form.phoneCountryCode}
-            onChange={(event) => updatePhoneCountry(event.target.value)}
-            className={`${fieldClass} pr-30fi`}
-            autoComplete="tel-country-code"
-            disabled={loading || saving}
-          >
-            {COUNTRY_CALLING_CODES.map((country) => (
-              <option key={`${country.iso}-${country.code}`} value={country.code}>
-                {country.code} {country.country}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={form.phoneCountryCode}
+              onChange={(event) => updatePhoneCountry(event.target.value)}
+              className={`${fieldClass} appearance-none pr-14`}
+              autoComplete="tel-country-code"
+              disabled={loading || saving}
+            >
+              {COUNTRY_CALLING_CODES.map((country) => (
+                <option key={`${country.iso}-${country.code}`} value={country.code}>
+                  {country.code} {country.country}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-5 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary" />
+          </div>
           <input
             value={form.phoneNationalNumber}
             onChange={(event) => updatePhoneNationalNumber(event.target.value)}

@@ -402,10 +402,10 @@ export default function Dashboard() {
                         : `${getGreeting(dashboardTime)}, ${displayName}`}
                     </p>
                   </div>
-                  <h2 className="mt-6 max-w-4xl text-4xl font-bold leading-[0.98] text-primary sm:text-5xl lg:text-6xl">
-                    Your study command center is ready.
+                  <h2 className="mt-6 max-w-4xl text-2xl font-bold leading-[0.98] text-primary sm:text-5xl">
+                    Workspace operational.
                   </h2>
-                  <p className="mt-6 max-w-3xl text-base leading-7 text-secondary sm:text-lg">
+                  <p className="mt-4 lg:mt-6 max-w-3xl text-base leading-7 text-secondary sm:text-lg">
                     Track your subjects, notes, exams, and progress from one focused workspace.
                   </p>
                 </div>
