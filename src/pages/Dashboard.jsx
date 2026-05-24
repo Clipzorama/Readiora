@@ -27,7 +27,6 @@ import {
   ProgressBar,
   WarRoomShell,
 } from "../components/WarRoomLayout";
-import { useProfile } from "../context/ProfileContext";
 import { useAuth } from "../hooks/useAuth";
 import { getNotes } from "../services/notesService";
 import { getSubjects } from "../services/subjectsService";
@@ -273,7 +272,6 @@ function NextExamCard({ exam, currentTime }) {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { displayName } = useProfile();
   const [subjects, setSubjects] = useState([]);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -310,6 +308,15 @@ export default function Dashboard() {
 
     return () => window.clearInterval(timerId);
   }, []);
+
+  const displayName = useMemo(() => {
+    return (
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      user?.email?.split("@")[0] ||
+      "Clipzorama"
+    );
+  }, [user]);
 
   const backendStatus = loading ? "checking" : error ? "disconnected" : "connected";
 
@@ -395,13 +402,11 @@ export default function Dashboard() {
             <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(22rem,0.65fr)] xl:items-stretch">
               <div className="flex min-h-[320px] flex-col justify-between rounded-[1.35rem] border border-border/80 bg-background/45 p-5 shadow-inner shadow-black/20 sm:p-7">
                 <div>
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary sm:text-sm">
-                      {loading
-                        ? "Loading workspace"
-                        : `${getGreeting(dashboardTime)}, ${displayName}`}
-                    </p>
-                  </div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary sm:text-sm">
+                    {loading
+                      ? "Loading workspace"
+                      : `${getGreeting(dashboardTime)}, ${displayName}`}
+                  </p>
                   <h2 className="mt-6 max-w-4xl text-4xl font-bold leading-[0.98] text-primary sm:text-5xl lg:text-6xl">
                     Your study command center is ready.
                   </h2>

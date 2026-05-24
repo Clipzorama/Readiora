@@ -91,13 +91,12 @@ export default function Signup() {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const firstName = formData.get("firstName");
-    const lastName = formData.get("lastName");
+    const fullName = formData.get("fullName");
     const email = formData.get("email");
     const password = formData.get("password");
 
     try {
-      await signUpWithEmail(email, password, firstName, lastName);
+      await signUpWithEmail(email, password, fullName);
       navigate("/dashboard");
     } catch (error) {
       console.error(error.message);
@@ -143,27 +142,14 @@ export default function Signup() {
           </motion.div>
 
           <form onSubmit={handleSignup} className="mt-4 space-y-3 sm:mt-8 sm:space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <motion.input
-                variants={itemVariants}
-                name="firstName"
-                type="text"
-                placeholder="First name"
-                required
-                autoComplete="given-name"
-                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
-              />
-
-              <motion.input
-                variants={itemVariants}
-                name="lastName"
-                type="text"
-                placeholder="Last name"
-                required
-                autoComplete="family-name"
-                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
-              />
-            </div>
+            <motion.input
+              variants={itemVariants}
+              name="fullName"
+              type="text"
+              placeholder="Full name"
+              required
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
+            />
 
             <motion.input
               variants={itemVariants}

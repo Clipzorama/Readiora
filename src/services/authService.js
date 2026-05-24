@@ -1,13 +1,12 @@
 import { supabase } from "../lib/supabase";
 
-export async function signUpWithEmail(email, password, firstName = "", lastName = "") {
+export async function signUpWithEmail(email, password, fullName = "") {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
-        first_name: firstName,
-        last_name: lastName,
+        full_name: fullName,
       },
       emailRedirectTo: `${window.location.origin}/auth/callback`,
     },

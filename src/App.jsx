@@ -7,7 +7,6 @@ import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Subjects from "./pages/Subjects";
 import Notes from "./pages/Notes";
-import Settings from "./pages/Settings";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -68,15 +67,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Notes />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
             </ProtectedRoute>
           }
         />
