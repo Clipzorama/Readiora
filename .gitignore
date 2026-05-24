@@ -27,3 +27,4 @@ dist-ssr
 AI_STACK_CONTEXT.md
 *.sql
 docs/architecture.md
+docs/file-map.md
