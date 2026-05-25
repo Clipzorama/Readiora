@@ -17,7 +17,8 @@ export default function LandingHero() {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}
         className="mx-auto min-w-0 w-full max-w-2xl overflow-hidden text-center lg:mx-0 lg:max-w-[38rem] lg:text-left xl:max-w-[42rem]"
       >
         <motion.div
@@ -93,7 +94,8 @@ export default function LandingHero() {
 
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.75, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto min-w-0 w-full max-w-xl lg:max-w-none"
       >
@@ -140,7 +142,8 @@ export default function LandingHero() {
                     <div className="mt-4 h-2 overflow-hidden rounded-full bg-background">
                       <motion.div
                         initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 0.78 }}
+                        whileInView={{ scaleX: 0.78 }}
+                        viewport={{ once: false, amount: 0.2 }}
                         transition={{
                           duration: 1.1,
                           delay: 0.55,
@@ -174,7 +177,8 @@ export default function LandingHero() {
                     <motion.div
                       key={row.title}
                       initial={{ opacity: 0, x: 16 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false, amount: 0.2 }}
                       transition={{
                         duration: 0.5,
                         delay: 0.45 + index * 0.1,

@@ -216,11 +216,12 @@ export default function LiveCommandSimulation() {
                         <div className="mt-4 h-2 overflow-hidden rounded-full bg-background">
                           <motion.div
                             initial={prefersReducedMotion ? false : { width: 0 }}
-                            animate={
+                            whileInView={
                               prefersReducedMotion
                                 ? { width: metric.progress }
                                 : { width: metric.progress }
                             }
+                            viewport={{ once: false, amount: 0.2 }}
                             transition={{
                               duration: 1.35,
                               delay: 0.18 + index * 0.08,
@@ -297,11 +298,12 @@ export default function LiveCommandSimulation() {
                           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-background">
                             <motion.div
                               initial={prefersReducedMotion ? false : { width: 0 }}
-                              animate={
+                              whileInView={
                                 prefersReducedMotion
                                   ? { width: topic.progress }
                                   : { width: topic.progress }
                               }
+                              viewport={{ once: false, amount: 0.2 }}
                               transition={{
                                 duration: 1.25,
                                 delay: 0.24 + index * 0.08,
