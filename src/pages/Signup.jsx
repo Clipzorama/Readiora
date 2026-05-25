@@ -97,8 +97,14 @@ export default function Signup() {
     const password = formData.get("password");
 
     try {
-      await signUpWithEmail(email, password, firstName, lastName);
-      navigate("/dashboard");
+      const data = await signUpWithEmail(email, password, firstName, lastName);
+
+      if (data.session) {
+        navigate("/dashboard");
+        return;
+      }
+
+      navigate("/verify-email", { state: { email } });
     } catch (error) {
       console.error(error.message);
       alert(error.message);

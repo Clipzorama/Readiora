@@ -32,21 +32,23 @@ export default function LandingHero() {
           variants={itemVariants}
           className="mt-6 max-w-full text-[clamp(2.35rem,10vw,3.75rem)] font-extrabold leading-[1.02] tracking-normal sm:text-[clamp(3rem,7vw,4.75rem)] lg:text-[clamp(3.4rem,4.4vw,4.75rem)] xl:text-[5.15rem]"
         >
-          Command your study day with{" "}
-          <GradientText
-            colors={["#e6fbff", "#7dd3fc", "#0eb6d3", "#e6fbff"]}
-            animationSpeed={7}
-            pauseOnHover
-            className="flex align-bottom max-w-full overflow-hidden"
-          >
-            <TextType
-              text={["tactical AI.", "AI precision.", "exam prep."]}
-              className="max-w-full"
-              typingSpeed={58}
-              deletingSpeed={28}
-              pauseDuration={1700}
-            />
-          </GradientText>
+          <span className="block lg:inline">Command your study day with</span>{" "}
+          <span className="mt-1 block min-h-[1.05em] max-w-full overflow-hidden lg:mt-0 lg:inline lg:min-h-0">
+            <GradientText
+              colors={["#e6fbff", "#7dd3fc", "#0eb6d3", "#e6fbff"]}
+              animationSpeed={7}
+              pauseOnHover
+              className="inline-block max-w-full overflow-hidden whitespace-nowrap align-bottom"
+            >
+              <TextType
+                text={["tactical AI.", "AI precision.", "exam prep."]}
+                className="max-w-full"
+                typingSpeed={58}
+                deletingSpeed={28}
+                pauseDuration={1700}
+              />
+            </GradientText>
+          </span>
         </motion.h1>
 
         <motion.p
