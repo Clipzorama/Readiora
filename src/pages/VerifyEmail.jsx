@@ -7,6 +7,7 @@ import xfaviLogo from "../assets/xfavi.webp";
 
 const loginRedirectDelay = 7000;
 
+
 const containerVariants = {
   hidden: { opacity: 0, y: 24, scale: 0.98 },
   visible: {
