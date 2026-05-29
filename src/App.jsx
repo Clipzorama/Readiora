@@ -39,13 +39,13 @@ export default function App() {
           }
         />
 
-        {/* Public auth routes */}
+        {/* Authenticated Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 
-        {/* Protected app routes */}
+        {/* Protected App Routes */}
         <Route
           path="/dashboard"
           element={
