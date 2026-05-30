@@ -78,6 +78,29 @@ export async function getNoteById(noteId) {
   return data;
 }
 
+// referencing every column and deleting everything that connects to it
+export async function deleteNoteSummary(noteId, userId) {
+  let query = supabase
+    .from("notes")
+    .update({
+      ai_summary: null,
+      ai_summary_status: null,
+      ai_summary_model: null,
+      ai_summary_generated_at: null,
+      ai_summary_error: null,
+      ai_summary_input_char_count: null,
+    })
+    .eq("id", noteId);
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { error } = await query;
+
+  if (error) throw error;
+}
+
 export async function createNote({ userId, subjectId, title, content }) {
   const { data, error } = await supabase
     .from("notes")
