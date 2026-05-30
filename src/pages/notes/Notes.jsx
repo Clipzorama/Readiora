@@ -36,7 +36,6 @@ import MarkdownEditor from "./MarkdownEditor";
 import NoteSavePanel from "./NoteSavePanel";
 import NotesHeader from "./NotesHeader";
 import RecentNotesLibrary from "./RecentNotesLibrary";
-import SelectedSummaryPanel from "./SelectedSummaryPanel";
 import { emptyDraft, workspaceVariants } from "./constants";
 
 export default function Notes() {
@@ -479,12 +478,6 @@ export default function Notes() {
                       onUpload={handleUpload}
                       onOpen={handleOpenAttachment}
                       onDelete={handleDeleteAttachment}
-                    />
-
-                    <SelectedSummaryPanel
-                      note={selectedNote}
-                      summarizing={summarizingNoteId === selectedNote?.id}
-                      onSummarize={handleSummarize}
                     />
 
                     <NoteSavePanel content={draft.content} attachments={attachments} aiReadyContext={aiReadyContext} />
