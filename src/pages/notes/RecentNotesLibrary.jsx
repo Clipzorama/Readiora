@@ -6,6 +6,7 @@ import {
   LoaderCircle,
   Sparkles,
 } from "lucide-react";
+import SummaryText from "../../components/SummaryText";
 import { CommandCard } from "../../components/WarRoomLayout";
 import { formatUpdated, getNoteAttachmentStats } from "./noteUtils";
 
@@ -27,7 +28,7 @@ function SummaryPreview({ note }) {
         <Sparkles className="h-3.5 w-3.5 text-button-hover" />
         AI Summary
       </div>
-      <p className="line-clamp-5 whitespace-pre-line">{note.ai_summary}</p>
+      <SummaryText clamp>{note.ai_summary}</SummaryText>
     </div>
   );
 }
@@ -79,26 +80,21 @@ export default function RecentNotesLibrary({
             return (
               <div
                 key={note.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => onSelect(note)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    onSelect(note);
-                  }
-                }}
                 className={`rounded-2xl border p-4 transition duration-200 ${
                   note.id === selectedNoteId
                     ? "border-strong-border/90 bg-button/15 shadow-[0_0_24px_hsl(var(--button)/0.12)]"
                     : "border-border/80 bg-background/60 hover:border-strong-border/80 hover:bg-card-hover/80"
-                } group cursor-pointer text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-strong-border`}
+                } text-left`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="break-words text-base font-semibold leading-tight text-primary transition group-hover:text-button-hover">
+                    <button
+                      type="button"
+                      onClick={() => onSelect(note)}
+                      className="break-word text-left text-base font-semibold leading-tight text-primary transition hover:text-button-hover"
+                    >
                       {note.title}
-                    </p>
+                    </button>
                     <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted">
                       <span className="rounded-full border border-border/80 bg-card/80 px-3 py-1">
                         {note.subjects?.name ?? "Unlinked"}
@@ -110,10 +106,7 @@ export default function RecentNotesLibrary({
                   </div>
                   <button
                     type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onSelect(note);
-                    }}
+                    onClick={() => onSelect(note)}
                     className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border/70 bg-card/70 text-muted transition hover:border-strong-border hover:text-primary"
                     aria-label={`Open ${note.title}`}
                     title="Open note"
@@ -149,11 +142,8 @@ export default function RecentNotesLibrary({
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <button
                     type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onSummarize(note);
-                    }}
-                    disabled={summarizingNoteId === note.id}
+                    onClick={() => onSummarize(note)}
+                    disabled={summarizingNoteId === note.id || !note.content?.trim()}
                     className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-strong-border/80 bg-button/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-button/15 transition hover:-translate-y-0.5 hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {summarizingNoteId === note.id ? (

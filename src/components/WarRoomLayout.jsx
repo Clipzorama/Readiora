@@ -140,48 +140,6 @@ function SidebarIdentity({ className = "" }) {
   );
 }
 
-function BottomNav({ onOpenSettings }) {
-  return (
-    <nav className="fixed inset-x-3 bottom-3 z-40 rounded-3xl border border-border bg-card/90 p-2 shadow-2xl shadow-black/45 backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-5 gap-1">
-        {navItems.map((item) => {
-          if (item.modal === "settings") {
-            return (
-              <button
-                key={item.label}
-                type="button"
-                onClick={onOpenSettings}
-                className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium text-muted transition hover:bg-card-hover hover:text-primary"
-              >
-                <item.icon className="h-4 w-4" />
-                <span className="truncate">{item.label}</span>
-              </button>
-            );
-          }
-
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                [
-                  "flex min-w-0 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition",
-                  isActive
-                    ? "bg-button/25 text-primary shadow-[0_0_22px_hsl(var(--button)/0.16)]"
-                    : "text-muted hover:bg-card-hover hover:text-primary",
-                ].join(" ")
-              }
-            >
-              <item.icon className="h-4 w-4" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
 export function WarRoomShell({ eyebrow, title, description, action, children }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -311,8 +269,6 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
           </motion.section>
         </div>
       </div>
-
-      <BottomNav onOpenSettings={openSettings} />
 
       <AnimatePresence>
         {settingsSaved && (

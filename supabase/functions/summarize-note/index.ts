@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Making file understand the deno global so i can read edge functions
+// Helps local TypeScript understand Supabase Edge Function globals.
 declare const Deno: {
   env: {
     get(name: string): string | undefined;
@@ -38,6 +38,17 @@ function getOutputText(response: any) {
     ?.filter(Boolean);
 
   return chunks?.join("\n").trim() ?? "";
+}
+
+function getOpenAiFailureMessage(response: any) {
+  if (response?.status === "incomplete") {
+    const reason = response?.incomplete_details?.reason;
+    return reason === "max_output_tokens"
+      ? "AI Agent used the output token budget before producing summary text. Try again with a shorter note."
+      : "AI Agent did not complete the summary response.";
+  }
+
+  return "AI Agent returned no summary text.";
 }
 
 Deno.serve(async (req) => {
@@ -148,9 +159,11 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_output_tokens: 700,
+        max_output_tokens: 1200,
+        reasoning: { effort: "minimal" },
+        text: { verbosity: "low" },
         instructions:
-          "You create compact study summaries for students. Use the user's note only. Keep the answer around 150 to 250 words. Be direct, accurate, and budget-conscious.",
+          "You create compact study summaries for students. Use the user's note only. Keep the answer around 150 to 250 words. Be direct, accurate, and budget-conscious. When the note contains an important formula, equation, recurrence, objective, or symbolic relationship, preserve it as proper mathematical notation in a display math block using $$...$$ LaTeX. Do not rewrite formulas as code, function returns, underscore-heavy text, or caret-style plaintext unless the source is explicitly code. For example, write $$\\mathbb{E}[\\sum_{t=0}^{\\infty} \\gamma^t R(s_t, a_t, s_{t+1})]$$ instead of return: E[sum_t y^t R(s_t, a_t, s_{t+1})].",
         input: [
           {
             role: "user",
@@ -174,7 +187,7 @@ Deno.serve(async (req) => {
     const summaryText = getOutputText(responseBody);
 
     if (!summaryText) {
-      throw new Error("OpenAI returned an empty summary.");
+      throw new Error(getOpenAiFailureMessage(responseBody));
     }
 
     const { data: savedSummary, error: updateError } = await supabase
