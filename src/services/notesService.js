@@ -35,6 +35,26 @@ export async function getNotesBySubject(userId, subjectId) {
   return data;
 }
 
+export async function getSummarizedNotes(userId) {
+  const { data, error } = await supabase
+    .from("notes")
+    .select(`
+      *,
+      subjects (
+        id,
+        name,
+        color
+      )
+    `)
+    .eq("user_id", userId)
+    .eq("ai_summary_status", "completed")
+    .not("ai_summary", "is", null)
+    .order("ai_summary_generated_at", { ascending: false, nullsFirst: false });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getNoteById(noteId) {
   const { data, error } = await supabase
     .from("notes")
