@@ -23,6 +23,7 @@ const navItems = [
   { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
   { label: "Subjects", to: "/subjects", icon: BookOpen },
   { label: "Notes", to: "/notes", icon: FileText },
+  { label: "Summaries", to: "/summaries", icon: Sparkles },
   { label: "Settings", modal: "settings", icon: SettingsIcon },
 ];
 
@@ -142,7 +143,7 @@ function SidebarIdentity({ className = "" }) {
 function BottomNav({ onOpenSettings }) {
   return (
     <nav className="fixed inset-x-3 bottom-3 z-40 rounded-3xl border border-border bg-card/90 p-2 shadow-2xl shadow-black/45 backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-4 gap-1">
+      <div className="grid grid-cols-5 gap-1">
         {navItems.map((item) => {
           if (item.modal === "settings") {
             return (
