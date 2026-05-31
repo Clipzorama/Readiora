@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -6,24 +6,29 @@ import {
   BookOpen,
   Check,
   ChevronDown,
+  Edit3,
   LoaderCircle,
   Plus,
   RotateCcw,
   Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
 import {
   CommandCard,
   WarRoomShell,
 } from "../components/WarRoomLayout";
+import AIContentRenderer from "../components/AIContentRenderer";
 import { useAuth } from "../hooks/useAuth";
 import { generateFlashcards } from "../services/aiService";
 import {
   createFlashcard,
   createFlashcardSet,
+  deleteFlashcardSet,
   getFlashcards,
   getFlashcardSets,
   updateFlashcard,
+  updateFlashcardSet,
 } from "../services/flashcardsService";
 import { getNotes } from "../services/notesService";
 import { getSubjects } from "../services/subjectsService";
@@ -47,6 +52,31 @@ const emptyGenerator = {
   subjectId: "",
   noteId: "",
   count: 8,
+};
+
+const flashcardContentComponents = {
+  p: ({ children }) => (
+    <p className="my-3 whitespace-pre-wrap wrap-break-word text-3xl font-bold leading-tight text-primary first:mt-0 last:mb-0 sm:text-5xl">
+      {children}
+    </p>
+  ),
+  ul: ({ children }) => (
+    <ul className="my-4 list-disc space-y-3 pl-6 text-left text-2xl font-semibold leading-snug text-primary sm:text-4xl">
+      {children}
+    </ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="my-4 list-decimal space-y-3 pl-6 text-left text-2xl font-semibold leading-snug text-primary sm:text-4xl">
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => <li className="leading-snug">{children}</li>,
+};
+
+const compactCardContentComponents = {
+  p: ({ children }) => (
+    <p className="my-0 wrap-break-word text-xs leading-5 text-secondary">{children}</p>
+  ),
 };
 
 function getNextReviewAt(status) {
@@ -86,10 +116,19 @@ function SelectField({ value, onChange, children, disabled = false, className = 
   );
 }
 
+function FieldLabel({ label, children }) {
+  return (
+    <label className="grid min-w-0 gap-2">
+      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">{label}</span>
+      {children}
+    </label>
+  );
+}
+
 function Modal({ title, eyebrow, children, onClose }) {
   return (
-    <div className="fixed inset-0 z-[90] grid place-items-end bg-background/75 p-3 backdrop-blur-sm sm:place-items-center sm:p-6">
-      <div className="w-full max-w-2xl overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-2xl shadow-black/50">
+    <div className="fixed inset-0 z-90 grid place-items-end bg-background/75 p-3 backdrop-blur-sm sm:place-items-center sm:p-6">
+      <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-black/50">
         <div className="flex items-start justify-between gap-4 border-b border-border bg-background/45 p-5">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-muted">{eyebrow}</p>
@@ -110,52 +149,88 @@ function Modal({ title, eyebrow, children, onClose }) {
   );
 }
 
-function SetCard({ set, selected, cardCount, masteredCount, onSelect }) {
+function SetCard({ set, selected, cardCount, masteredCount, onSelect, onEdit, onDelete }) {
   const progress = cardCount ? Math.round((masteredCount / cardCount) * 100) : 0;
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(set.id)}
-      className={`min-w-0 rounded-2xl border p-4 text-left transition ${
+    <div
+      className={`min-w-[16rem] max-w-[18rem] flex-1 rounded-2xl border p-4 transition ${
         selected
           ? "border-strong-border bg-button/15 shadow-[0_0_24px_hsl(var(--button)/0.12)]"
           : "border-border bg-background/55 hover:border-strong-border/70 hover:bg-card-hover/70"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-base font-bold text-primary">{set.title}</h3>
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-secondary">
-            {set.description || set.subjects?.name || "Flashcard set"}
-          </p>
+      <button type="button" onClick={() => onSelect(set.id)} className="block w-full text-left">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-base font-bold text-primary">{set.title}</h3>
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-secondary">
+              {set.description || set.subjects?.name || "Flashcard set"}
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-semibold text-secondary">
+            {cardCount}
+          </span>
         </div>
-        <span className="shrink-0 rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-semibold text-secondary">
-          {cardCount}
-        </span>
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-background">
+          <div className="h-full rounded-full bg-button" style={{ width: `${progress}%` }} />
+        </div>
+        <p className="mt-2 text-xs text-muted">{progress}% mastered</p>
+      </button>
+      <div className="mt-4 flex gap-2">
+        <button
+          type="button"
+          onClick={() => onEdit(set)}
+          className="inline-flex min-h-9 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card/80 px-3 text-xs font-semibold text-secondary transition hover:border-strong-border hover:text-primary"
+        >
+          <Edit3 className="h-3.5 w-3.5" />
+          Edit
+        </button>
+        <button
+          type="button"
+          onClick={() => onDelete(set)}
+          className="inline-flex min-h-9 items-center justify-center rounded-xl border border-danger/35 bg-danger/10 px-3 text-danger transition hover:border-danger"
+          aria-label={`Delete ${set.title}`}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
       </div>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-background">
-        <div className="h-full rounded-full bg-button" style={{ width: `${progress}%` }} />
-      </div>
-      <p className="mt-2 text-xs text-muted">{progress}% mastered</p>
-    </button>
+    </div>
   );
 }
 
 function StudyCard({ card, flipped, onFlip }) {
+  const content = flipped ? card.answer : card.question;
+  const mastered = card.status === "mastered";
+
   return (
     <button
       type="button"
       onClick={onFlip}
-      className="group flex min-h-[24rem] w-full items-center justify-center rounded-[1.5rem] border border-strong-border/70 bg-[linear-gradient(145deg,hsl(var(--card)/0.98),hsl(var(--button)/0.16))] p-6 text-center shadow-[0_0_42px_hsl(var(--button)/0.12)] transition hover:-translate-y-0.5 hover:border-strong-border sm:min-h-[30rem] sm:p-10"
+      className={`group relative flex min-h-96 w-full items-center justify-center overflow-hidden rounded-3xl border p-6 text-center transition hover:-translate-y-0.5 sm:min-h-120 sm:p-10 ${
+        mastered
+          ? "border-success/60 bg-[linear-gradient(145deg,hsl(var(--card)/0.98),hsl(var(--success)/0.16))] shadow-[0_0_46px_hsl(var(--success)/0.14)] hover:border-success"
+          : "border-strong-border/70 bg-[linear-gradient(145deg,hsl(var(--card)/0.98),hsl(var(--button)/0.16))] shadow-[0_0_42px_hsl(var(--button)/0.12)] hover:border-strong-border"
+      }`}
     >
+      {mastered && (
+        <>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-success" />
+          <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-success/35 bg-success/15 px-3 py-1.5 text-xs font-semibold text-success shadow-lg shadow-success/10">
+            <Check className="h-3.5 w-3.5" />
+          </div>
+        </>
+      )}
       <div className="max-w-3xl">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
           {flipped ? "Back" : "Front"}
         </p>
-        <p className="mt-8 whitespace-pre-wrap break-words text-3xl font-bold leading-tight text-primary sm:text-5xl">
-          {flipped ? card.answer : card.question}
-        </p>
+        <AIContentRenderer
+          className="mt-8 text-primary [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:pb-2 [&_.katex-display]:text-left sm:[&_.katex-display]:text-center"
+          components={flashcardContentComponents}
+        >
+          {content}
+        </AIContentRenderer>
         <p className="mt-8 text-sm font-semibold text-secondary transition group-hover:text-primary">
           Tap card to {flipped ? "show front" : "reveal answer"}
         </p>
@@ -187,8 +262,10 @@ function ResultsPanel({ results, cards, onReset }) {
           <p className="text-sm font-semibold text-primary">Cards to revisit</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {learning.map((card) => (
-              <span key={card.id} className="rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-secondary">
-                {card.question}
+              <span key={card.id} className="max-w-full rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-secondary">
+                <AIContentRenderer clamp components={compactCardContentComponents}>
+                  {card.question}
+                </AIContentRenderer>
               </span>
             ))}
           </div>
@@ -207,6 +284,7 @@ function ResultsPanel({ results, cards, onReset }) {
 
 export default function Flashcards() {
   const { user } = useAuth();
+  const studySectionRef = useRef(null);
   const [subjects, setSubjects] = useState([]);
   const [notes, setNotes] = useState([]);
   const [sets, setSets] = useState([]);
@@ -217,6 +295,7 @@ export default function Flashcards() {
   const [results, setResults] = useState({});
   const [setModalOpen, setSetModalOpen] = useState(false);
   const [cardModalOpen, setCardModalOpen] = useState(false);
+  const [editingSetId, setEditingSetId] = useState("");
   const [setForm, setSetForm] = useState(emptySetForm);
   const [cardForm, setCardForm] = useState(emptyCardForm);
   const [generator, setGenerator] = useState(emptyGenerator);
@@ -305,6 +384,28 @@ export default function Flashcards() {
     }));
   }
 
+  function openCreateSet() {
+    setEditingSetId("");
+    setSetForm({ ...emptySetForm, subjectId: subjects[0]?.id ?? "" });
+    setSetModalOpen(true);
+  }
+
+  function openEditSet(set) {
+    setEditingSetId(set.id);
+    setSetForm({
+      title: set.title ?? "",
+      description: set.description ?? "",
+      subjectId: set.subject_id ?? "",
+    });
+    setSetModalOpen(true);
+  }
+
+  function closeSetModal() {
+    setSetModalOpen(false);
+    setEditingSetId("");
+    setSetForm({ ...emptySetForm, subjectId: subjects[0]?.id ?? "" });
+  }
+
   function nextCard() {
     setFlipped(false);
     setCardIndex((current) => Math.min(current + 1, Math.max(selectedCards.length - 1, 0)));
@@ -332,36 +433,76 @@ export default function Flashcards() {
     }
   }
 
-  async function handleCreateSet(event) {
+  async function handleSaveSet(event) {
     event.preventDefault();
     if (!setForm.title.trim()) return;
 
     try {
       setSaving(true);
       setError("");
-      const created = await createFlashcardSet({
-        userId: user.id,
-        ...setForm,
-      });
-      setSets((current) => [created, ...current]);
-      setSetForm({ ...emptySetForm, subjectId: subjects[0]?.id ?? "" });
-      setSetModalOpen(false);
-      setSelectedSetId(created.id);
+      const saved = editingSetId
+        ? await updateFlashcardSet(editingSetId, {
+          userId: user.id,
+          ...setForm,
+        })
+        : await createFlashcardSet({
+          userId: user.id,
+          ...setForm,
+        });
+
+      setSets((current) => (
+        editingSetId
+          ? current.map((set) => (set.id === saved.id ? saved : set))
+          : [saved, ...current]
+      ));
+      closeSetModal();
+      setSelectedSetId(saved.id);
       setCardIndex(0);
       setFlipped(false);
       setResults({});
       setCardForm((current) => ({
         ...current,
-        setId: created.id,
-        subjectId: created.subject_id || current.subjectId || subjects[0]?.id || "",
+        setId: saved.id,
+        subjectId: saved.subject_id || current.subjectId || subjects[0]?.id || "",
       }));
       setGenerator((current) => ({
         ...current,
-        setId: created.id,
-        subjectId: created.subject_id || current.subjectId || subjects[0]?.id || "",
+        setId: saved.id,
+        subjectId: saved.subject_id || current.subjectId || subjects[0]?.id || "",
       }));
+      setNotice(editingSetId ? "Flashcard set updated." : "Flashcard set created.");
     } catch (saveError) {
       setError(saveError.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDeleteSet(set) {
+    const confirmed = window.confirm(`Delete "${set.title}"? Existing cards will stay in your account, but they will no longer belong to this set.`);
+    if (!confirmed) return;
+
+    try {
+      setSaving(true);
+      setError("");
+      await deleteFlashcardSet(set.id, user.id);
+      const remainingSets = sets.filter((currentSet) => currentSet.id !== set.id);
+      setSets(remainingSets);
+      setFlashcards((current) => current.map((card) => (
+        card.set_id === set.id ? { ...card, set_id: null, flashcard_sets: null } : card
+      )));
+
+      if (selectedSetId === set.id) {
+        const nextSet = remainingSets[0] ?? null;
+        setSelectedSetId(nextSet?.id ?? "");
+        setCardIndex(0);
+        setFlipped(false);
+        setResults({});
+      }
+
+      setNotice("Flashcard set deleted.");
+    } catch (deleteError) {
+      setError(deleteError.message);
     } finally {
       setSaving(false);
     }
@@ -404,9 +545,45 @@ export default function Flashcards() {
       setError("");
       setNotice("");
       const generatedRows = await generateFlashcards(generator);
-      setFlashcards((current) => [...current, ...generatedRows]);
-      chooseSet(generator.setId);
-      setNotice(`${generatedRows.length} flashcard${generatedRows.length === 1 ? "" : "s"} generated.`);
+      const normalizedGeneratedRows = generatedRows.map((card) => ({
+        ...card,
+        set_id: card.set_id || generator.setId,
+        subject_id: card.subject_id || generator.subjectId,
+      }));
+      const cardsNeedingSet = generatedRows.filter((card) => card.id && card.set_id !== generator.setId);
+
+      if (cardsNeedingSet.length > 0) {
+        await Promise.all(cardsNeedingSet.map((card) => updateFlashcard(card.id, {
+          userId: user.id,
+          setId: generator.setId,
+          subjectId: card.subject_id || generator.subjectId,
+        })));
+      }
+
+      const [setRows, cardRows] = await Promise.all([
+        getFlashcardSets(user.id),
+        getFlashcards(user.id),
+      ]);
+      const refreshedCards = (cardRows?.length ? cardRows : normalizedGeneratedRows).map((card) => (
+        generatedRows.some((generatedCard) => generatedCard.id === card.id)
+          ? { ...card, set_id: card.set_id || generator.setId }
+          : card
+      ));
+      const generatedIds = new Set(normalizedGeneratedRows.map((card) => card.id));
+      const firstGeneratedIndex = refreshedCards
+        .filter((card) => card.set_id === generator.setId)
+        .findIndex((card) => generatedIds.has(card.id));
+
+      setSets(setRows ?? []);
+      setFlashcards(refreshedCards);
+      setSelectedSetId(generator.setId);
+      setCardIndex(firstGeneratedIndex >= 0 ? firstGeneratedIndex : 0);
+      setFlipped(false);
+      setResults({});
+      setNotice(`${normalizedGeneratedRows.length} flashcard${normalizedGeneratedRows.length === 1 ? "" : "s"} generated. Ready to study.`);
+      window.requestAnimationFrame(() => {
+        studySectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     } catch (generateError) {
       setError(generateError.message);
     } finally {
@@ -459,42 +636,59 @@ export default function Flashcards() {
           <>
             <CommandCard className="overflow-hidden p-0">
               <div className="grid gap-5 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-                <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_9rem]">
-                  <SelectField
-                    value={generator.setId}
-                    onChange={(setId) => {
-                      const nextSet = sets.find((set) => set.id === setId);
-                      setGenerator((current) => ({
-                        ...current,
-                        setId,
-                        subjectId: nextSet?.subject_id || current.subjectId,
-                        noteId: "",
-                      }));
-                    }}
-                  >
-                    <option value="">Choose set</option>
-                    {sets.map((set) => (
-                      <option key={set.id} value={set.id}>{set.title}</option>
-                    ))}
-                  </SelectField>
-                  <SelectField
-                    value={generator.noteId}
-                    onChange={(noteId) => setGenerator((current) => ({ ...current, noteId }))}
-                    disabled={!generator.subjectId}
-                  >
-                    <option value="">All notes in subject</option>
-                    {subjectNotes.map((note) => (
-                      <option key={note.id} value={note.id}>{note.title}</option>
-                    ))}
-                  </SelectField>
-                  <SelectField
-                    value={String(generator.count)}
-                    onChange={(count) => setGenerator((current) => ({ ...current, count: Number(count) }))}
-                  >
-                    {[4, 6, 8, 10, 12].map((count) => (
-                      <option key={count} value={count}>{count}</option>
-                    ))}
-                  </SelectField>
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_9rem]">
+                  <FieldLabel label="Set">
+                    <SelectField
+                      value={generator.setId}
+                      onChange={(setId) => {
+                        const nextSet = sets.find((set) => set.id === setId);
+                        setGenerator((current) => ({
+                          ...current,
+                          setId,
+                          subjectId: nextSet?.subject_id || current.subjectId,
+                          noteId: "",
+                        }));
+                      }}
+                    >
+                      <option value="">Choose set</option>
+                      {sets.map((set) => (
+                        <option key={set.id} value={set.id}>{set.title}</option>
+                      ))}
+                    </SelectField>
+                  </FieldLabel>
+                  <FieldLabel label="Subject">
+                    <SelectField
+                      value={generator.subjectId}
+                      onChange={(subjectId) => setGenerator((current) => ({ ...current, subjectId, noteId: "" }))}
+                    >
+                      <option value="">Choose subject</option>
+                      {subjects.map((subject) => (
+                        <option key={subject.id} value={subject.id}>{subject.name}</option>
+                      ))}
+                    </SelectField>
+                  </FieldLabel>
+                  <FieldLabel label="Source Notes">
+                    <SelectField
+                      value={generator.noteId}
+                      onChange={(noteId) => setGenerator((current) => ({ ...current, noteId }))}
+                      disabled={!generator.subjectId}
+                    >
+                      <option value="">All notes in subject</option>
+                      {subjectNotes.map((note) => (
+                        <option key={note.id} value={note.id}>{note.title}</option>
+                      ))}
+                    </SelectField>
+                  </FieldLabel>
+                  <FieldLabel label="Card Count">
+                    <SelectField
+                      value={String(generator.count)}
+                      onChange={(count) => setGenerator((current) => ({ ...current, count: Number(count) }))}
+                    >
+                      {[4, 6, 8, 10, 12].map((count) => (
+                        <option key={count} value={count}>{count}</option>
+                      ))}
+                    </SelectField>
+                  </FieldLabel>
                 </div>
                 <button
                   type="button"
@@ -508,44 +702,7 @@ export default function Flashcards() {
               </div>
             </CommandCard>
 
-            <section className="grid gap-5 xl:grid-cols-[17rem_minmax(0,1fr)]">
-              <aside className="grid gap-3 xl:self-start">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Sets</p>
-                  <button
-                    type="button"
-                    onClick={() => setSetModalOpen(true)}
-                    className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-border bg-card/80 px-3 text-xs font-semibold text-secondary transition hover:border-strong-border hover:text-primary"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Set
-                  </button>
-                </div>
-
-                {sets.length === 0 ? (
-                  <CommandCard className="p-4">
-                    <p className="text-sm leading-6 text-secondary">
-                      Create your first set to start adding cards.
-                    </p>
-                  </CommandCard>
-                ) : (
-                  sets.map((set) => {
-                    const setCards = flashcards.filter((card) => card.set_id === set.id);
-                    const mastered = setCards.filter((card) => card.status === "mastered").length;
-                    return (
-                      <SetCard
-                        key={set.id}
-                        set={set}
-                        selected={set.id === selectedSet?.id}
-                        cardCount={setCards.length}
-                        masteredCount={mastered}
-                        onSelect={chooseSet}
-                      />
-                    );
-                  })
-                )}
-              </aside>
-
+            <section ref={studySectionRef} className="grid gap-5 scroll-mt-4">
               <div className="grid min-w-0 gap-5">
                 <CommandCard className="p-4 sm:p-5">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -626,7 +783,6 @@ export default function Flashcards() {
                           onClick={() => markCard("mastered")}
                           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-success/40 bg-success/15 px-4 py-2 text-sm font-semibold text-success transition hover:border-success"
                         >
-                          <Check className="h-4 w-4" />
                           Mastered
                         </button>
                       </div>
@@ -654,14 +810,61 @@ export default function Flashcards() {
                   </CommandCard>
                 )}
               </div>
+
+              <CommandCard className="p-4 sm:p-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Sets</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={openCreateSet}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-strong-border bg-button px-4 py-2 text-sm font-semibold text-white transition hover:bg-button-hover"
+                  >
+                    <Plus className="h-4 w-4" />
+                    New set
+                  </button>
+                </div>
+
+                {sets.length === 0 ? (
+                  <div className="mt-4 rounded-2xl border border-border bg-background/55 p-4">
+                    <p className="text-sm leading-6 text-secondary">
+                      Create your first set to start adding cards.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-4 flex justify-center md:justify-start gap-3 overflow-x-auto pb-2">
+                    {sets.map((set) => {
+                      const setCards = flashcards.filter((card) => card.set_id === set.id);
+                      const mastered = setCards.filter((card) => card.status === "mastered").length;
+                      return (
+                        <SetCard
+                          key={set.id}
+                          set={set}
+                          selected={set.id === selectedSet?.id}
+                          cardCount={setCards.length}
+                          masteredCount={mastered}
+                          onSelect={chooseSet}
+                          onEdit={openEditSet}
+                          onDelete={handleDeleteSet}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </CommandCard>
             </section>
           </>
         )}
       </div>
 
       {setModalOpen && (
-        <Modal title="Create Set" eyebrow="Flashcard Sets" onClose={() => setSetModalOpen(false)}>
-          <form onSubmit={handleCreateSet} className="grid gap-4">
+        <Modal
+          title={editingSetId ? "Edit Set" : "Create Set"}
+          eyebrow="Flashcard Sets"
+          onClose={closeSetModal}
+        >
+          <form onSubmit={handleSaveSet} className="grid gap-4">
             <input
               type="text"
               value={setForm.title}
@@ -689,7 +892,7 @@ export default function Flashcards() {
               disabled={saving || !setForm.title.trim()}
               className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-strong-border bg-button px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving ? "Saving..." : "Create Set"}
+              {saving ? "Saving..." : editingSetId ? "Save Changes" : "Create Set"}
             </button>
           </form>
         </Modal>

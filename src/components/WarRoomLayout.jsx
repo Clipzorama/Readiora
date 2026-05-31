@@ -51,16 +51,16 @@ const cardVariants = {
 
 function SidebarNav({ onNavigate, onOpenSettings }) {
   const sections = [
-    { label: "Workspace", items: navItems },
+    { label: "Core", items: navItems },
     { label: "Study", items: studyNavItems },
     { label: "Account", items: utilityNavItems },
   ];
 
   return (
-    <nav className="grid gap-4">
+    <nav className="grid gap-4 mt-10">
       {sections.map((section) => (
         <div key={section.label}>
-          <p className="px-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted">
+          <p className="px-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-button">
             {section.label}
           </p>
           <div className="mt-2 grid gap-1">
@@ -74,13 +74,13 @@ function SidebarNav({ onNavigate, onOpenSettings }) {
                       onNavigate?.();
                       onOpenSettings?.();
                     }}
-                    className="group relative flex items-center justify-between overflow-hidden rounded-xl border border-transparent px-3 py-2 text-left text-sm font-medium text-secondary transition duration-200 hover:border-border hover:bg-card-hover/80 hover:text-primary"
+                    className="group relative flex items-center justify-between overflow-hidden rounded-xl border border-transparent px-3 py-2 text-left text-sm font-medium text-secondary transition duration-200 hover:border-border hover:bg-card-hover/80 hover:text-primary cursor-pointer"
                   >
                     <span className="flex min-w-0 items-center gap-2.5">
                       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border/70 bg-background/45 text-secondary transition group-hover:text-primary">
                         <item.icon className="h-3.5 w-3.5" />
                       </span>
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate ">{item.label}</span>
                     </span>
                   </button>
                 );
@@ -129,23 +129,24 @@ function SidebarNav({ onNavigate, onOpenSettings }) {
 
 function SidebarIdentity({ className = "" }) {
   const { avatarUrl, displayName, initials, loading } = useProfile();
+  const firstName = displayName.split(/\s+/).filter(Boolean)[0] || displayName;
 
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 rounded-3xl border border-border bg-background/55 p-3 ${className}`}
+      className={`group flex min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 transition duration-200 hover:bg-background/45 ${className}`}
     >
       <UserAvatar
         avatarUrl={avatarUrl}
         initials={initials}
-        label={displayName}
+        label={firstName}
         size="sm"
       />
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-primary">
-          {loading ? "Loading profile" : displayName}
+        <p className="truncate text-sm font-semibold leading-tight text-primary">
+          {loading ? "Loading profile" : firstName}
         </p>
-        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted">
-          Active operator
+        <p className="mt-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted">
+          Operator
         </p>
       </div>
     </div>
@@ -182,18 +183,18 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
   return (
     <main className="min-h-screen overflow-x-clip bg-background text-primary">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-24 top-[-10rem] h-80 w-80 rounded-full bg-button/20 blur-3xl" />
-        <div className="absolute right-[-8rem] top-24 h-96 w-96 rounded-full bg-button-hover/10 blur-3xl" />
-        <div className="absolute bottom-[-12rem] left-1/3 h-96 w-96 rounded-full bg-strong-border/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.025)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.025)_1px,transparent_1px)] bg-[size:44px_44px]" />
+        <div className="absolute -left-24 -top-40 h-80 w-80 rounded-full bg-button/20 blur-3xl" />
+        <div className="absolute -right-32 top-24 h-96 w-96 rounded-full bg-button-hover/10 blur-3xl" />
+        <div className="absolute -bottom-48 left-1/3 h-96 w-96 rounded-full bg-strong-border/20 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.025)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.025)_1px,transparent_1px)] bg-size-[44px_44px]" />
       </div>
 
       <div className="relative flex w-full gap-4 px-3 pb-32 pt-4 sm:pt-6 md:pb-10 lg:px-0 lg:py-0 xl:gap-5">
         <aside className="sticky top-0 z-20 hidden h-screen max-h-screen w-60 shrink-0 self-start overflow-y-auto border-r border-border bg-card/70 p-3 shadow-2xl shadow-black/30 backdrop-blur-xl lg:flex lg:flex-col lg:justify-between">
-          <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-strong-border to-transparent" />
+          <div className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-strong-border to-transparent" />
           <div>
-            <div className="rounded-2xl border border-strong-border/70 bg-background/65 p-2.5 shadow-inner shadow-black/25">
-              <SidebarIdentity />
+            <div className="border-b border-border/70 pb-4">
+              <SidebarIdentity className="-mx-1" />
             </div>
 
             <div className="mt-5">
@@ -218,7 +219,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
               whileHover={{ y: -1, scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleSignOut}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -229,7 +230,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
         <div className="min-w-0 flex-1 lg:py-5 lg:pr-5">
           <header className="sticky top-2 z-30 mb-4 rounded-2xl border border-border bg-card/85 p-2.5 shadow-xl shadow-black/25 backdrop-blur-xl lg:hidden">
             <div className="flex items-center justify-between gap-3">
-              <SidebarIdentity className="flex-1" />
+              <SidebarIdentity className="flex-1 px-1" />
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -283,7 +284,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="fixed bottom-24 left-1/2 z-[80] w-[min(calc(100vw-2rem),26rem)] -translate-x-1/2 rounded-2xl border border-success/40 bg-card/95 px-4 py-3 text-sm font-semibold text-primary shadow-2xl shadow-black/40 backdrop-blur-xl md:bottom-6"
+            className="fixed bottom-24 left-1/2 z-80 w-[min(calc(100vw-2rem),26rem)] -translate-x-1/2 rounded-2xl border border-success/40 bg-card/95 px-4 py-3 text-sm font-semibold text-primary shadow-2xl shadow-black/40 backdrop-blur-xl md:bottom-6"
           >
             Profile settings saved.
           </motion.div>
@@ -331,9 +332,6 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
                 </div>
 
                 <div className="mt-6">
-                  <p className="px-3 text-xs uppercase tracking-[0.22em] text-muted">
-                    Navigation
-                  </p>
                   <div className="mt-3">
                     <SidebarNav
                       onNavigate={() => setMobileOpen(false)}
@@ -364,7 +362,7 @@ export function CommandCard({ children, className = "" }) {
     <motion.section
       variants={cardVariants}
       whileHover={{ y: -2 }}
-      className={`group relative rounded-[1.5rem] border border-border bg-card/75 p-5 shadow-xl shadow-black/20 backdrop-blur transition duration-200 hover:border-strong-border/70 hover:shadow-[0_0_28px_hsl(var(--button)/0.12)] sm:p-6 ${className}`}
+      className={`group relative rounded-3xl border border-border bg-card/75 p-5 shadow-xl shadow-black/20 backdrop-blur transition duration-200 hover:border-strong-border/70 hover:shadow-[0_0_28px_hsl(var(--button)/0.12)] sm:p-6 ${className}`}
     >
       {children}
     </motion.section>
@@ -483,7 +481,7 @@ export function MiniBarChart({ data }) {
               initial={{ height: 0 }}
               animate={{ height: `${Math.max((item.value / maxValue) * 100, 12)}%` }}
               transition={{ duration: 0.45, ease: "easeOut" }}
-              className="w-full rounded-t-xl bg-gradient-to-t from-button to-button-hover shadow-lg shadow-button/20"
+              className="w-full rounded-t-xl bg-linear-to-t from-button to-button-hover shadow-lg shadow-button/20"
               title={`${item.value} hours`}
             />
           </div>

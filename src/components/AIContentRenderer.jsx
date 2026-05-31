@@ -16,7 +16,7 @@ const greekSymbols = {
 };
 
 const formulaStartPattern =
-  /\b(?:V|Q|P|R|E|Var|Cov|Pr)\s*(?:\^|\*|\()|Σ|∑|max_|argmax_|min_|[αβγδεθλμπσ]/;
+  /\b(?:V|Q|P|R|E|F|A|I|N|C|S|T|M|Var|Cov|Pr)\s*(?:=|\^|_|\*|\()|\b[a-z]\s*(?:=|\^|_|\*)|Σ|∑|max_|argmax_|min_|[αβγδεθλμπσ]/;
 
 function hasMathDelimiters(line) {
   return /\$|\\\(|\\\[/.test(line);
@@ -53,6 +53,17 @@ function splitFormulaExpressions(value) {
     .filter(Boolean);
 }
 
+function formatInlineBareFormulas(line) {
+  if (hasMathDelimiters(line) || !line.includes("=")) {
+    return line;
+  }
+
+  return line.replace(
+    /\b((?:[A-Za-z](?:\([^)]+\))?|[A-Za-z](?:\^\d+|\^[A-Za-z])?|[A-Za-z]_[A-Za-z0-9{}]+|Var\([^)]+\)|Cov\([^)]+\)|Pr\([^)]+\))\s*=\s*[^.,;!?]+)/g,
+    (formula) => `$${latexifyExpression(formula)}$`,
+  );
+}
+
 function formatBareFormulaLine(line) {
   const match = line.match(/^(\s*(?:[-*+]\s+|\d+\.\s+)?)(.*)$/);
   const prefix = match?.[1] ?? "";
@@ -64,6 +75,11 @@ function formatBareFormulaLine(line) {
 
   const formulaStart = body.search(formulaStartPattern);
   const labelEnd = body.lastIndexOf(":", formulaStart);
+
+  if (labelEnd < 0 && formulaStart > 0) {
+    return prefix + formatInlineBareFormulas(body);
+  }
+
   const label = labelEnd >= 0 ? body.slice(0, labelEnd + 1).trim() : "";
   const expression = labelEnd >= 0 ? body.slice(labelEnd + 1).trim() : body.trim();
   const formulas = splitFormulaExpressions(expression).map(latexifyExpression);
@@ -156,7 +172,12 @@ const baseComponents = {
   td: ({ children }) => <td className="border-t border-border px-4 py-3 text-secondary">{children}</td>,
 };
 
-export default function AIContentRenderer({ children, className = "", clamp = false }) {
+export default function AIContentRenderer({
+  children,
+  className = "",
+  clamp = false,
+  components = {},
+}) {
   const content = normalizeMathMarkdown(String(children ?? ""));
 
   return (
@@ -170,7 +191,7 @@ export default function AIContentRenderer({ children, className = "", clamp = fa
       <ReactMarkdown
         remarkPlugins={[remarkMath]}
         rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false }]]}
-        components={baseComponents}
+        components={{ ...baseComponents, ...components }}
       >
         {content}
       </ReactMarkdown>

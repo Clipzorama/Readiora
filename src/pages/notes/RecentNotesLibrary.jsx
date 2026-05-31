@@ -100,7 +100,7 @@ export default function RecentNotesLibrary({
                     <button
                       type="button"
                       onClick={() => onSelect(note)}
-                      className="max-w-full break-words text-left text-base font-semibold leading-tight text-primary transition hover:text-button-hover"
+                      className="max-w-full wrap-break-word text-left text-base font-semibold leading-tight text-primary transition hover:text-button-hover"
                     >
                       {note.title}
                     </button>

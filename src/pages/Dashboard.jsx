@@ -88,7 +88,7 @@ function BackendStatusPill({ status }) {
   return (
     <div
       className={[
-        "group relative min-w-[17rem] overflow-hidden rounded-[1.35rem] border p-3 shadow-2xl backdrop-blur-xl",
+        "group relative min-w-68 overflow-hidden rounded-[1.35rem] border p-3 shadow-2xl backdrop-blur-xl",
         tone.frame,
       ].join(" ")}
     >
@@ -116,7 +116,7 @@ function BackendStatusPill({ status }) {
           {bars.map((height, index) => (
             <span
               key={`${status}-${height}-${index}`}
-              className={`w-1.5 rounded-full bg-gradient-to-t ${tone.beam}`}
+              className={`w-1.5 rounded-full bg-linear-to-t ${tone.beam}`}
               style={{ height: `${height}%`, opacity: isConnected ? 1 : 0.72 }}
             />
           ))}
@@ -193,7 +193,7 @@ function NextExamCard({ exam, currentTime }) {
   if (!exam) {
     return (
       <div className="relative overflow-hidden rounded-[1.35rem] border border-strong-border/55 bg-card/80 p-5 shadow-2xl shadow-button/10 backdrop-blur-xl sm:p-6">
-        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-button-hover to-transparent" />
+        <div className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-button-hover to-transparent" />
         <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-button/20 blur-3xl" />
         <div className="relative">
           <div className="flex items-center justify-between gap-4">
@@ -230,9 +230,9 @@ function NextExamCard({ exam, currentTime }) {
 
   return (
     <div className="relative overflow-hidden rounded-[1.35rem] border border-strong-border/60 bg-[linear-gradient(145deg,hsl(var(--card)/0.96),hsl(var(--button)/0.16))] p-5 shadow-2xl shadow-button/10 backdrop-blur-xl sm:p-6">
-      <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-button-hover to-transparent" />
+      <div className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-button-hover to-transparent" />
       <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-button-hover/20 blur-3xl" />
-      <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-button/5 via-button-hover/50 to-button/5" />
+      <div className="absolute bottom-0 left-0 h-px w-full bg-linear-to-r from-button/5 via-button-hover/50 to-button/5" />
 
       <div className="relative">
         <div className="flex items-center justify-between gap-4">
@@ -391,9 +391,9 @@ export default function Dashboard() {
         <section>
           <CommandCard className="relative overflow-hidden p-5 sm:p-7 xl:p-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_12%,hsl(var(--button)/0.18),transparent_32%),radial-gradient(circle_at_88%_18%,hsl(var(--button-hover)/0.14),transparent_34%)]" />
-            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-strong-border to-transparent" />
+            <div className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-strong-border to-transparent" />
             <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(22rem,0.65fr)] xl:items-stretch">
-              <div className="flex min-h-[320px] flex-col justify-between rounded-[1.35rem] border border-border/80 bg-background/45 p-5 shadow-inner shadow-black/20 sm:p-7">
+              <div className="flex min-h-80 flex-col justify-between rounded-[1.35rem] border border-border/80 bg-background/45 p-5 shadow-inner shadow-black/20 sm:p-7">
                 <div>
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary sm:text-sm">

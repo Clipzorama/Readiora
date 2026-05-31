@@ -271,7 +271,7 @@ export default function Signup() {
           className="absolute bottom-0 left-10 h-72 w-72 rounded-full bg-button-hover/10 blur-3xl"
         />
 
-        <div className="relative z-10 flex w-full flex-col justify-between">
+        <div className="relative z-10 flex w-full flex-col gap-8 xl:gap-20">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-secondary">
               Xevaro
@@ -279,7 +279,7 @@ export default function Signup() {
 
             <motion.h1
               variants={itemVariants}
-              className="mt-7 max-w-xl text-5xl font-bold leading-tight xl:text-6xl"
+              className="mt-7 max-w-xl text-5xl font-bold leading-tight"
             >
               Study with structure, strategy, and intelligent feedback.
             </motion.h1>

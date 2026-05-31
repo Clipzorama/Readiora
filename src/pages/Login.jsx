@@ -135,7 +135,7 @@ export default function Login() {
           className="absolute bottom-20 right-10 h-72 w-72 rounded-full bg-emerald/10 blur-3xl"
         />
 
-        <div className="relative z-10 flex w-full flex-col justify-between">
+        <div className="relative z-10 flex w-full flex-col gap-8 xl:gap-20">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-secondary">
               Xevaro
@@ -143,7 +143,7 @@ export default function Login() {
 
             <motion.h1
               variants={itemVariants}
-              className="mt-7 max-w-xl text-5xl font-bold leading-tight xl:text-6xl"
+              className="mt-7 max-w-xl text-5xl font-bold leading-tight"
             >
               Your tactical AI learning operating system.
             </motion.h1>
@@ -227,7 +227,7 @@ export default function Login() {
               className="mx-auto h-14 w-auto object-contain sm:h-20"
             />
             <h2 className="mt-2 text-xl font-bold sm:mt-3 sm:text-4xl">
-              Sign in
+              Login
             </h2>
 
             <p className="mt-2 text-sm text-secondary sm:mt-3 sm:text-base">
@@ -301,8 +301,8 @@ export default function Login() {
             className="mt-5 text-center text-sm text-secondary sm:mt-8"
           >
             Don&apos;t have an account?{" "}
-            <Link to="/signup" className="font-semibold text-button">
-              Create one manually
+            <Link to="/signup" className="font-semibold text-button capitalize">
+              sign up
             </Link>
           </motion.p>
 

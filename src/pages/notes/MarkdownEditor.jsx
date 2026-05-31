@@ -118,7 +118,7 @@ export default function MarkdownEditor({ content, mode, textareaRef, onChange, o
           value={content}
           onChange={(event) => onChange(event.target.value)}
           placeholder={"Start writing with markdown...\n\n## Core idea\n- What happened?\n- Why does it matter?\n- What should I memorize?"}
-          className="min-h-120 w-full resize-y bg-background/30 px-5 pb-8 pt-10 font-dm text-base leading-8 text-primary outline-none transition placeholder:text-muted focus:bg-background/40 sm:min-h-[38rem] sm:px-7 sm:pt-12 xl:min-h-[44rem]"
+          className="min-h-120 w-full resize-y bg-background/30 px-5 pb-8 pt-10 font-dm text-base leading-8 text-primary outline-none transition placeholder:text-muted focus:bg-background/40 sm:min-h-152 sm:px-7 sm:pt-12 xl:min-h-176"
         />
       ) : (
         <MarkdownPreview content={content} />
