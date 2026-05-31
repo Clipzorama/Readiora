@@ -158,6 +158,38 @@ html {
         animation-play-state: paused;
     }
 
+    .ai-content .katex {
+        color: hsl(var(--primary));
+        font-size: 1.02em;
+    }
+
+    .ai-content .katex-display {
+        margin: 1rem 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border: 1px solid hsl(var(--strong-border) / 0.45);
+        border-radius: 1rem;
+        background: hsl(var(--background) / 0.72);
+        padding: 1rem;
+        box-shadow: 0 0 28px hsl(var(--button) / 0.07);
+    }
+
+    .ai-content .katex-display > .katex {
+        display: block;
+        min-width: max-content;
+        text-align: center;
+        font-size: 1.12em;
+    }
+
+    .ai-content strong {
+        color: hsl(var(--primary));
+        font-weight: 700;
+    }
+
+    .ai-content em {
+        color: hsl(var(--primary) / 0.92);
+    }
+
     .rb-spotlight-card {
         --spotlight-x: 50%;
         --spotlight-y: 50%;
