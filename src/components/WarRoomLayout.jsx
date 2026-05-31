@@ -5,6 +5,7 @@ import {
   BookOpen,
   ChevronRight,
   FileText,
+  Layers3,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -23,7 +24,14 @@ const navItems = [
   { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
   { label: "Subjects", to: "/subjects", icon: BookOpen },
   { label: "Notes", to: "/notes", icon: FileText },
+];
+
+const studyNavItems = [
   { label: "Summaries", to: "/summaries", icon: Sparkles },
+  { label: "Flashcards", to: "/flashcards", icon: Layers3 },
+];
+
+const utilityNavItems = [
   { label: "Settings", modal: "settings", icon: SettingsIcon },
 ];
 
@@ -42,75 +50,79 @@ const cardVariants = {
 };
 
 function SidebarNav({ onNavigate, onOpenSettings }) {
-  return (
-    <nav className="grid gap-2">
-      {navItems.map((item) => {
-        if (item.modal === "settings") {
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => {
-                onNavigate?.();
-                onOpenSettings?.();
-              }}
-              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-transparent px-4 py-3 text-left text-sm font-medium text-secondary transition duration-200 hover:border-border hover:bg-card-hover/80 hover:text-primary"
-            >
-              <span className="absolute inset-y-2 left-0 w-1 rounded-r-full bg-transparent transition" />
-              <span className="flex min-w-0 items-center gap-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border/70 bg-background/45 text-secondary transition group-hover:text-primary">
-                  <item.icon className="h-4 w-4" />
-                </span>
-                <span className="truncate">{item.label}</span>
-              </span>
-              <ChevronRight className="h-4 w-4 opacity-0 transition group-hover:opacity-100" />
-            </button>
-          );
-        }
+  const sections = [
+    { label: "Workspace", items: navItems },
+    { label: "Study", items: studyNavItems },
+    { label: "Account", items: utilityNavItems },
+  ];
 
-        return (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              [
-                "group relative flex items-center justify-between overflow-hidden rounded-2xl border px-4 py-3 text-sm font-medium transition duration-200",
-                isActive
-                  ? "border-strong-border bg-button/20 text-primary shadow-[0_0_30px_hsl(var(--button)/0.16)]"
-                  : "border-transparent text-secondary hover:border-border hover:bg-card-hover/80 hover:text-primary",
-              ].join(" ")
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <span
-                  className={`absolute inset-y-2 left-0 w-1 rounded-r-full transition ${
-                    isActive ? "bg-button-hover" : "bg-transparent"
-                  }`}
-                />
-                <span className="flex min-w-0 items-center gap-3">
-                  <span
-                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border transition ${
-                      isActive
-                        ? "border-strong-border bg-background/70 text-primary"
-                        : "border-border/70 bg-background/45 text-secondary group-hover:text-primary"
-                    }`}
+  return (
+    <nav className="grid gap-4">
+      {sections.map((section) => (
+        <div key={section.label}>
+          <p className="px-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted">
+            {section.label}
+          </p>
+          <div className="mt-2 grid gap-1">
+            {section.items.map((item) => {
+              if (item.modal === "settings") {
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => {
+                      onNavigate?.();
+                      onOpenSettings?.();
+                    }}
+                    className="group relative flex items-center justify-between overflow-hidden rounded-xl border border-transparent px-3 py-2 text-left text-sm font-medium text-secondary transition duration-200 hover:border-border hover:bg-card-hover/80 hover:text-primary"
                   >
-                    <item.icon className="h-4 w-4" />
-                  </span>
-                  <span className="truncate">{item.label}</span>
-                </span>
-                <ChevronRight
-                  className={`h-4 w-4 transition ${
-                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                  }`}
-                />
-              </>
-            )}
-          </NavLink>
-        );
-      })}
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border/70 bg-background/45 text-secondary transition group-hover:text-primary">
+                        <item.icon className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                    </span>
+                  </button>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={onNavigate}
+                  className={({ isActive }) =>
+                    [
+                      "group relative flex items-center justify-between overflow-hidden rounded-xl border px-3 py-2 text-sm font-medium transition duration-200",
+                      isActive
+                        ? "border-strong-border bg-button/20 text-primary shadow-[0_0_20px_hsl(var(--button)/0.12)]"
+                        : "border-transparent text-secondary hover:border-border hover:bg-card-hover/80 hover:text-primary",
+                    ].join(" ")
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <span className="flex min-w-0 items-center gap-2.5">
+                        <span
+                          className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg border transition ${
+                            isActive
+                              ? "border-strong-border bg-background/70 text-primary"
+                              : "border-border/70 bg-background/45 text-secondary group-hover:text-primary"
+                          }`}
+                        >
+                          <item.icon className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="truncate">{item.label}</span>
+                      </span>
+                      <ChevronRight className={`h-3.5 w-3.5 transition ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
+                    </>
+                  )}
+                </NavLink>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }
@@ -176,33 +188,28 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
         <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.025)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.025)_1px,transparent_1px)] bg-[size:44px_44px]" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-[1560px] gap-6 px-4 pb-32 pt-6 sm:pt-8 md:pb-12 lg:px-8 lg:py-10 xl:px-10">
-        <aside className="sticky top-5 z-20 hidden h-[calc(100dvh-2.5rem)] max-h-[calc(100dvh-2.5rem)] w-72 shrink-0 self-start overflow-y-auto rounded-[1.75rem] border border-border bg-card/70 p-4 shadow-2xl shadow-black/35 backdrop-blur-xl lg:flex lg:flex-col lg:justify-between">
+      <div className="relative flex w-full gap-4 px-3 pb-32 pt-4 sm:pt-6 md:pb-10 lg:px-0 lg:py-0 xl:gap-5">
+        <aside className="sticky top-0 z-20 hidden h-screen max-h-screen w-60 shrink-0 self-start overflow-y-auto border-r border-border bg-card/70 p-3 shadow-2xl shadow-black/30 backdrop-blur-xl lg:flex lg:flex-col lg:justify-between">
           <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-strong-border to-transparent" />
           <div>
-            <div className="rounded-3xl border border-strong-border/70 bg-background/65 p-4 shadow-inner shadow-black/25">
+            <div className="rounded-2xl border border-strong-border/70 bg-background/65 p-2.5 shadow-inner shadow-black/25">
               <SidebarIdentity />
             </div>
 
-            <div className="mt-8">
-              <p className="px-3 text-xs uppercase tracking-[0.22em] text-muted">
-                Navigation
-              </p>
-              <div className="mt-3">
-                <SidebarNav onOpenSettings={openSettings} />
-              </div>
+            <div className="mt-5">
+              <SidebarNav onOpenSettings={openSettings} />
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-3xl border border-border bg-background/65 p-4">
+          <div className="grid gap-3 rounded-2xl border border-border bg-background/65 p-3">
             <div className="flex items-start gap-3">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-success/30 bg-success/15 text-success">
-                <ShieldCheck className="h-4 w-4" />
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-success/30 bg-success/15 text-success">
+                <ShieldCheck className="h-3.5 w-3.5" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-primary">Secure Workspace</p>
-                <p className="mt-1 text-sm leading-6 text-secondary">
-                  Account protection and workspace security are active.
+                <p className="mt-1 text-xs leading-5 text-secondary">
+                  Account protection active.
                 </p>
               </div>
             </div>
@@ -211,7 +218,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
               whileHover={{ y: -1, scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleSignOut}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-3 py-3 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -219,15 +226,15 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1">
-          <header className="sticky top-3 z-30 mb-5 rounded-3xl border border-border bg-card/85 p-3 shadow-xl shadow-black/25 backdrop-blur-xl lg:hidden">
+        <div className="min-w-0 flex-1 lg:py-5 lg:pr-5">
+          <header className="sticky top-2 z-30 mb-4 rounded-2xl border border-border bg-card/85 p-2.5 shadow-xl shadow-black/25 backdrop-blur-xl lg:hidden">
             <div className="flex items-center justify-between gap-3">
               <SidebarIdentity className="flex-1" />
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setMobileOpen(true)}
-                  className="grid h-11 w-11 place-items-center rounded-2xl border border-border bg-background/70 text-secondary transition hover:border-strong-border hover:text-primary"
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-background/70 text-secondary transition hover:border-strong-border hover:text-primary"
                   aria-label="Open navigation"
                 >
                   <Menu className="h-5 w-5" />
@@ -240,11 +247,11 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
             variants={pageVariants}
             initial="hidden"
             animate="visible"
-            className="grid gap-6"
+            className="grid gap-5"
           >
             <motion.header
               variants={cardVariants}
-              className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card/70 p-5 shadow-2xl shadow-black/25 backdrop-blur-xl sm:p-7 lg:p-8"
+              className="relative overflow-hidden rounded-[1.35rem] border border-border bg-card/70 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl sm:p-6 lg:p-6"
             >
               <div className="absolute right-0 top-0 h-36 w-36 rounded-bl-full bg-button/15 blur-2xl" />
               <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -252,7 +259,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
                   <p className="text-xs uppercase tracking-[0.28em] text-secondary">
                     {eyebrow}
                   </p>
-                  <h1 className="mt-3 text-3xl font-bold leading-tight tracking-normal text-primary sm:text-5xl">
+                  <h1 className="mt-3 text-3xl font-bold leading-tight tracking-normal text-primary sm:text-4xl">
                     {title}
                   </h1>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-secondary sm:text-base">
@@ -263,7 +270,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
               </div>
             </motion.header>
 
-            <motion.div variants={cardVariants} className="mx-auto w-full max-w-7xl">
+            <motion.div variants={cardVariants} className="w-full">
               {children}
             </motion.div>
           </motion.section>

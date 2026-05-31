@@ -150,7 +150,7 @@ export default function Login() {
 
             <motion.p
               variants={itemVariants}
-              className="mt-6 max-w-lg text-base leading-8 text-secondary xl:text-lg"
+              className="mt-6 mb-2 max-w-lg text-base leading-8 text-secondary xl:text-lg"
             >
               Transform notes into missions, flashcards, quizzes, and focused
               study workflows built for serious exam preparation.

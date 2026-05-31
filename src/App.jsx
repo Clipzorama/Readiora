@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Subjects from "./pages/Subjects";
 import Notes from "./pages/notes/Notes";
 import Summaries from "./pages/Summaries";
+import Flashcards from "./pages/Flashcards";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -79,6 +80,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Summaries />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/flashcards"
+          element={
+            <ProtectedRoute>
+              <Flashcards />
             </ProtectedRoute>
           }
         />

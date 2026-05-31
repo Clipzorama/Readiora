@@ -402,7 +402,7 @@ export default function Notes() {
         </AddButton>
       }
     >
-      <div className="grid gap-6">
+      <div className="grid min-w-0 gap-4 sm:gap-6">
         {error && (
           <div className="flex items-start gap-3 rounded-2xl border border-danger/40 bg-danger/15 p-4 text-sm text-primary">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
@@ -425,7 +425,7 @@ export default function Notes() {
             </p>
           </CommandCard>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid min-w-0 gap-4 sm:gap-6">
             <RecentNotesLibrary
               loading={loading}
               notes={notes}
@@ -443,9 +443,9 @@ export default function Notes() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)] 2xl:grid-cols-[minmax(0,1fr)_24rem]"
+                  className="grid min-w-0 items-start gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)] 2xl:grid-cols-[minmax(0,1fr)_24rem]"
                 >
-                  <section className="grid min-w-0 gap-6">
+                  <section className="grid min-w-0 gap-4 sm:gap-6">
                     <NotesHeader
                       draft={draft}
                       subjects={subjects}
@@ -469,7 +469,7 @@ export default function Notes() {
                     />
                   </section>
 
-                  <aside className="grid min-w-0 gap-5 xl:sticky xl:top-4 xl:self-start">
+                  <aside className="grid min-w-0 gap-4 sm:gap-5 xl:sticky xl:top-4 xl:self-start">
                     <AttachmentUploader
                       attachments={attachments}
                       previewUrls={previewUrls}

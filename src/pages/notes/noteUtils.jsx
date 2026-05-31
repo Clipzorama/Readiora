@@ -31,38 +31,3 @@ export function getNoteAttachmentStats(note) {
     hasMarkdown: Boolean(note?.content?.trim()),
   };
 }
-
-export function renderInline(text) {
-  const parts = [];
-  const pattern = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g;
-  let lastIndex = 0;
-  let match;
-
-  while ((match = pattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
-    }
-
-    const token = match[0];
-    const key = `${match.index}-${token}`;
-    if (token.startsWith("**")) {
-      parts.push(<strong key={key}>{token.slice(2, -2)}</strong>);
-    } else if (token.startsWith("*")) {
-      parts.push(<em key={key}>{token.slice(1, -1)}</em>);
-    } else {
-      parts.push(
-        <code key={key} className="rounded-md border border-border bg-background/80 px-1.5 py-0.5 text-sm text-primary">
-          {token.slice(1, -1)}
-        </code>,
-      );
-    }
-
-    lastIndex = pattern.lastIndex;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return parts;
-}

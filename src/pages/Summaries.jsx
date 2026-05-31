@@ -16,7 +16,7 @@ import {
   CommandCard,
   WarRoomShell,
 } from "../components/WarRoomLayout";
-import SummaryText from "../components/SummaryText";
+import AIContentRenderer from "../components/AIContentRenderer";
 import { useAuth } from "../hooks/useAuth";
 import { deleteNoteSummary, getSummarizedNotes } from "../services/notesService";
 
@@ -188,7 +188,7 @@ function ActiveSummary({ note }) {
 
       <div className="p-5 sm:p-6 lg:p-7">
         <div className="rounded-2xl border border-strong-border/50 bg-button/10 p-4 text-sm leading-7 text-secondary shadow-[0_0_30px_hsl(var(--button)/0.08)] sm:p-5 sm:text-base sm:leading-8">
-          <SummaryText>{note.ai_summary}</SummaryText>
+          <AIContentRenderer>{note.ai_summary}</AIContentRenderer>
         </div>
       </div>
     </CommandCard>

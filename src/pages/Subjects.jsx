@@ -296,27 +296,33 @@ export default function Subjects() {
                   <span className="text-xs uppercase tracking-[0.18em] text-muted">
                     Exam Date
                   </span>
-                  <input
-                    type="date"
-                    value={form.examDate}
-                    onChange={(event) =>
-                      setForm({ ...form, examDate: event.target.value })
-                    }
-                    className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
-                  />
+                  <div className="relative">
+                    <input
+                      type="date"
+                      value={form.examDate}
+                      onChange={(event) =>
+                        setForm({ ...form, examDate: event.target.value })
+                      }
+                      className="min-h-14 w-full rounded-2xl border border-border bg-background/70 px-4 py-3 pr-12 text-primary outline-none transition focus:border-strong-border [&::-webkit-calendar-picker-indicator]:opacity-0"
+                    />
+                    <CalendarClock className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+                  </div>
                 </label>
                 <label className="grid gap-2">
                   <span className="text-xs uppercase tracking-[0.18em] text-muted">
                     Exam Time
                   </span>
-                  <input
-                    type="time"
-                    value={form.examTime}
-                    onChange={(event) =>
-                      setForm({ ...form, examTime: event.target.value })
-                    }
-                    className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition focus:border-strong-border"
-                  />
+                  <div className="relative">
+                    <input
+                      type="time"
+                      value={form.examTime}
+                      onChange={(event) =>
+                        setForm({ ...form, examTime: event.target.value })
+                      }
+                      className="min-h-14 w-full rounded-2xl border border-border bg-background/70 px-4 py-3 pr-12 text-primary outline-none transition focus:border-strong-border [&::-webkit-calendar-picker-indicator]:opacity-0"
+                    />
+                    <Clock3 className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+                  </div>
                 </label>
               </div>
 

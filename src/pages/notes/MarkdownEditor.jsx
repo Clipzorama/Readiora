@@ -9,8 +9,8 @@ import {
   PenLine,
   Quote,
 } from "lucide-react";
+import AIContentRenderer from "../../components/AIContentRenderer";
 import { CommandCard } from "../../components/WarRoomLayout";
-import { renderInline } from "./noteUtils";
 
 const toolbarActions = [
   { label: "Bold", icon: Bold, before: "**", after: "**", fallback: "important point" },
@@ -23,104 +23,7 @@ const toolbarActions = [
 ];
 
 function MarkdownPreview({ content }) {
-  const lines = content.split("\n");
-  const blocks = [];
-  let index = 0;
-
-  while (index < lines.length) {
-    const line = lines[index];
-
-    if (!line.trim()) {
-      index += 1;
-      continue;
-    }
-
-    if (line.startsWith("```")) {
-      const code = [];
-      index += 1;
-      while (index < lines.length && !lines[index].startsWith("```")) {
-        code.push(lines[index]);
-        index += 1;
-      }
-      index += 1;
-      blocks.push(
-        <pre key={`code-${index}`} className="overflow-x-auto rounded-2xl border border-border bg-background/85 p-4 text-sm leading-7 text-secondary">
-          <code>{code.join("\n")}</code>
-        </pre>,
-      );
-      continue;
-    }
-
-    if (/^#{1,3}\s/.test(line)) {
-      const level = line.match(/^#+/)?.[0].length ?? 2;
-      const text = line.replace(/^#{1,3}\s/, "");
-      const Tag = level === 1 ? "h1" : level === 2 ? "h2" : "h3";
-      blocks.push(
-        <Tag key={`heading-${index}`} className={level === 1 ? "text-3xl font-bold text-primary" : "text-2xl font-bold text-primary"}>
-          {renderInline(text)}
-        </Tag>,
-      );
-      index += 1;
-      continue;
-    }
-
-    if (/^>\s?/.test(line)) {
-      const quote = [];
-      while (index < lines.length && /^>\s?/.test(lines[index])) {
-        quote.push(lines[index].replace(/^>\s?/, ""));
-        index += 1;
-      }
-      blocks.push(
-        <blockquote key={`quote-${index}`} className="border-l-4 border-strong-border bg-button/10 px-5 py-4 text-secondary">
-          {quote.map((item, itemIndex) => (
-            <p key={`${item}-${itemIndex}`} className="leading-8">{renderInline(item)}</p>
-          ))}
-        </blockquote>,
-      );
-      continue;
-    }
-
-    if (/^-\s+/.test(line) || /^\d+\.\s+/.test(line)) {
-      const ordered = /^\d+\.\s+/.test(line);
-      const items = [];
-      const itemPattern = ordered ? /^\d+\.\s+/ : /^-\s+/;
-      while (index < lines.length && itemPattern.test(lines[index])) {
-        items.push(lines[index].replace(itemPattern, ""));
-        index += 1;
-      }
-      const Tag = ordered ? "ol" : "ul";
-      blocks.push(
-        <Tag key={`list-${index}`} className={`${ordered ? "list-decimal" : "list-disc"} space-y-2 pl-6 text-secondary`}>
-          {items.map((item, itemIndex) => (
-            <li key={`${item}-${itemIndex}`} className="leading-8">{renderInline(item)}</li>
-          ))}
-        </Tag>,
-      );
-      continue;
-    }
-
-    const paragraph = [];
-    while (
-      index < lines.length &&
-      lines[index].trim() &&
-      !/^#{1,3}\s/.test(lines[index]) &&
-      !lines[index].startsWith("```") &&
-      !/^>\s?/.test(lines[index]) &&
-      !/^-\s+/.test(lines[index]) &&
-      !/^\d+\.\s+/.test(lines[index])
-    ) {
-      paragraph.push(lines[index]);
-      index += 1;
-    }
-
-    blocks.push(
-      <p key={`paragraph-${index}`} className="leading-8 text-secondary">
-        {renderInline(paragraph.join(" "))}
-      </p>,
-    );
-  }
-
-  if (blocks.length === 0) {
+  if (!content.trim()) {
     return (
       <div className="grid min-h-112 place-items-center rounded-b-3xl bg-background/25 px-6 text-center text-secondary">
         <div>
@@ -134,7 +37,11 @@ function MarkdownPreview({ content }) {
     );
   }
 
-  return <div className="grid min-h-112 content-start gap-5 px-5 py-6 sm:px-7">{blocks}</div>;
+  return (
+    <div className="min-h-112 px-5 py-6 sm:px-7">
+      <AIContentRenderer>{content}</AIContentRenderer>
+    </div>
+  );
 }
 
 function MarkdownToolbar({ onAction }) {

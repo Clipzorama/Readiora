@@ -6,7 +6,7 @@ import {
   LoaderCircle,
   Sparkles,
 } from "lucide-react";
-import SummaryText from "../../components/SummaryText";
+import AIContentRenderer from "../../components/AIContentRenderer";
 import { CommandCard } from "../../components/WarRoomLayout";
 import { formatUpdated, getNoteAttachmentStats } from "./noteUtils";
 
@@ -23,12 +23,17 @@ function SummaryPreview({ note }) {
   if (!note.ai_summary) return null;
 
   return (
-    <div className="mt-4 rounded-2xl border border-strong-border/50 bg-button/10 p-3 text-sm leading-6 text-secondary">
-      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+    <div className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-strong-border/50 bg-button/10 p-3 text-sm leading-6 text-secondary">
+      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-button">
         <Sparkles className="h-3.5 w-3.5 text-button-hover" />
-        AI Summary
+        AI-Generated Summary
       </div>
-      <SummaryText clamp>{note.ai_summary}</SummaryText>
+      <AIContentRenderer
+        clamp
+        className="text-sm leading-6 **:max-w-full [&_li]:leading-6 [&_p]:leading-6"
+      >
+        {note.ai_summary}
+      </AIContentRenderer>
     </div>
   );
 }
@@ -42,8 +47,8 @@ export default function RecentNotesLibrary({
   onSummarize,
 }) {
   return (
-    <CommandCard className="p-4 sm:p-5">
-      <div className="mb-5 flex items-start justify-between gap-4">
+    <CommandCard className="min-w-0 overflow-hidden p-3 sm:p-5">
+      <div className="mb-4 flex items-start justify-between gap-3 sm:mb-5 sm:gap-4">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.22em] text-muted">
             Library
@@ -73,49 +78,50 @@ export default function RecentNotesLibrary({
           </p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid min-w-0 gap-3 lg:grid-cols-2 xl:grid-cols-2">
           {notes.map((note) => {
             const stats = getNoteAttachmentStats(note);
 
             return (
               <div
                 key={note.id}
-                className={`rounded-2xl border p-4 transition duration-200 ${
+                className={`min-w-0 overflow-hidden rounded-2xl border p-3 transition duration-200 sm:p-4 cursor-pointer ${
                   note.id === selectedNoteId
                     ? "border-strong-border/90 bg-button/15 shadow-[0_0_24px_hsl(var(--button)/0.12)]"
                     : "border-border/80 bg-background/60 hover:border-strong-border/80 hover:bg-card-hover/80"
                 } text-left`}
+                onClick={() => onSelect(note)}
+                aria-label={`Open ${note.title}`}
+                title="Open note"
+
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <button
                       type="button"
                       onClick={() => onSelect(note)}
-                      className="break-word text-left text-base font-semibold leading-tight text-primary transition hover:text-button-hover"
+                      className="max-w-full break-words text-left text-base font-semibold leading-tight text-primary transition hover:text-button-hover"
                     >
                       {note.title}
                     </button>
                     <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted">
-                      <span className="rounded-full border border-border/80 bg-card/80 px-3 py-1">
+                      <span className="max-w-full truncate rounded-full border border-border/80 bg-card/80 px-3 py-1">
                         {note.subjects?.name ?? "Unlinked"}
                       </span>
-                      <span className="rounded-full border border-border/80 bg-card/80 px-3 py-1">
+                      <span className="max-w-full truncate rounded-full border border-border/80 bg-card/80 px-3 py-1">
                         Saved {formatUpdated(note)}
                       </span>
                     </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() => onSelect(note)}
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border/70 bg-card/70 text-muted transition hover:border-strong-border hover:text-primary"
-                    aria-label={`Open ${note.title}`}
-                    title="Open note"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border/70 bg-card/70 text-muted transition hover:border-strong-border cursor-pointer"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-4 w-4 text-primary" />
                   </button>
                 </div>
 
-                <div className="mt-4 grid gap-2 text-xs text-secondary sm:grid-cols-2">
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-secondary">
                   <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-background/60 px-3 py-2">
                     <span>Attachments</span>
                     <span className="font-semibold text-primary">{stats.count}</span>
@@ -144,7 +150,7 @@ export default function RecentNotesLibrary({
                     type="button"
                     onClick={() => onSummarize(note)}
                     disabled={summarizingNoteId === note.id || !note.content?.trim()}
-                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-strong-border/80 bg-button/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-button/15 transition hover:-translate-y-0.5 hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-strong-border/80 bg-button/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-button/15 transition hover:-translate-y-0.5 hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
                   >
                     {summarizingNoteId === note.id ? (
                       <LoaderCircle className="h-4 w-4 animate-spin" />

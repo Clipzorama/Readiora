@@ -66,7 +66,6 @@ export default function ProfileSettingsForm({ onSaved }) {
       profile?.phone || authIdentity.phone || "",
     );
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       firstName: profile?.first_name || authIdentity.firstName || "",
       lastName: profile?.last_name || authIdentity.lastName || "",
