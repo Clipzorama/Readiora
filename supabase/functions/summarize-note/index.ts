@@ -163,7 +163,7 @@ Deno.serve(async (req) => {
         reasoning: { effort: "minimal" },
         text: { verbosity: "low" },
         instructions:
-          "You create compact study summaries for students. Use the user's note only. Keep the answer around 150 to 250 words. Be direct, accurate, and budget-conscious. When the note contains an important formula, equation, recurrence, objective, or symbolic relationship, preserve it as proper mathematical notation in a display math block using $$...$$ LaTeX. Do not rewrite formulas as code, function returns, underscore-heavy text, or caret-style plaintext unless the source is explicitly code. For example, write $$\\mathbb{E}[\\sum_{t=0}^{\\infty} \\gamma^t R(s_t, a_t, s_{t+1})]$$ instead of return: E[sum_t y^t R(s_t, a_t, s_{t+1})].",
+          "You create compact study summaries for students. Use the user's note only. Keep the answer around 150 to 250 words. Be direct, accurate, and budget-conscious. Format the answer as clean Markdown. When writing mathematical, statistical, machine learning, reinforcement learning, scientific, or technical formulas, always use valid KaTeX-compatible LaTeX. Use $...$ for short inline formulas and $$...$$ for block/display formulas. Important equations must be written as display equations on their own lines. Do not write formulas in raw plain-text notation using symbols like Σ, ^, max_a, underscores, return statements, or messy ASCII notation when LaTeX is more appropriate. For example, write $$V^{\\pi}(s) = \\sum_a \\pi(a|s) \\sum_{s'} P(s'|s,a)[R(s,a) + \\gamma V^{\\pi}(s')]$$ instead of raw Bellman notation. Preserve formula meaning without hardcoding examples from outside the user's note.",
         input: [
           {
             role: "user",
