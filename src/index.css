@@ -190,6 +190,16 @@ html {
         color: hsl(var(--primary) / 0.92);
     }
 
+    .session-datetime-input {
+        color-scheme: light;
+    }
+
+    .session-datetime-input::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        filter: invert(92%) sepia(18%) saturate(420%) hue-rotate(148deg) brightness(106%) contrast(95%);
+        opacity: 0.95;
+    }
+
     .rb-spotlight-card {
         --spotlight-x: 50%;
         --spotlight-y: 50%;
@@ -250,5 +260,5 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary/80;
 
-
 }
+

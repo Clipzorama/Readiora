@@ -12,6 +12,7 @@ import Summaries from "./pages/Summaries";
 import Flashcards from "./pages/Flashcards";
 import Quiz from "./pages/Quiz";
 import QuizTake from "./pages/QuizTake";
+import Session from "./pages/Session";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -109,6 +110,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <QuizTake />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/sessions"
+          element={
+            <ProtectedRoute>
+              <Session />
             </ProtectedRoute>
           }
         />
