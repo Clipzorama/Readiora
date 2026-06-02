@@ -23,24 +23,50 @@ import {
   CardHeader,
   CommandCard,
   MetricCard,
-  MiniBarChart,
   ProgressBar,
   WarRoomShell,
 } from "../components/WarRoomLayout";
 import { useProfile } from "../context/ProfileContext";
 import { useAuth } from "../hooks/useAuth";
 import { getNotes } from "../services/notesService";
+import { getQuizAccuracySummary } from "../services/quizService";
+import { getStudySessionSummary } from "../services/sessionsService";
 import { getSubjects } from "../services/subjectsService";
 
-const zeroStudyHours = [
-  { label: "Mon", value: 0 },
-  { label: "Tue", value: 0 },
-  { label: "Wed", value: 0 },
-  { label: "Thu", value: 0 },
-  { label: "Fri", value: 0 },
-  { label: "Sat", value: 0 },
-  { label: "Sun", value: 0 },
-];
+const emptyStudySummary = {
+  weeklyHours: [
+    { label: "Sun", dateLabel: "", value: 0, isToday: false },
+    { label: "Mon", dateLabel: "", value: 0, isToday: false },
+    { label: "Tue", dateLabel: "", value: 0, isToday: false },
+    { label: "Wed", dateLabel: "", value: 0, isToday: false },
+    { label: "Thu", dateLabel: "", value: 0, isToday: false },
+    { label: "Fri", dateLabel: "", value: 0, isToday: false },
+    { label: "Sat", dateLabel: "", value: 0, isToday: false },
+  ],
+  weekRangeLabel: "",
+  weekStart: "",
+  weekEnd: "",
+  weeklyTotalHours: 0,
+  streakDays: 0,
+  totalSessions: 0,
+  totalHours: 0,
+};
+
+function getSundayWeekKey(date) {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay());
+
+  return `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
+}
+
+function formatHours(value) {
+  const hours = Number(value || 0);
+  return `${hours.toLocaleString(undefined, {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: Number.isInteger(hours) ? 0 : 1,
+  })}h`;
+}
 
 function EmptyPanel({ children }) {
   return (
@@ -271,11 +297,121 @@ function NextExamCard({ exam, currentTime }) {
   );
 }
 
+function StudyHoursWeeklyPanel({ summary }) {
+  const days = summary.weeklyHours?.length ? summary.weeklyHours : emptyStudySummary.weeklyHours;
+  const maxDayHours = Math.max(1, ...days.map((day) => Number(day.value || 0)));
+  const weeklyTotal = Number(summary.weeklyTotalHours || 0);
+  const activeDays = days.filter((day) => Number(day.value || 0) > 0).length;
+  const averageHours = activeDays > 0 ? Math.round((weeklyTotal / activeDays) * 10) / 10 : 0;
+  const hasStudyHours = weeklyTotal > 0;
+
+  return (
+    <CommandCard className="overflow-hidden">
+      <div className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-button-hover/70 to-transparent" />
+      <CardHeader
+        eyebrow="Consistency"
+        title="Study Hours"
+        icon={LineChart}
+      />
+
+      <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+            Current Week
+          </p>
+          <p className="mt-2 text-lg font-semibold text-primary">
+            {summary.weekRangeLabel || "This week"}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-strong-border/70 bg-background/70 px-4 py-3 text-left sm:text-right">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted">
+            Weekly Total
+          </p>
+          <p className="mt-1 text-2xl font-bold text-primary">
+            {formatHours(weeklyTotal)}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-[1.25rem] border border-border bg-background/55 p-3 sm:p-4">
+        <div className="flex h-56 items-end gap-2 sm:gap-3">
+          {days.map((day) => {
+            const value = Number(day.value || 0);
+            const height = value > 0 ? Math.max((value / maxDayHours) * 100, 10) : 4;
+
+            return (
+              <div key={`${day.label}-${day.isoDate || day.dateLabel}`} className="flex min-w-0 flex-1 flex-col items-center gap-2">
+                <span className={`text-[0.68rem] font-semibold ${value > 0 ? "text-primary" : "text-muted"}`}>
+                  {formatHours(value)}
+                </span>
+                <div
+                  className={`flex h-36 w-full items-end overflow-hidden rounded-2xl border px-1.5 py-1.5 ${
+                    day.isToday
+                      ? "border-button-hover/70 bg-button/15 shadow-[0_0_22px_hsl(var(--button)/0.14)]"
+                      : "border-border bg-card/65"
+                  }`}
+                  title={`${day.label}${day.dateLabel ? `, ${day.dateLabel}` : ""}: ${formatHours(value)}`}
+                >
+                  <div
+                    className={`w-full rounded-xl transition-all duration-500 ${
+                      value > 0
+                        ? "bg-linear-to-t from-button via-button-hover to-[#dff8ff] shadow-lg shadow-button/25"
+                        : "bg-border/50"
+                    }`}
+                    style={{ height: `${height}%` }}
+                  />
+                </div>
+                <div className="text-center">
+                  <p className={`text-xs font-semibold uppercase tracking-[0.14em] ${day.isToday ? "text-primary" : "text-muted"}`}>
+                    {day.label}
+                  </p>
+                  {day.dateLabel && (
+                    <p className="mt-1 text-[0.65rem] text-muted">
+                      {day.dateLabel}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-border bg-background/60 p-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted">Studied Days</p>
+          <p className="mt-2 text-xl font-semibold text-primary">{activeDays}/7</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-background/60 p-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted">Avg Active Day</p>
+          <p className="mt-2 text-xl font-semibold text-primary">{formatHours(averageHours)}</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-background/60 p-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted">All Time</p>
+          <p className="mt-2 text-xl font-semibold text-primary">{formatHours(summary.totalHours)}</p>
+        </div>
+      </div>
+
+      <p className="mt-4 text-sm leading-6 text-secondary">
+        {hasStudyHours
+          ? `${formatHours(weeklyTotal)} logged across the current Sunday-Saturday week. This view resets when the next week begins.`
+          : "No completed study sessions logged for this week yet. The weekly chart will reset when the next Sunday-Saturday week begins."}
+      </p>
+    </CommandCard>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const { displayName } = useProfile();
   const [subjects, setSubjects] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [quizAccuracy, setQuizAccuracy] = useState({
+    attemptsCount: 0,
+    averageAccuracy: 0,
+    latestAccuracy: null,
+  });
+  const [studySummary, setStudySummary] = useState(emptyStudySummary);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [dashboardTime, setDashboardTime] = useState(() => new Date());
@@ -287,12 +423,16 @@ export default function Dashboard() {
       try {
         setLoading(true);
         setError("");
-        const [subjectRows, noteRows] = await Promise.all([
+        const [subjectRows, noteRows, quizAccuracySummary, studySessionSummary] = await Promise.all([
           getSubjects(user.id),
           getNotes(user.id),
+          getQuizAccuracySummary(user.id),
+          getStudySessionSummary(user.id),
         ]);
         setSubjects(subjectRows ?? []);
         setNotes(noteRows ?? []);
+        setQuizAccuracy(quizAccuracySummary);
+        setStudySummary(studySessionSummary);
       } catch (loadError) {
         setError(loadError.message);
       } finally {
@@ -312,6 +452,7 @@ export default function Dashboard() {
   }, []);
 
   const backendStatus = loading ? "checking" : error ? "disconnected" : "connected";
+  const activeWeekKey = useMemo(() => getSundayWeekKey(dashboardTime), [dashboardTime]);
 
   const scheduledExamCount = useMemo(() => {
     return subjects.filter((subject) => subject.exam_date).length;
@@ -329,6 +470,31 @@ export default function Dashboard() {
       .sort((first, second) => first.date.getTime() - second.date.getTime())[0] ?? null;
   }, [dashboardTime, subjects]);
 
+  useEffect(() => {
+    if (!user || loading) return;
+
+    let cancelled = false;
+
+    async function refreshWeeklyStudySummary() {
+      try {
+        const studySessionSummary = await getStudySessionSummary(user.id);
+        if (!cancelled) {
+          setStudySummary(studySessionSummary);
+        }
+      } catch {
+        if (!cancelled) {
+          setError("Unable to refresh weekly study progress.");
+        }
+      }
+    }
+
+    refreshWeeklyStudySummary();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeWeekKey, loading, user]);
+
   const metrics = [
     {
       label: "Subjects",
@@ -345,13 +511,6 @@ export default function Dashboard() {
       tone: "success",
     },
     {
-      label: "Readiness",
-      value: "0%",
-      detail: "No readiness engine enabled",
-      icon: Target,
-      tone: "warning",
-    },
-    {
       label: "Flashcards",
       value: 0,
       detail: "No flashcard system enabled",
@@ -360,15 +519,19 @@ export default function Dashboard() {
     },
     {
       label: "Quiz accuracy",
-      value: "0%",
-      detail: "No quiz attempts yet",
+      value: quizAccuracy.attemptsCount > 0 ? `${quizAccuracy.averageAccuracy}%` : "0%",
+      detail: quizAccuracy.attemptsCount > 0
+        ? `${quizAccuracy.attemptsCount} saved attempt${quizAccuracy.attemptsCount === 1 ? "" : "s"}`
+        : "No quiz attempts yet",
       icon: BarChart3,
       tone: "success",
     },
     {
       label: "Current streak",
-      value: "0 days",
-      detail: "No study sessions yet",
+      value: `${studySummary.streakDays} day${studySummary.streakDays === 1 ? "" : "s"}`,
+      detail: studySummary.totalSessions > 0
+        ? `${studySummary.totalSessions} completed session${studySummary.totalSessions === 1 ? "" : "s"}`
+        : "No study sessions yet",
       icon: Flame,
       tone: "primary",
     },
@@ -439,7 +602,7 @@ export default function Dashboard() {
           </CommandCard>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {metrics.map((metric) => (
             <MetricCard key={metric.label} {...metric} />
           ))}
@@ -448,14 +611,7 @@ export default function Dashboard() {
         <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
           <div className="grid gap-6">
             <div className="grid gap-6 lg:grid-cols-2">
-              <CommandCard>
-                <CardHeader
-                  eyebrow="Consistency"
-                  title="Study Hours"
-                  icon={LineChart}
-                />
-                <MiniBarChart data={zeroStudyHours} />
-              </CommandCard>
+              <StudyHoursWeeklyPanel summary={studySummary} />
 
               <CommandCard>
                 <CardHeader

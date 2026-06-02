@@ -5,6 +5,7 @@ import {
   BookOpen,
   ChevronRight,
   CircleHelp,
+  Clock3,
   FileText,
   Layers3,
   LayoutDashboard,
@@ -31,6 +32,7 @@ const studyNavItems = [
   { label: "Summaries", to: "/summaries", icon: Sparkles },
   { label: "Flashcards", to: "/flashcards", icon: Layers3 },
   { label: "Quiz Arena", to: "/quiz", icon: CircleHelp },
+  { label: "Sessions", to: "/sessions", icon: Clock3 },
 ];
 
 const utilityNavItems = [
@@ -155,7 +157,7 @@ function SidebarIdentity({ className = "" }) {
   );
 }
 
-export function WarRoomShell({ eyebrow, title, description, action, children }) {
+export function WarRoomShell({ eyebrow, title, description, action, children, hideHeader = false }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -252,26 +254,28 @@ export function WarRoomShell({ eyebrow, title, description, action, children }) 
             animate="visible"
             className="grid gap-5"
           >
-            <motion.header
-              variants={cardVariants}
-              className="relative overflow-hidden rounded-[1.35rem] border border-border bg-card/70 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl sm:p-6 lg:p-6"
-            >
-              <div className="absolute right-0 top-0 h-36 w-36 rounded-bl-full bg-button/15 blur-2xl" />
-              <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-[0.28em] text-secondary">
-                    {eyebrow}
-                  </p>
-                  <h1 className="mt-3 text-3xl font-bold leading-tight tracking-normal text-primary sm:text-4xl">
-                    {title}
-                  </h1>
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-secondary sm:text-base">
-                    {description}
-                  </p>
+            {!hideHeader && (
+              <motion.header
+                variants={cardVariants}
+                className="relative overflow-hidden rounded-[1.35rem] border border-border bg-card/70 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl sm:p-6 lg:p-6"
+              >
+                <div className="absolute right-0 top-0 h-36 w-36 rounded-bl-full bg-button/15 blur-2xl" />
+                <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.28em] text-secondary">
+                      {eyebrow}
+                    </p>
+                    <h1 className="mt-3 text-3xl font-bold leading-tight tracking-normal text-primary sm:text-4xl">
+                      {title}
+                    </h1>
+                    <p className="mt-3 max-w-3xl text-sm leading-7 text-secondary sm:text-base">
+                      {description}
+                    </p>
+                  </div>
+                  {action && <div className="shrink-0">{action}</div>}
                 </div>
-                {action && <div className="shrink-0">{action}</div>}
-              </div>
-            </motion.header>
+              </motion.header>
+            )}
 
             <motion.div variants={cardVariants} className="w-full">
               {children}
