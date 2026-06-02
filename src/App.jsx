@@ -10,6 +10,8 @@ import Subjects from "./pages/Subjects";
 import Notes from "./pages/notes/Notes";
 import Summaries from "./pages/Summaries";
 import Flashcards from "./pages/Flashcards";
+import Quiz from "./pages/Quiz";
+import QuizTake from "./pages/QuizTake";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -89,6 +91,24 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Flashcards />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/quiz"
+          element={
+            <ProtectedRoute>
+              <Quiz />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/quiz/:quizId/start"
+          element={
+            <ProtectedRoute>
+              <QuizTake />
             </ProtectedRoute>
           }
         />
