@@ -43,6 +43,7 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+// making the count between 4 and 12
 function clampCount(value: unknown) {
   const parsed = Number(value);
 
@@ -81,6 +82,7 @@ function normalizeDifficulty(value: unknown) {
   return ["easy", "medium", "hard"].includes(String(value)) ? String(value) : "medium";
 }
 
+// here im building a readable note text block with noteIDs and titles
 function buildNoteInput(notes: NoteRow[]) {
   const chunks: string[] = [];
   let remaining = MAX_INPUT_CHARS;
@@ -98,6 +100,7 @@ function buildNoteInput(notes: NoteRow[]) {
   return chunks.join("").trim();
 }
 
+//  parsing the content inside of the agents responses so it looks better inside of the flashcard
 function parseGeneratedCards(responseText: string, noteIds: Set<string>, fallbackNoteId: string | null) {
   let parsed: any;
 

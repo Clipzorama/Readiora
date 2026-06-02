@@ -17,6 +17,7 @@ const corsHeaders = {
 const MODEL = "gpt-5-nano";
 const MAX_NOTE_CHARS = 8000;
 
+// JSON with CORS headers
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -27,6 +28,7 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+// extracting texts from AI response shape
 function getOutputText(response: any) {
   if (typeof response?.output_text === "string") {
     return response.output_text.trim();
@@ -40,6 +42,7 @@ function getOutputText(response: any) {
   return chunks?.join("\n").trim() ?? "";
 }
 
+// error interms of inadequate response or no response at all
 function getOpenAiFailureMessage(response: any) {
   if (response?.status === "incomplete") {
     const reason = response?.incomplete_details?.reason;
