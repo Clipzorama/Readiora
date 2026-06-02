@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   BookOpen,
   ChevronRight,
+  CircleHelp,
   FileText,
   Layers3,
   LayoutDashboard,
@@ -29,6 +30,7 @@ const navItems = [
 const studyNavItems = [
   { label: "Summaries", to: "/summaries", icon: Sparkles },
   { label: "Flashcards", to: "/flashcards", icon: Layers3 },
+  { label: "Quiz Arena", to: "/quiz", icon: CircleHelp },
 ];
 
 const utilityNavItems = [
