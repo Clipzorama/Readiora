@@ -33,6 +33,29 @@ type GeneratedCard = {
   sourceNoteId?: unknown;
 };
 
+type RequestBody = {
+  subjectId?: unknown;
+  setId?: unknown;
+  noteId?: unknown;
+  count?: unknown;
+};
+
+type OpenAiResponseBody = {
+  output_text?: unknown;
+  output?: unknown;
+  status?: unknown;
+  incomplete_details?: {
+    reason?: unknown;
+  };
+  error?: {
+    message?: unknown;
+  };
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -54,20 +77,27 @@ function clampCount(value: unknown) {
   return Math.min(MAX_CARD_COUNT, Math.max(MIN_CARD_COUNT, Math.round(parsed)));
 }
 
-function getOutputText(response: any) {
+function getOutputText(response: OpenAiResponseBody) {
   if (typeof response?.output_text === "string") {
     return response.output_text.trim();
   }
 
-  const chunks = response?.output
-    ?.flatMap((item: any) => item?.content ?? [])
-    ?.map((content: any) => content?.text)
-    ?.filter(Boolean);
+  const output = Array.isArray(response.output) ? response.output : [];
+  const chunks = output
+    .flatMap((item) => {
+      if (!isRecord(item) || !Array.isArray(item.content)) {
+        return [];
+      }
 
-  return chunks?.join("\n").trim() ?? "";
+      return item.content;
+    })
+    .map((content) => (isRecord(content) && typeof content.text === "string" ? content.text : ""))
+    .filter(Boolean);
+
+  return chunks.join("\n").trim();
 }
 
-function getOpenAiFailureMessage(response: any) {
+function getOpenAiFailureMessage(response: OpenAiResponseBody) {
   if (response?.status === "incomplete") {
     const reason = response?.incomplete_details?.reason;
     return reason === "max_output_tokens"
@@ -76,6 +106,10 @@ function getOpenAiFailureMessage(response: any) {
   }
 
   return "AI Agent returned no flashcard text.";
+}
+
+function getOpenAiErrorMessage(response: OpenAiResponseBody, fallback: string) {
+  return typeof response.error?.message === "string" ? response.error.message : fallback;
 }
 
 function normalizeDifficulty(value: unknown) {
@@ -102,7 +136,7 @@ function buildNoteInput(notes: NoteRow[]) {
 
 //  parsing the content inside of the agents responses so it looks better inside of the flashcard
 function parseGeneratedCards(responseText: string, noteIds: Set<string>, fallbackNoteId: string | null) {
-  let parsed: any;
+  let parsed: unknown;
 
   try {
     parsed = JSON.parse(responseText);
@@ -110,7 +144,7 @@ function parseGeneratedCards(responseText: string, noteIds: Set<string>, fallbac
     throw new Error("AI Agent returned invalid JSON.");
   }
 
-  const cards = Array.isArray(parsed?.flashcards) ? parsed.flashcards : [];
+  const cards = isRecord(parsed) && Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
 
   return cards
     .map((card: GeneratedCard) => {
@@ -172,10 +206,11 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Authentication required." }, 401);
   }
 
-  let body: any;
+  let body: RequestBody;
 
   try {
-    body = await req.json();
+    const parsedBody: unknown = await req.json();
+    body = isRecord(parsedBody) ? parsedBody : {};
   } catch {
     return jsonResponse({ error: "Request body must be valid JSON." }, 400);
   }
@@ -306,10 +341,11 @@ Deno.serve(async (req) => {
       }),
     });
 
-    const responseBody = await openAiResponse.json();
+    const parsedResponseBody: unknown = await openAiResponse.json();
+    const responseBody = isRecord(parsedResponseBody) ? parsedResponseBody : {};
 
     if (!openAiResponse.ok) {
-      throw new Error(responseBody?.error?.message ?? "OpenAI flashcard request failed.");
+      throw new Error(getOpenAiErrorMessage(responseBody, "OpenAI flashcard request failed."));
     }
 
     const responseText = getOutputText(responseBody);

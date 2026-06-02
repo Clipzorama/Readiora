@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -28,6 +28,33 @@ import UserAvatar from "./UserAvatar";
 const fieldClass =
   "w-full rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border disabled:cursor-not-allowed disabled:opacity-60";
 
+function buildProfileForm(profile, authIdentity) {
+  const phoneParts = parseInternationalPhoneNumber(
+    profile?.phone || authIdentity.phone || "",
+  );
+
+  return {
+    firstName: profile?.first_name || authIdentity.firstName || "",
+    lastName: profile?.last_name || authIdentity.lastName || "",
+    avatarUrl: profile?.avatar_url || authIdentity.avatarUrl || "",
+    phoneCountryCode: phoneParts.countryCode,
+    phoneNationalNumber: phoneParts.nationalNumber,
+  };
+}
+
+function buildProfileFormKey(profile, authIdentity) {
+  return [
+    profile?.first_name,
+    profile?.last_name,
+    profile?.avatar_url,
+    profile?.phone,
+    authIdentity.firstName,
+    authIdentity.lastName,
+    authIdentity.avatarUrl,
+    authIdentity.phone,
+  ].join("|");
+}
+
 function Field({ label, helper, children }) {
   return (
     <label className="grid gap-2">
@@ -50,33 +77,21 @@ export default function ProfileSettingsForm({ onSaved }) {
     displayName,
   } = useProfile();
   const authIdentity = useMemo(() => getAuthIdentity(user), [user]);
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    avatarUrl: "",
-    phoneCountryCode: COUNTRY_CALLING_CODES[0].code,
-    phoneNationalNumber: "",
-  });
+  const profileForm = useMemo(
+    () => ({
+      key: buildProfileFormKey(profile, authIdentity),
+      values: buildProfileForm(profile, authIdentity),
+    }),
+    [authIdentity, profile],
+  );
+  const [formState, setFormState] = useState(() => profileForm);
+  const form = formState.key === profileForm.key ? formState.values : profileForm.values;
   const [status, setStatus] = useState({ type: "", message: "" });
   const [saving, setSaving] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
 
-  useEffect(() => {
-    const phoneParts = parseInternationalPhoneNumber(
-      profile?.phone || authIdentity.phone || "",
-    );
-
-    setForm({
-      firstName: profile?.first_name || authIdentity.firstName || "",
-      lastName: profile?.last_name || authIdentity.lastName || "",
-      avatarUrl: profile?.avatar_url || authIdentity.avatarUrl || "",
-      phoneCountryCode: phoneParts.countryCode,
-      phoneNationalNumber: phoneParts.nationalNumber,
-    });
-  }, [authIdentity, profile]);
-
   function updateField(field, value) {
-    setForm((current) => ({ ...current, [field]: value }));
+    setFormState({ key: profileForm.key, values: { ...form, [field]: value } });
     setStatus({ type: "", message: "" });
   }
 
@@ -95,15 +110,21 @@ export default function ProfileSettingsForm({ onSaved }) {
   }
 
   function updatePhoneCountry(value) {
-    setForm((current) => ({ ...current, phoneCountryCode: value }));
+    setFormState({
+      key: profileForm.key,
+      values: { ...form, phoneCountryCode: value },
+    });
     setStatus({ type: "", message: "" });
   }
 
   function updatePhoneNationalNumber(value) {
-    setForm((current) => ({
-      ...current,
-      phoneNationalNumber: sanitizePhoneDigits(value),
-    }));
+    setFormState({
+      key: profileForm.key,
+      values: {
+        ...form,
+        phoneNationalNumber: sanitizePhoneDigits(value),
+      },
+    });
     setStatus({ type: "", message: "" });
   }
 
@@ -136,7 +157,10 @@ export default function ProfileSettingsForm({ onSaved }) {
         phone: normalizePhoneNumber(phone),
       });
       setAvatarFile(null);
-      setForm((current) => ({ ...current, avatarUrl: uploadedAvatarUrl }));
+      setFormState({
+        key: profileForm.key,
+        values: { ...form, avatarUrl: uploadedAvatarUrl },
+      });
       setStatus({
         type: "success",
         message: "Profile settings saved.",

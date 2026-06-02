@@ -40,6 +40,28 @@ type DistractorSet = {
   wrongAnswers: unknown;
 };
 
+type RequestBody = {
+  subjectId?: unknown;
+  noteId?: unknown;
+  count?: unknown;
+};
+
+type OpenAiResponseBody = {
+  output_text?: unknown;
+  output?: unknown;
+  status?: unknown;
+  incomplete_details?: {
+    reason?: unknown;
+  };
+  error?: {
+    message?: unknown;
+  };
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -60,20 +82,27 @@ function clampCount(value: unknown) {
   return Math.min(MAX_QUESTION_COUNT, Math.max(MIN_QUESTION_COUNT, Math.round(parsed)));
 }
 
-function getOutputText(response: any) {
+function getOutputText(response: OpenAiResponseBody) {
   if (typeof response?.output_text === "string") {
     return response.output_text.trim();
   }
 
-  const chunks = response?.output
-    ?.flatMap((item: any) => item?.content ?? [])
-    ?.map((content: any) => content?.text)
-    ?.filter(Boolean);
+  const output = Array.isArray(response.output) ? response.output : [];
+  const chunks = output
+    .flatMap((item) => {
+      if (!isRecord(item) || !Array.isArray(item.content)) {
+        return [];
+      }
 
-  return chunks?.join("\n").trim() ?? "";
+      return item.content;
+    })
+    .map((content) => (isRecord(content) && typeof content.text === "string" ? content.text : ""))
+    .filter(Boolean);
+
+  return chunks.join("\n").trim();
 }
 
-function getOpenAiFailureMessage(response: any, kind: string) {
+function getOpenAiFailureMessage(response: OpenAiResponseBody, kind: string) {
   if (response?.status === "incomplete") {
     const reason = response?.incomplete_details?.reason;
     return reason === "max_output_tokens"
@@ -82,6 +111,18 @@ function getOpenAiFailureMessage(response: any, kind: string) {
   }
 
   return `AI Agent returned no ${kind} text.`;
+}
+
+function getOpenAiErrorMessage(response: OpenAiResponseBody, fallback: string) {
+  return typeof response.error?.message === "string" ? response.error.message : fallback;
+}
+
+function getQuestionOrder(question: unknown) {
+  if (!isRecord(question)) {
+    return 0;
+  }
+
+  return typeof question.question_order === "number" ? question.question_order : 0;
 }
 
 function normalizeDifficulty(value: unknown) {
@@ -106,7 +147,7 @@ function buildNoteInput(notes: NoteRow[]) {
 }
 
 function parseQuestions(responseText: string, noteIds: Set<string>, fallbackNoteId: string | null) {
-  let parsed: any;
+  let parsed: unknown;
 
   try {
     parsed = JSON.parse(responseText);
@@ -114,7 +155,7 @@ function parseQuestions(responseText: string, noteIds: Set<string>, fallbackNote
     throw new Error("AI Agent returned invalid quiz JSON.");
   }
 
-  const questions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+  const questions = isRecord(parsed) && Array.isArray(parsed.questions) ? parsed.questions : [];
 
   return questions
     .map((question: GeneratedQuestion, index: number) => {
@@ -145,7 +186,7 @@ function parseQuestions(responseText: string, noteIds: Set<string>, fallbackNote
 }
 
 function parseDistractors(responseText: string) {
-  let parsed: any;
+  let parsed: unknown;
 
   try {
     parsed = JSON.parse(responseText);
@@ -153,7 +194,7 @@ function parseDistractors(responseText: string) {
     throw new Error("AI Agent returned invalid wrong-answer JSON.");
   }
 
-  const sets = Array.isArray(parsed?.distractors) ? parsed.distractors : [];
+  const sets = isRecord(parsed) && Array.isArray(parsed.distractors) ? parsed.distractors : [];
   const byIndex = new Map<number, string[]>();
 
   for (const set of sets as DistractorSet[]) {
@@ -194,10 +235,11 @@ async function callOpenAi(openAiKey: string, body: Record<string, unknown>) {
     body: JSON.stringify(body),
   });
 
-  const responseBody = await response.json();
+  const parsedResponseBody: unknown = await response.json();
+  const responseBody = isRecord(parsedResponseBody) ? parsedResponseBody : {};
 
   if (!response.ok) {
-    throw new Error(responseBody?.error?.message ?? "OpenAI quiz request failed.");
+    throw new Error(getOpenAiErrorMessage(responseBody, "OpenAI quiz request failed."));
   }
 
   return responseBody;
@@ -244,10 +286,11 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Authentication required." }, 401);
   }
 
-  let body: any;
+  let body: RequestBody;
 
   try {
-    body = await req.json();
+    const parsedBody: unknown = await req.json();
+    body = isRecord(parsedBody) ? parsedBody : {};
   } catch {
     return jsonResponse({ error: "Request body must be valid JSON." }, 400);
   }
@@ -537,7 +580,7 @@ Deno.serve(async (req) => {
       quiz: {
         ...savedQuiz,
         quiz_questions: [...(savedQuestions ?? savedQuiz?.quiz_questions ?? [])].sort(
-          (first: any, second: any) => (first.question_order ?? 0) - (second.question_order ?? 0),
+          (first, second) => getQuestionOrder(first) - getQuestionOrder(second),
         ),
       },
       models: {
