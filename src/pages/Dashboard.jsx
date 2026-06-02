@@ -5,6 +5,7 @@ import {
   ArrowRight,
   BarChart3,
   BookMarked,
+  BookOpen,
   BrainCircuit,
   CalendarClock,
   CheckCircle2,
@@ -26,12 +27,9 @@ import {
   ProgressBar,
   WarRoomShell,
 } from "../components/WarRoomLayout";
-import { useProfile } from "../context/ProfileContext";
 import { useAuth } from "../hooks/useAuth";
-import { getNotes } from "../services/notesService";
-import { getQuizAccuracySummary } from "../services/quizService";
+import { getDashboardIntelligence } from "../services/dashboardIntelligenceService";
 import { getStudySessionSummary } from "../services/sessionsService";
-import { getSubjects } from "../services/subjectsService";
 
 const emptyStudySummary = {
   weeklyHours: [
@@ -51,6 +49,22 @@ const emptyStudySummary = {
   totalSessions: 0,
   totalHours: 0,
 };
+
+const emptyFlashcardSummary = {
+  total: 0,
+  mastered: 0,
+  learning: 0,
+  reviewing: 0,
+  new: 0,
+  masteryPercent: 0,
+};
+
+const dashboardSections = [
+  { id: "overview", label: "Overview", icon: BarChart3 },
+  { id: "readiness", label: "Readiness", icon: Radar },
+  { id: "exams", label: "Exams", icon: CalendarClock },
+  { id: "strategy", label: "Strategy", icon: BrainCircuit },
+];
 
 function getSundayWeekKey(date) {
   const start = new Date(date);
@@ -192,14 +206,6 @@ function getCountdownParts(targetDate, currentTime) {
   const seconds = totalSeconds % 60;
 
   return { days, hours, minutes, seconds };
-}
-
-function getGreeting(currentTime) {
-  const hour = currentTime.getHours();
-
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
 }
 
 function CountdownUnit({ value, label }) {
@@ -401,9 +407,190 @@ function StudyHoursWeeklyPanel({ summary }) {
   );
 }
 
+function DashboardSectionNav({ activeSection, onSectionChange }) {
+  return (
+    <div className="grid gap-2 rounded-[1.35rem] border border-border bg-card/70 p-2 shadow-xl shadow-black/20 backdrop-blur sm:grid-cols-4">
+      {dashboardSections.map((section) => {
+        const Icon = section.icon;
+        const active = activeSection === section.id;
+
+        return (
+          <button
+            key={section.id}
+            type="button"
+            onClick={() => onSectionChange(section.id)}
+            className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${
+              active
+                ? "border-strong-border bg-button text-white shadow-lg shadow-button/20"
+                : "border-transparent bg-background/45 text-secondary hover:border-border hover:text-primary"
+            }`}
+          >
+            <Icon className="h-4 w-4" />
+            {section.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function FlashcardMasteryPanel({ summary }) {
+  return (
+    <CommandCard>
+      <CardHeader eyebrow="Active Recall" title="Flashcard Mastery" icon={CheckCircle2} />
+      <div className="grid gap-4">
+        <div className="rounded-2xl border border-strong-border/60 bg-button/15 p-5 text-center">
+          <p className="text-5xl font-bold text-primary">{summary.total}</p>
+          <p className="mt-2 text-sm uppercase tracking-[0.22em] text-muted">
+            Total flashcards
+          </p>
+        </div>
+        <ProgressBar value={summary.masteryPercent} label="Mastery" />
+        <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+          {[
+            ["Mastered", summary.mastered, "text-success"],
+            ["Learning", summary.learning, "text-warning"],
+            ["Reviewing", summary.reviewing, "text-button-hover"],
+            ["New", summary.new, "text-secondary"],
+          ].map(([label, value, color]) => (
+            <div key={label} className="rounded-2xl border border-border bg-background/60 p-3">
+              <p className={`text-xl font-bold ${color}`}>{value}</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-muted">{label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </CommandCard>
+  );
+}
+
+function ReadinessMapPanel({ readinessBySubject }) {
+  return (
+    <CommandCard>
+      <CardHeader eyebrow="Readiness Map" title="Subject Progress" icon={Radar} />
+      {readinessBySubject.length === 0 ? (
+        <EmptyPanel>No subjects yet. Add subjects, notes, quizzes, flashcards, or sessions to calculate readiness.</EmptyPanel>
+      ) : (
+        <div className="space-y-5">
+          {readinessBySubject.map((subject) => (
+            <div key={subject.subjectId} className="rounded-2xl border border-border bg-background/60 p-4">
+              <ProgressBar value={subject.readiness} label={subject.subjectName} />
+              <div className="mt-4 grid gap-2 text-xs text-secondary sm:grid-cols-4">
+                <span>Cards: {subject.flashcardMastery}%</span>
+                <span>Quiz: {subject.quizAccuracy}%</span>
+                <span>Study: {formatHours(subject.studyHours)}</span>
+                <span>Notes: {subject.noteCount}</span>
+              </div>
+              {subject.signalCount === 0 && (
+                <p className="mt-3 text-xs leading-5 text-muted">
+                  No usable progress signals yet.
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </CommandCard>
+  );
+}
+
+function WeakTopicsPanel({ weakTopics }) {
+  return (
+    <CommandCard>
+      <CardHeader eyebrow="Threat Matrix" title="Weak Topics" icon={Target} />
+      {weakTopics.length === 0 ? (
+        <EmptyPanel>
+          No weak-topic data yet. Complete quizzes, mark flashcards, add notes, and log study sessions to build this list.
+        </EmptyPanel>
+      ) : (
+        <div className="space-y-3">
+          {weakTopics.map((topic) => (
+            <Link
+              key={topic.id}
+              to={topic.route}
+              className="block rounded-2xl border border-border bg-background/60 p-4 transition hover:border-strong-border hover:bg-card-hover/70"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-primary">{topic.title}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-muted">{topic.subjectName}</p>
+                  <p className="mt-2 text-sm leading-6 text-secondary">{topic.detail}</p>
+                </div>
+                <span className="rounded-full border border-warning/40 bg-warning/15 px-3 py-1 text-xs font-semibold text-warning">
+                  {topic.severity}%
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </CommandCard>
+  );
+}
+
+function StudyMissionsPanel({ missions }) {
+  return (
+    <CommandCard>
+      <CardHeader eyebrow="Today's Mission" title="Study Missions" icon={Target} />
+      {missions.length === 0 ? (
+        <EmptyPanel>
+          No missions yet. Add notes, generate quizzes or flashcards, and complete study sessions to create targeted actions.
+        </EmptyPanel>
+      ) : (
+        <div className="space-y-3">
+          {missions.map((mission, index) => (
+            <Link
+              key={mission.id}
+              to={mission.route}
+              className="flex items-start gap-3 rounded-2xl border border-border bg-background/60 p-4 transition hover:border-strong-border hover:bg-card-hover/70"
+            >
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-strong-border/60 bg-button/20 text-sm font-bold text-primary">
+                {index + 1}
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-primary">{mission.title}</span>
+                <span className="mt-1 block text-sm leading-6 text-secondary">{mission.detail}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </CommandCard>
+  );
+}
+
+function RecentActivityPanel({ notes }) {
+  return (
+    <CommandCard>
+      <CardHeader eyebrow="After Action" title="Recent Activity" icon={Activity} />
+      {notes.length === 0 ? (
+        <EmptyPanel>No recent note activity.</EmptyPanel>
+      ) : (
+        <div className="space-y-4">
+          {notes.slice(0, 5).map((note) => (
+            <div
+              key={note.id}
+              className="grid gap-3 rounded-2xl border border-border bg-background/70 p-4 sm:grid-cols-[1fr_auto]"
+            >
+              <div>
+                <p className="font-semibold">{note.title}</p>
+                <p className="mt-2 text-sm text-secondary">
+                  {note.subjects?.name ?? "Linked subject"}
+                </p>
+              </div>
+              <span className="self-start rounded-full border border-success/30 bg-success/15 px-3 py-1 text-sm text-success">
+                Saved
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </CommandCard>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
-  const { displayName } = useProfile();
   const [subjects, setSubjects] = useState([]);
   const [notes, setNotes] = useState([]);
   const [quizAccuracy, setQuizAccuracy] = useState({
@@ -412,6 +599,11 @@ export default function Dashboard() {
     latestAccuracy: null,
   });
   const [studySummary, setStudySummary] = useState(emptyStudySummary);
+  const [flashcardSummary, setFlashcardSummary] = useState(emptyFlashcardSummary);
+  const [readinessBySubject, setReadinessBySubject] = useState([]);
+  const [weakTopics, setWeakTopics] = useState([]);
+  const [studyMissions, setStudyMissions] = useState([]);
+  const [activeSection, setActiveSection] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [dashboardTime, setDashboardTime] = useState(() => new Date());
@@ -423,16 +615,15 @@ export default function Dashboard() {
       try {
         setLoading(true);
         setError("");
-        const [subjectRows, noteRows, quizAccuracySummary, studySessionSummary] = await Promise.all([
-          getSubjects(user.id),
-          getNotes(user.id),
-          getQuizAccuracySummary(user.id),
-          getStudySessionSummary(user.id),
-        ]);
-        setSubjects(subjectRows ?? []);
-        setNotes(noteRows ?? []);
-        setQuizAccuracy(quizAccuracySummary);
-        setStudySummary(studySessionSummary);
+        const intelligence = await getDashboardIntelligence(user.id);
+        setSubjects(intelligence.subjects);
+        setNotes(intelligence.notes);
+        setQuizAccuracy(intelligence.quizAccuracy);
+        setStudySummary(intelligence.studySessionSummary);
+        setFlashcardSummary(intelligence.flashcardSummary);
+        setReadinessBySubject(intelligence.readinessBySubject);
+        setWeakTopics(intelligence.weakTopics);
+        setStudyMissions(intelligence.studyMissions);
       } catch (loadError) {
         setError(loadError.message);
       } finally {
@@ -512,10 +703,12 @@ export default function Dashboard() {
     },
     {
       label: "Flashcards",
-      value: 0,
-      detail: "No flashcard system enabled",
+      value: flashcardSummary.total,
+      detail: flashcardSummary.total > 0
+        ? `${flashcardSummary.masteryPercent}% mastered`
+        : "No flashcards yet",
       icon: CheckCircle2,
-      tone: "danger",
+      tone: flashcardSummary.total > 0 ? "success" : "danger",
     },
     {
       label: "Quiz accuracy",
@@ -539,9 +732,9 @@ export default function Dashboard() {
 
   return (
     <WarRoomShell
-      eyebrow="AI Study War Room"
+      eyebrow="Dashboard"
       title="Command Center"
-      description="Track real workspace totals from your account. Advanced study systems remain empty until implemented."
+      description="Track your study signals, readiness, exams, and next actions from real workspace data."
       action={<BackendStatusPill status={backendStatus} />}
     >
       <div className="grid gap-6">
@@ -551,161 +744,33 @@ export default function Dashboard() {
           </div>
         )}
 
-        <section>
-          <CommandCard className="relative overflow-hidden p-5 sm:p-7 xl:p-8">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_12%,hsl(var(--button)/0.18),transparent_32%),radial-gradient(circle_at_88%_18%,hsl(var(--button-hover)/0.14),transparent_34%)]" />
-            <div className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-strong-border to-transparent" />
-            <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(22rem,0.65fr)] xl:items-stretch">
-              <div className="flex min-h-80 flex-col justify-between rounded-[1.35rem] border border-border/80 bg-background/45 p-5 shadow-inner shadow-black/20 sm:p-7">
-                <div>
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary sm:text-sm">
-                      {loading
-                        ? "Loading workspace"
-                        : `${getGreeting(dashboardTime)}, ${displayName}`}
-                    </p>
-                  </div>
-                  <h2 className="mt-6 max-w-4xl text-2xl font-bold leading-[0.98] text-primary sm:text-5xl">
-                    Workspace operational.
-                  </h2>
-                  <p className="mt-4 lg:mt-6 max-w-3xl text-base leading-7 text-secondary sm:text-lg">
-                    Track your subjects, notes, exams, and progress from one focused workspace.
-                  </p>
-                </div>
+        <DashboardSectionNav activeSection={activeSection} onSectionChange={setActiveSection} />
 
-                <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-border bg-card/70 p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted">
-                      Subjects
-                    </p>
-                    <p className="mt-3 text-3xl font-bold">{subjects.length}</p>
-                  </div>
-                  <div className="rounded-2xl border border-border bg-card/70 p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted">
-                      Notes
-                    </p>
-                    <p className="mt-3 text-3xl font-bold">{notes.length}</p>
-                  </div>
-                  <div className="rounded-2xl border border-border bg-card/70 p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted">
-                      Exams
-                    </p>
-                    <p className="mt-3 text-3xl font-bold">
-                      {scheduledExamCount}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <NextExamCard exam={nextExam} currentTime={dashboardTime} />
+        {activeSection === "overview" && (
+          <section className="grid gap-6">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              {metrics.map((metric) => (
+                <MetricCard key={metric.label} {...metric} />
+              ))}
             </div>
-          </CommandCard>
-        </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          {metrics.map((metric) => (
-            <MetricCard key={metric.label} {...metric} />
-          ))}
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="grid gap-6">
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.75fr)]">
               <StudyHoursWeeklyPanel summary={studySummary} />
-
-              <CommandCard>
-                <CardHeader
-                  eyebrow="Readiness Map"
-                  title="Subject Progress"
-                  icon={Radar}
-                />
-                {subjects.length === 0 ? (
-                  <EmptyPanel>No subjects yet.</EmptyPanel>
-                ) : (
-                  <div className="space-y-5">
-                    {subjects.map((subject) => (
-                      <ProgressBar key={subject.id} value={0} label={subject.name} />
-                    ))}
-                  </div>
-                )}
-              </CommandCard>
+              <FlashcardMasteryPanel summary={flashcardSummary} />
             </div>
+          </section>
+        )}
 
-            <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-              <CommandCard>
-                <CardHeader
-                  eyebrow="Threat Matrix"
-                  title="Weak Topics"
-                  icon={Target}
-                />
-                <EmptyPanel>No weak-topic data exists yet.</EmptyPanel>
-              </CommandCard>
+        {activeSection === "readiness" && (
+          <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(21rem,0.75fr)]">
+            <ReadinessMapPanel readinessBySubject={readinessBySubject} />
+            <WeakTopicsPanel weakTopics={weakTopics} />
+          </section>
+        )}
 
-              <CommandCard>
-                <CardHeader
-                  eyebrow="After Action"
-                  title="Recent Activity"
-                  icon={Activity}
-                />
-                {notes.length === 0 ? (
-                  <EmptyPanel>No recent note activity.</EmptyPanel>
-                ) : (
-                  <div className="space-y-4">
-                    {notes.slice(0, 3).map((note) => (
-                      <div
-                        key={note.id}
-                        className="grid gap-3 rounded-2xl border border-border bg-background/70 p-4 sm:grid-cols-[1fr_auto]"
-                      >
-                        <div>
-                          <p className="font-semibold">{note.title}</p>
-                          <p className="mt-2 text-sm text-secondary">
-                            {note.subjects?.name ?? "Linked subject"}
-                          </p>
-                        </div>
-                        <span className="self-start rounded-full border border-success/30 bg-success/15 px-3 py-1 text-sm text-success">
-                          Saved
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CommandCard>
-            </div>
-          </div>
-
-          <aside className="grid gap-6">
-            <CommandCard>
-              <CardHeader
-                eyebrow="AI Strategist"
-                title="Priority Summary"
-                icon={BrainCircuit}
-              />
-              <p className="leading-7 text-secondary">
-                No AI summary exists for this workspace.
-              </p>
-              <div className="mt-5 grid gap-3">
-                <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
-                  <Zap className="h-4 w-4 text-warning" />
-                  <span className="text-sm">Critical weaknesses: 0</span>
-                </div>
-                <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
-                  <Layers3 className="h-4 w-4 text-success" />
-                  <span className="text-sm">Strongest subject: none</span>
-                </div>
-              </div>
-            </CommandCard>
-
-            <CommandCard>
-              <CardHeader
-                eyebrow="Today's Mission"
-                title="No Mission Scheduled"
-                icon={Target}
-              />
-              <div className="space-y-3 text-sm text-secondary">
-                <EmptyPanel>No generated study missions.</EmptyPanel>
-              </div>
-            </CommandCard>
-
+        {activeSection === "exams" && (
+          <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
+            <NextExamCard exam={nextExam} currentTime={dashboardTime} />
             <CommandCard>
               <CardHeader
                 eyebrow="Upcoming Exam"
@@ -718,9 +783,62 @@ export default function Dashboard() {
                   {scheduledExamCount === 1 ? "exam scheduled" : "exams scheduled"}
                 </p>
               </div>
+              <div className="mt-4 grid gap-3">
+                {subjects.filter((subject) => subject.exam_date).slice(0, 4).map((subject) => {
+                  const examDate = buildExamDate(subject);
+                  return (
+                    <div key={subject.id} className="rounded-2xl border border-border bg-background/60 p-3">
+                      <p className="font-semibold text-primary">{subject.name}</p>
+                      <p className="mt-1 text-sm text-secondary">
+                        {examDate ? formatExamDate(examDate) : "Date unavailable"}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </CommandCard>
-          </aside>
-        </section>
+          </section>
+        )}
+
+        {activeSection === "strategy" && (
+          <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(21rem,0.75fr)]">
+            <div className="grid gap-6">
+              <StudyMissionsPanel missions={studyMissions} />
+              <RecentActivityPanel notes={notes} />
+            </div>
+            <CommandCard>
+              <CardHeader
+                eyebrow="AI Strategist"
+                title="Priority Summary"
+                icon={BrainCircuit}
+              />
+              <div className="grid gap-3">
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
+                  <Zap className="h-4 w-4 text-warning" />
+                  <span className="text-sm">
+                    Critical weaknesses: {weakTopics.filter((topic) => topic.severity >= 70).length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
+                  <Layers3 className="h-4 w-4 text-success" />
+                  <span className="text-sm">
+                    Strongest subject: {
+                      readinessBySubject.length > 0
+                        ? [...readinessBySubject].sort((first, second) => second.readiness - first.readiness)[0]?.subjectName
+                        : "none"
+                    }
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
+                  <BookOpen className="h-4 w-4 text-button-hover" />
+                  <span className="text-sm">
+                    Notes available: {notes.length}
+                  </span>
+                </div>
+              </div>
+            </CommandCard>
+          </section>
+        )}
       </div>
     </WarRoomShell>
   );
