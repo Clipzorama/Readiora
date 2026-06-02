@@ -39,3 +39,23 @@ export async function generateFlashcards({ subjectId, noteId, setId, count }) {
 
   return data.flashcards;
 }
+
+export async function generateQuiz({ subjectId, noteId, count }) {
+  const { data, error } = await supabase.functions.invoke("generate-quiz", {
+    body: { subjectId, noteId, count },
+  });
+
+  if (error) {
+    throw new Error(error.message || "Could not generate quiz.");
+  }
+
+  if (data?.error) {
+    throw new Error(data.error);
+  }
+
+  if (!data?.quiz || !Array.isArray(data.quiz.quiz_questions)) {
+    throw new Error("Quiz response was empty.");
+  }
+
+  return data.quiz;
+}
