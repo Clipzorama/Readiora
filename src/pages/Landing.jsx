@@ -7,12 +7,14 @@ import LiveCommandSimulation from "../components/landing/LiveCommandSimulation";
 
 export default function Landing() {
   return (
-    <main className="landing-page relative min-h-screen overflow-x-clip bg-background text-primary transition-colors duration-500">
+    <main className="landing-page relative flex min-h-screen flex-col overflow-x-clip bg-background text-primary">
       <LandingBackground />
       <LandingHeader />
-      <LandingHero />
-      <LiveCommandSimulation />
-      <LandingFAQ />
+      <div className="relative z-10 flex-1">
+        <LandingHero />
+        <LiveCommandSimulation />
+        <LandingFAQ />
+      </div>
       <LandingFooter />
     </main>
   );

@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Menu, X } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
-import readioraLogo from "../../assets/readioralogo.webp";
+import { useTheme } from "../../hooks/useTheme";
+import readioraDarkLogo from "../../assets/readioradark.webp";
+import readioraLightLogo from "../../assets/readioralight.webp";
 
 const navLinks = [
   { label: "Overview", href: "#overview" },
@@ -13,9 +15,11 @@ const navLinks = [
 
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme } = useTheme();
+  const readioraLogo = theme === "light" ? readioraLightLogo : readioraDarkLogo;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/80 bg-background/82 backdrop-blur-2xl transition-colors duration-500">
+    <header className="sticky top-0 z-30 border-b border-border/80 bg-background/82 backdrop-blur-2xl">
       <div className="mx-auto flex w-full max-w-352 items-center justify-between gap-3 px-3 py-3 sm:px-4 lg:px-5 xl:px-6">
         <Link to="/" className="flex min-w-0 items-center" onClick={() => setMenuOpen(false)}>
           <img
@@ -25,12 +29,12 @@ export default function LandingHeader() {
           />
         </Link>
 
-        <nav className="landing-card-surface hidden items-center gap-1 rounded-2xl border border-border bg-card/78 p-1 shadow-lg shadow-black/5 transition-colors duration-500 lg:flex">
+        <nav className="landing-card-surface hidden items-center gap-1 rounded-2xl border border-border bg-card/78 p-1 shadow-lg shadow-black/5 lg:flex">
           {navLinks.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-secondary transition-colors duration-500 hover:bg-card-hover hover:text-primary"
+              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-secondary transition hover:bg-card-hover hover:text-primary"
             >
               {item.label}
             </a>
@@ -41,7 +45,7 @@ export default function LandingHeader() {
           <ThemeToggle />
           <Link
             to="/login"
-            className="landing-card-surface rounded-xl border border-border bg-card/80 px-4 py-2.5 text-sm font-semibold text-secondary shadow-sm shadow-black/5 transition-colors duration-500 hover:border-strong-border hover:bg-card-hover hover:text-primary"
+            className="landing-card-surface rounded-xl border border-border bg-card/80 px-4 py-2.5 text-sm font-semibold text-secondary shadow-sm shadow-black/5 transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
           >
             Sign In
           </Link>
@@ -59,7 +63,7 @@ export default function LandingHeader() {
           <button
             type="button"
             onClick={() => setMenuOpen((current) => !current)}
-            className="landing-card-surface grid h-10 w-10 place-items-center rounded-xl border border-border bg-card/85 text-secondary shadow-sm shadow-black/5 transition-colors duration-500 hover:border-strong-border hover:bg-card-hover hover:text-primary"
+            className="landing-card-surface grid h-10 w-10 place-items-center rounded-xl border border-border bg-card/85 text-secondary shadow-sm shadow-black/5 transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
@@ -71,11 +75,11 @@ export default function LandingHeader() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="border-t border-border bg-background/95 px-3 py-3 shadow-xl shadow-black/10 backdrop-blur-2xl transition-colors duration-500 md:hidden"
+            className="border-t border-border bg-background/95 px-3 py-3 shadow-xl shadow-black/10 backdrop-blur-2xl md:hidden"
           >
             <nav className="mx-auto grid w-full max-w-352 gap-2">
               {navLinks.map((item) => (
@@ -83,7 +87,7 @@ export default function LandingHeader() {
                   key={item.label}
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="landing-card-surface rounded-xl border border-border bg-card/75 px-4 py-3 text-sm font-semibold text-secondary transition-colors duration-500 hover:border-strong-border hover:bg-card-hover hover:text-primary"
+                  className="landing-card-surface rounded-xl border border-border bg-card/75 px-4 py-3 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
                 >
                   {item.label}
                 </a>
@@ -92,7 +96,7 @@ export default function LandingHeader() {
                 <Link
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="landing-card-surface inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card/80 px-4 py-2.5 text-sm font-semibold text-secondary transition-colors duration-500 hover:border-strong-border hover:bg-card-hover hover:text-primary"
+                  className="landing-card-surface inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card/80 px-4 py-2.5 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
                 >
                   Sign In
                 </Link>

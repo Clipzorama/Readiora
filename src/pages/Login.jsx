@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 
-import readioraFaviconLogo from "../assets/readiora-favicon.webp";
+import readioraFaviconLogo from "../assets/readioralogo.webp";
 import {
   signInWithEmail,
   signInWithGoogle,

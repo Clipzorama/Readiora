@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, LogIn, MailCheck } from "lucide-react";
 
-import readioraFaviconLogo from "../assets/readiora-favicon.webp";
+import readioraFaviconLogo from "../assets/readioradark.webp";
 
 const loginRedirectDelay = 7000;
 

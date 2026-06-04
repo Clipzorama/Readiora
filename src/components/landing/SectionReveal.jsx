@@ -5,8 +5,8 @@ export default function SectionReveal({ children, className = "", ...props }) {
 
   return (
     <motion.section
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
-      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? false : { opacity: 0 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1 }}
       viewport={{ once: false, amount: 0.2 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className={className}
