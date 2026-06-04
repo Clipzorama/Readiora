@@ -134,20 +134,20 @@ const baseComponents = {
 
     if (inline) {
       return (
-        <code className="rounded-md border border-border bg-background/80 px-1.5 py-0.5 text-sm text-primary">
+        <code className="rounded-md border border-strong-border/60 bg-button/10 px-1.5 py-0.5 font-mono text-[0.92em] font-semibold text-primary">
           {children}
         </code>
       );
     }
 
     return (
-      <code className="block min-w-full text-sm leading-7 text-secondary">
+      <code className="block min-w-full font-mono text-sm leading-7 text-primary">
         {children}
       </code>
     );
   },
   pre: ({ children }) => (
-    <pre className="my-4 overflow-x-auto rounded-2xl border border-border bg-background/85 p-4">
+    <pre className="my-4 overflow-x-auto rounded-2xl border border-strong-border/70 bg-background/95 p-4 shadow-inner shadow-black/10">
       {children}
     </pre>
   ),
