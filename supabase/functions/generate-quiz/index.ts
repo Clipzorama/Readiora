@@ -16,6 +16,7 @@ const corsHeaders = {
 const QUIZ_MODEL = "gpt-5-mini";
 const WRONG_ANSWER_MODEL = "gpt-5-nano";
 const MAX_INPUT_CHARS = 10000;
+const MAX_SOURCE_CHARS = 10000;
 const MIN_QUESTION_COUNT = 4;
 const MAX_QUESTION_COUNT = 12;
 
@@ -40,10 +41,21 @@ type DistractorSet = {
   wrongAnswers: unknown;
 };
 
+type DocumentChunkRow = {
+  id: string;
+  note_id: string;
+  attachment_id: string;
+  page_number: number | null;
+  chunk_index: number;
+  text: string;
+};
+
 type RequestBody = {
   subjectId?: unknown;
   noteId?: unknown;
   count?: unknown;
+  chunkIds?: unknown;
+  attachmentIds?: unknown;
 };
 
 type OpenAiResponseBody = {
@@ -97,7 +109,7 @@ function getOutputText(response: OpenAiResponseBody) {
       return item.content;
     })
     .map((content) => (isRecord(content) && typeof content.text === "string" ? content.text : ""))
-    .filter(Boolean);
+    .filter((text) => text.length > 0);
 
   return chunks.join("\n").trim();
 }
@@ -129,6 +141,12 @@ function normalizeDifficulty(value: unknown) {
   return ["easy", "medium", "hard"].includes(String(value)) ? String(value) : "medium";
 }
 
+function normalizeStringArray(value: unknown) {
+  return Array.isArray(value)
+    ? [...new Set(value.filter((item): item is string => typeof item === "string" && item.length > 0))]
+    : [];
+}
+
 function buildNoteInput(notes: NoteRow[]) {
   const chunks: string[] = [];
   let remaining = MAX_INPUT_CHARS;
@@ -144,6 +162,66 @@ function buildNoteInput(notes: NoteRow[]) {
   }
 
   return chunks.join("").trim();
+}
+
+async function getSourceChunks({
+  supabase,
+  userId,
+  noteIds,
+  chunkIds,
+  attachmentIds,
+}: {
+  supabase: any;
+  userId: string;
+  noteIds: string[];
+  chunkIds: string[];
+  attachmentIds: string[];
+}) {
+  if (noteIds.length === 0) {
+    return [];
+  }
+
+  let query = supabase
+    .from("document_chunks")
+    .select("id, note_id, attachment_id, page_number, chunk_index, text")
+    .eq("user_id", userId)
+    .in("note_id", noteIds)
+    .order("page_number", { ascending: true, nullsFirst: false })
+    .order("chunk_index", { ascending: true });
+
+  if (chunkIds.length > 0) {
+    query = query.in("id", chunkIds);
+  } else if (attachmentIds.length > 0) {
+    query = query.in("attachment_id", attachmentIds);
+  }
+
+  const { data, error } = await query.limit(12);
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
+}
+
+function buildSourceInput(chunks: DocumentChunkRow[]) {
+  const parts: string[] = [];
+  let remaining = MAX_SOURCE_CHARS;
+
+  for (const chunk of chunks) {
+    if (remaining <= 0) break;
+
+    const header = `\n\nSOURCE CHUNK ID: ${chunk.id}\nATTACHMENT ID: ${chunk.attachment_id}\nPAGE: ${chunk.page_number ?? "unknown"}\nCHUNK: ${chunk.chunk_index}\nTEXT:\n`;
+    const text = (chunk.text ?? "").trim();
+    const slice = text.slice(0, Math.max(0, remaining - header.length));
+
+    if (!slice) continue;
+
+    parts.push(`${header}${slice}`);
+    remaining -= header.length + slice.length;
+  }
+
+  return parts.join("").trim();
 }
 
 function parseQuestions(responseText: string, noteIds: Set<string>, fallbackNoteId: string | null) {
@@ -178,11 +256,15 @@ function parseQuestions(responseText: string, noteIds: Set<string>, fallbackNote
         correctAnswer,
         explanation,
         topicName,
-        difficulty: normalizeDifficulty(question.difficulty),
-        sourceNoteId,
-      };
-    })
-    .filter((question) => question.question && question.correctAnswer && question.explanation);
+      difficulty: normalizeDifficulty(question.difficulty),
+      sourceNoteId,
+    };
+  })
+    .filter((question) => (
+      question.question.length > 0
+      && question.correctAnswer.length > 0
+      && question.explanation.length > 0
+    ));
 }
 
 function parseDistractors(responseText: string) {
@@ -202,7 +284,7 @@ function parseDistractors(responseText: string) {
     const wrongAnswers = Array.isArray(set.wrongAnswers)
       ? set.wrongAnswers
         .map((answer) => (typeof answer === "string" ? answer.trim() : ""))
-        .filter(Boolean)
+        .filter((answer) => answer.length > 0)
         .slice(0, 3)
       : [];
 
@@ -298,6 +380,8 @@ Deno.serve(async (req) => {
   const subjectId = typeof body?.subjectId === "string" ? body.subjectId : "";
   const noteId = typeof body?.noteId === "string" && body.noteId ? body.noteId : null;
   const count = clampCount(body?.count);
+  const chunkIds = normalizeStringArray(body?.chunkIds);
+  const attachmentIds = normalizeStringArray(body?.attachmentIds);
 
   if (!subjectId) {
     return jsonResponse({ error: "subjectId is required." }, 400);
@@ -331,20 +415,25 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: notesError.message }, 500);
   }
 
-  const sourceNotes = (notes ?? []).filter((note: NoteRow) => (note.content ?? "").trim());
-
-  if (sourceNotes.length === 0) {
-    return jsonResponse({
-      error: noteId
-        ? "This note has no markdown content to generate a quiz from."
-        : "This subject has no markdown note content to generate a quiz from.",
-    }, 400);
-  }
+  const noteRows = notes ?? [];
+  const sourceNotes = noteRows.filter((note: NoteRow) => (note.content ?? "").trim());
+  const sourceChunks = await getSourceChunks({
+    supabase,
+    userId: user.id,
+    noteIds: noteRows.map((note: NoteRow) => note.id),
+    chunkIds,
+    attachmentIds,
+  });
 
   const noteInput = buildNoteInput(sourceNotes);
+  const sourceInput = buildSourceInput(sourceChunks);
 
-  if (!noteInput) {
-    return jsonResponse({ error: "No usable note content found." }, 400);
+  if (!noteInput && !sourceInput) {
+    return jsonResponse({
+      error: noteId
+        ? "This note has no markdown or extracted source content to generate a quiz from."
+        : "This subject has no markdown or extracted source content to generate a quiz from.",
+    }, 400);
   }
 
   try {
@@ -393,14 +482,14 @@ Deno.serve(async (req) => {
         },
       },
       instructions:
-        "You generate multiple-choice quiz questions for students. Use only the supplied note content. Create questions that test understanding, definitions, formulas, contrasts, cause/effect, and likely exam reasoning. Return only JSON matching the schema. Do not generate wrong answers.",
+        "You generate multiple-choice quiz questions for students. Use only the supplied note content and extracted source chunks. Create questions that test understanding, definitions, formulas, contrasts, cause/effect, and likely exam reasoning. Return only JSON matching the schema. Do not generate wrong answers.",
       input: [
         {
           role: "user",
           content: [
             {
               type: "input_text",
-              text: `Create exactly ${count} quiz questions for subject: ${subject.name}.\nUse sourceNoteId from the matching NOTE ID when possible.\n\n${noteInput}`,
+              text: `Create exactly ${count} quiz questions for subject: ${subject.name}.\nUse sourceNoteId from the matching NOTE ID when possible.\n\nMarkdown note content:\n${noteInput || "No markdown note content supplied."}\n\nExtracted source chunks:\n${sourceInput || "No extracted source chunks supplied."}`,
             },
           ],
         },
@@ -548,6 +637,22 @@ Deno.serve(async (req) => {
       throw questionsInsertError;
     }
 
+    if (sourceChunks.length > 0 && savedQuestions?.length) {
+      await supabase
+        .from("ai_generation_sources")
+        .insert(savedQuestions.flatMap((question: { id: string; source_note_id?: string | null }) => (
+          sourceChunks.map((chunk: DocumentChunkRow) => ({
+            user_id: user.id,
+            artifact_type: "quiz_question",
+            artifact_id: question.id,
+            note_id: question.source_note_id ?? chunk.note_id,
+            attachment_id: chunk.attachment_id,
+            chunk_id: chunk.id,
+            page_number: chunk.page_number,
+          }))
+        )));
+    }
+
     const { data: savedQuiz, error: selectError } = await supabase
       .from("quizzes")
       .select(`
@@ -587,7 +692,8 @@ Deno.serve(async (req) => {
         quiz: QUIZ_MODEL,
         wrongAnswers: WRONG_ANSWER_MODEL,
       },
-      inputCharCount: noteInput.length,
+      inputCharCount: noteInput.length + sourceInput.length,
+      sources: sourceChunks,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Quiz generation failed.";
