@@ -252,6 +252,30 @@ html {
         --spotlight-y: 50%;
     }
 
+    .landing-page {
+        --landing-card: var(--card);
+        --landing-panel: var(--background);
+        --landing-soft: var(--background);
+    }
+
+    html[data-theme="light"] .landing-page {
+        --landing-card: 210, 40%, 98%;
+        --landing-panel: 210, 50%, 99%;
+        --landing-soft: 214, 48%, 96%;
+    }
+
+    .landing-card-surface {
+        background-color: hsl(var(--landing-card) / var(--landing-surface-opacity, 1));
+    }
+
+    .landing-panel-surface {
+        background-color: hsl(var(--landing-panel) / var(--landing-surface-opacity, 1));
+    }
+
+    .landing-soft-surface {
+        background-color: hsl(var(--landing-soft) / var(--landing-surface-opacity, 1));
+    }
+
     .rb-spotlight-glow {
         opacity: 0;
         transition: opacity 450ms ease;

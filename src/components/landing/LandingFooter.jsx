@@ -3,9 +3,9 @@ import readioraLogo from "../../assets/readioralogo.webp";
 
 export default function LandingFooter() {
   return (
-    <footer className="relative z-10 border-t border-border bg-background/95 px-3 py-10 sm:px-4 lg:px-5">
+    <footer className="relative z-10 border-t border-border bg-background/95 px-3 py-10 transition-colors duration-500 sm:px-4 lg:px-5">
       <div className="mx-auto flex w-full max-w-[88rem] flex-col gap-8">
-        <div className="flex flex-col gap-6 rounded-[1.5rem] border border-border bg-card/65 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
+        <div className="landing-card-surface flex flex-col gap-6 rounded-[1.5rem] border border-border bg-card/65 p-5 transition-colors duration-500 sm:p-6 md:flex-row md:items-center md:justify-between">
           <div>
             <img src={readioraLogo} alt="Readiora" className="h-8 w-auto object-contain" />
             <p className="mt-4 max-w-xl text-sm leading-7 text-secondary">

@@ -183,7 +183,7 @@ export default function Notes() {
     setNotice("");
     setEditorMode("write");
     setWorkspaceVisible(true);
-    setLibraryHiddenForNewNote(false);
+    setLibraryHiddenForNewNote(true);
   }
 
   function startNewNote() {

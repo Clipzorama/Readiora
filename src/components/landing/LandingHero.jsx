@@ -1,36 +1,56 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Sparkles, Timer } from "lucide-react";
 import ElectricBorder from "../reactbits/ElectricBorder";
 import GradientText from "../reactbits/GradientText";
 import SpotlightCard from "../reactbits/SpotlightCard";
 import TextType from "../reactbits/TextType";
-import {
-  containerVariants,
-  itemVariants,
-  metricCards,
-  missionRows,
-} from "./landingData";
+import { metricCards, missionRows } from "./landingData";
+
+const heroTextContainerVariants = {
+  hidden: { opacity: 0, x: -36 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.72,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.09,
+      delayChildren: 0.08,
+    },
+  },
+};
+
+const heroTextItemVariants = {
+  hidden: { opacity: 0, x: -18 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 export default function LandingHero() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <section id="overview" className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] scroll-mt-24 w-full max-w-[88rem] items-start gap-8 px-3 pb-12 pt-16 sm:min-h-[calc(100vh-104px)] sm:px-4 sm:pb-16 sm:pt-20 md:pt-24 lg:min-h-[calc(100vh-88px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(26rem,0.95fr)] lg:items-center lg:gap-14 lg:px-5 lg:pt-16 xl:gap-20 xl:px-6 xl:pt-20">
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
+        variants={prefersReducedMotion ? undefined : heroTextContainerVariants}
+        initial={prefersReducedMotion ? false : "hidden"}
+        whileInView={prefersReducedMotion ? undefined : "visible"}
         viewport={{ once: false, amount: 0.2 }}
         className="mx-auto min-w-0 w-full max-w-2xl overflow-hidden text-center lg:mx-0 lg:max-w-[38rem] lg:text-left xl:max-w-[42rem]"
       >
         <motion.div
-          variants={itemVariants}
-          className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/85 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary sm:text-xs lg:mx-0"
+          variants={prefersReducedMotion ? undefined : heroTextItemVariants}
+          className="landing-card-surface mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/85 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary transition-colors duration-500 sm:text-xs lg:mx-0"
         >
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           Premium AI Study Platform
         </motion.div>
 
         <motion.h1
-          variants={itemVariants}
+          variants={prefersReducedMotion ? undefined : heroTextItemVariants}
           className="mt-6 max-w-full text-[clamp(2.35rem,10vw,3.75rem)] font-extrabold leading-[1.02] tracking-normal sm:text-[clamp(3rem,7vw,4.75rem)] lg:text-[clamp(3.4rem,4.4vw,4.75rem)] xl:text-[5.15rem]"
         >
           <span className="block lg:inline">Command your study day with</span>{" "}
@@ -53,7 +73,7 @@ export default function LandingHero() {
         </motion.h1>
 
         <motion.p
-          variants={itemVariants}
+          variants={prefersReducedMotion ? undefined : heroTextItemVariants}
           className="mx-auto mt-5 max-w-2xl text-base leading-8 text-secondary sm:text-lg lg:mx-0"
         >
           Readiora turns notes, subjects, and revision goals into a polished
@@ -62,7 +82,7 @@ export default function LandingHero() {
         </motion.p>
 
         <motion.div
-          variants={itemVariants}
+          variants={prefersReducedMotion ? undefined : heroTextItemVariants}
           className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3"
         >
           {metricCards.map((metric) => {
@@ -71,10 +91,10 @@ export default function LandingHero() {
               <SpotlightCard
                 key={metric.label}
                 spotlightColor="rgba(14, 182, 211, 0.26)"
-                className="rounded-2xl border border-border bg-card/75 p-4 text-left transition hover:border-strong-border"
+                className="landing-card-surface rounded-2xl border border-border bg-card/75 p-4 text-left transition-colors duration-500 hover:border-strong-border"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-background/80">
+                  <div className="landing-soft-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-background/80 transition-colors duration-500">
                     <Icon className="h-5 w-5 text-secondary" />
                   </div>
                   <div className="min-w-0">
@@ -93,8 +113,8 @@ export default function LandingHero() {
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, x: 44, scale: 0.98 }}
+        whileInView={prefersReducedMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.75, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto min-w-0 w-full max-w-xl lg:max-w-none"
@@ -108,10 +128,10 @@ export default function LandingHero() {
         >
           <SpotlightCard
             spotlightColor="rgba(14, 165, 200, 0.24)"
-            className="rounded-[1.75rem] border border-strong-border/60 bg-card/90 p-3 shadow-2xl shadow-button/20 sm:p-4 lg:rounded-[2rem]"
+            className="landing-card-surface rounded-[1.75rem] border border-strong-border/60 bg-card/90 p-3 shadow-2xl shadow-button/20 transition-colors duration-500 sm:p-4 lg:rounded-[2rem]"
           >
-            <div className="overflow-hidden rounded-[1.35rem] border border-border bg-background/85">
-              <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
+            <div className="landing-panel-surface overflow-hidden rounded-[1.35rem] border border-border bg-background/85 transition-colors duration-500">
+              <div className="flex items-center justify-between border-b border-border px-4 py-4 transition-colors duration-500 sm:px-5">
                 <div className="min-w-0">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-secondary">
                     Live Mission Control
@@ -120,14 +140,14 @@ export default function LandingHero() {
                     Biology final prep
                   </h2>
                 </div>
-                <div className="ml-3 rounded-xl border border-strong-border bg-button/15 px-3 py-2 text-sm font-semibold text-primary">
+                <div className="ml-3 rounded-xl border border-strong-border bg-button/15 px-3 py-2 text-sm font-semibold text-primary transition-colors duration-500">
                   82%
                 </div>
               </div>
 
               <div className="grid gap-3 p-4 sm:p-5">
                 <div className="grid gap-3 sm:grid-cols-[1fr_0.78fr]">
-                  <div className="rounded-2xl border border-border bg-card/70 p-4">
+                  <div className="landing-card-surface rounded-2xl border border-border bg-card/70 p-4 transition-colors duration-500">
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.2em] text-secondary">
@@ -135,11 +155,11 @@ export default function LandingHero() {
                         </p>
                         <p className="mt-2 text-3xl font-bold">42:00</p>
                       </div>
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-background/75">
+                      <div className="landing-soft-surface flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-background/75 transition-colors duration-500">
                         <Timer className="h-6 w-6 text-secondary" />
                       </div>
                     </div>
-                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-background">
+                    <div className="landing-soft-surface mt-4 h-2 overflow-hidden rounded-full bg-background transition-colors duration-500">
                       <motion.div
                         initial={{ scaleX: 0 }}
                         whileInView={{ scaleX: 0.78 }}
@@ -154,7 +174,7 @@ export default function LandingHero() {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-border bg-card/70 p-4">
+                  <div className="landing-card-surface rounded-2xl border border-border bg-card/70 p-4 transition-colors duration-500">
                     <p className="text-xs uppercase tracking-[0.2em] text-secondary">
                       AI Queue
                     </p>
@@ -162,7 +182,7 @@ export default function LandingHero() {
                       {["Flashcards", "Quiz", "Weak topics"].map((item) => (
                         <div
                           key={item}
-                          className="flex items-center justify-between rounded-xl bg-background/70 px-3 py-2 text-sm"
+                          className="landing-soft-surface flex items-center justify-between rounded-xl bg-background/70 px-3 py-2 text-sm transition-colors duration-500"
                         >
                           <span>{item}</span>
                           <span className="text-secondary">Ready</span>
@@ -184,7 +204,7 @@ export default function LandingHero() {
                         delay: 0.45 + index * 0.1,
                         ease: [0.22, 1, 0.36, 1],
                       }}
-                      className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl border border-border bg-card/65 p-4"
+                      className="landing-card-surface grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl border border-border bg-card/65 p-4 transition-colors duration-500"
                     >
                       <div className="min-w-0">
                         <p className="truncate font-semibold">{row.title}</p>
@@ -192,7 +212,7 @@ export default function LandingHero() {
                           {row.status}
                         </p>
                       </div>
-                      <p className="rounded-xl border border-border bg-background/75 px-3 py-2 text-sm font-semibold">
+                      <p className="landing-soft-surface rounded-xl border border-border bg-background/75 px-3 py-2 text-sm font-semibold transition-colors duration-500">
                         {row.value}
                       </p>
                     </motion.div>

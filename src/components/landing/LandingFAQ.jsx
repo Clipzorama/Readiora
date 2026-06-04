@@ -10,7 +10,7 @@ function FAQItem({ item, isOpen, onToggle }) {
   return (
     <motion.div
       layout
-      className="overflow-hidden rounded-2xl border border-border bg-card/75 transition hover:border-strong-border hover:bg-card/90"
+      className="landing-card-surface overflow-hidden rounded-2xl border border-border bg-card/75 transition-colors duration-500 hover:border-strong-border hover:bg-card/90"
     >
       <button
         type="button"
@@ -24,7 +24,7 @@ function FAQItem({ item, isOpen, onToggle }) {
         <motion.span
           animate={prefersReducedMotion ? undefined : { rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.24, ease: "easeOut" }}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/75"
+          className="landing-soft-surface flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/75 transition-colors duration-500"
         >
           <ChevronDown className="h-4 w-4 text-secondary" />
         </motion.span>
@@ -56,7 +56,7 @@ export default function LandingFAQ() {
   return (
     <SectionReveal id="faq" className="relative z-10 mx-auto w-full max-w-5xl scroll-mt-24 px-3 py-16 sm:px-4 sm:py-20 lg:px-5 lg:py-24">
       <div className="mx-auto max-w-3xl text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary">
+        <div className="landing-card-surface mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary transition-colors duration-500">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           Support the workflow
         </div>

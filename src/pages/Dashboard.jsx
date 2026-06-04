@@ -103,10 +103,11 @@ function BackendStatusPill({ status }) {
       : "Data channel offline";
   const tone = isConnected
     ? {
-        frame: "border-success/45 bg-[linear-gradient(135deg,hsl(var(--emerald)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.16))] text-[#49f3bd] shadow-success/10",
-        badge: "border-success/50 bg-success/20 text-[#6dffd0]",
-        beam: "from-[#4cffc3] via-[#17e6ad] to-[#d8fff1]",
-        dot: "bg-[#25f0b0]",
+        frame: "border-success/45 bg-[linear-gradient(135deg,hsl(var(--emerald)/0.16),hsl(var(--card)/0.9)_56%,hsl(var(--button)/0.12))] text-success shadow-success/10",
+        badge: "border-success/50 bg-success/15 text-success",
+        beam: "from-success via-button to-success/45",
+        detail: "text-success",
+        dot: "bg-success",
         ring: "border-success/25",
       }
     : isChecking
@@ -114,6 +115,7 @@ function BackendStatusPill({ status }) {
           frame: "border-warning/45 bg-[linear-gradient(135deg,hsl(var(--warning)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.14))] text-warning shadow-warning/10",
           badge: "border-warning/50 bg-warning/15 text-warning",
           beam: "from-warning via-[#38c7ff] to-[#dff8ff]",
+          detail: "text-secondary",
           dot: "bg-warning",
           ring: "border-warning/25",
         }
@@ -121,6 +123,7 @@ function BackendStatusPill({ status }) {
           frame: "border-danger/45 bg-[linear-gradient(135deg,hsl(var(--danger)/0.24),hsl(var(--card)/0.84)_56%,hsl(var(--button)/0.12))] text-[#ff8585] shadow-danger/10",
           badge: "border-danger/50 bg-danger/20 text-[#ff9a9a]",
           beam: "from-danger via-[#ff6363] to-[#ffd1d1]",
+          detail: "text-secondary",
           dot: "bg-[#ff5656]",
           ring: "border-danger/25",
         };
@@ -147,7 +150,7 @@ function BackendStatusPill({ status }) {
             <span className={`h-2 w-2 rounded-full ${tone.dot} shadow-[0_0_18px_currentColor]`} />
             <p className="truncate text-sm font-bold">{statusLabel}</p>
           </div>
-          <p className="mt-1 truncate text-xs font-medium text-secondary">
+          <p className={`mt-1 truncate text-xs font-semibold ${tone.detail}`}>
             {statusDetail}
           </p>
         </div>

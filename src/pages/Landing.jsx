@@ -7,7 +7,7 @@ import LiveCommandSimulation from "../components/landing/LiveCommandSimulation";
 
 export default function Landing() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background text-primary">
+    <main className="landing-page relative min-h-screen overflow-x-clip bg-background text-primary transition-colors duration-500">
       <LandingBackground />
       <LandingHeader />
       <LandingHero />
