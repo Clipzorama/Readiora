@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import {
   BookOpen,
@@ -100,6 +100,8 @@ function normalizeColor(value) {
 
 export default function Subjects() {
   const { user } = useAuth();
+  const examDateInputRef = useRef(null);
+  const examTimeInputRef = useRef(null);
   const [subjects, setSubjects] = useState([]);
   const [notes, setNotes] = useState([]);
   const [form, setForm] = useState(emptyForm);
@@ -229,6 +231,20 @@ export default function Subjects() {
     }
   }
 
+  function openInputPicker(inputRef) {
+    const input = inputRef.current;
+    if (!input) return;
+
+    input.focus();
+
+    if (typeof input.showPicker === "function") {
+      input.showPicker();
+      return;
+    }
+
+    input.click();
+  }
+
   return (
     <WarRoomShell
       eyebrow="Knowledge Domains"
@@ -292,12 +308,14 @@ export default function Subjects() {
                     className="min-h-14 rounded-2xl border border-border bg-background/70 px-4 py-3 text-primary outline-none transition placeholder:text-muted focus:border-strong-border"
                   />
                 </label>
-                <label className="grid gap-2">
-                  <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                <div className="grid gap-2">
+                  <label htmlFor="subject-exam-date" className="text-xs uppercase tracking-[0.18em] text-muted">
                     Exam Date
-                  </span>
+                  </label>
                   <div className="relative">
                     <input
+                      id="subject-exam-date"
+                      ref={examDateInputRef}
                       type="date"
                       value={form.examDate}
                       onChange={(event) =>
@@ -305,15 +323,25 @@ export default function Subjects() {
                       }
                       className="min-h-14 w-full rounded-2xl border border-border bg-background/70 px-4 py-3 pr-12 text-primary outline-none transition focus:border-strong-border [&::-webkit-calendar-picker-indicator]:opacity-0"
                     />
-                    <CalendarClock className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+                    <button
+                      type="button"
+                      onClick={() => openInputPicker(examDateInputRef)}
+                      className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-xl text-primary transition hover:bg-button/15 focus:outline-none focus:ring-2 focus:ring-strong-border"
+                      aria-label="Open exam date picker"
+                      title="Open exam date picker"
+                    >
+                      <CalendarClock className="h-5 w-5" />
+                    </button>
                   </div>
-                </label>
-                <label className="grid gap-2">
-                  <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                </div>
+                <div className="grid gap-2">
+                  <label htmlFor="subject-exam-time" className="text-xs uppercase tracking-[0.18em] text-muted">
                     Exam Time
-                  </span>
+                  </label>
                   <div className="relative">
                     <input
+                      id="subject-exam-time"
+                      ref={examTimeInputRef}
                       type="time"
                       value={form.examTime}
                       onChange={(event) =>
@@ -321,9 +349,17 @@ export default function Subjects() {
                       }
                       className="min-h-14 w-full rounded-2xl border border-border bg-background/70 px-4 py-3 pr-12 text-primary outline-none transition focus:border-strong-border [&::-webkit-calendar-picker-indicator]:opacity-0"
                     />
-                    <Clock3 className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+                    <button
+                      type="button"
+                      onClick={() => openInputPicker(examTimeInputRef)}
+                      className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-xl text-primary transition hover:bg-button/15 focus:outline-none focus:ring-2 focus:ring-strong-border"
+                      aria-label="Open exam time picker"
+                      title="Open exam time picker"
+                    >
+                      <Clock3 className="h-5 w-5" />
+                    </button>
                   </div>
-                </label>
+                </div>
               </div>
 
               <div className="grid gap-4 xl:grid-cols-[18rem_minmax(0,1fr)]">

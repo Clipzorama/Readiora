@@ -54,7 +54,7 @@ export default function LandingFAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <SectionReveal className="relative z-10 mx-auto w-full max-w-5xl px-3 py-16 sm:px-4 sm:py-20 lg:px-5 lg:py-24">
+    <SectionReveal id="faq" className="relative z-10 mx-auto w-full max-w-5xl scroll-mt-24 px-3 py-16 sm:px-4 sm:py-20 lg:px-5 lg:py-24">
       <div className="mx-auto max-w-3xl text-center">
         <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -64,7 +64,7 @@ export default function LandingFAQ() {
           Frequently Asked Questions
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-secondary sm:text-lg">
-          Everything students and teams usually ask before turning Xevaro into
+          Everything students and teams usually ask before turning Readiora into
           their daily study workspace.
         </p>
       </div>

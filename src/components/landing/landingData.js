@@ -113,24 +113,24 @@ export const weakTopics = [
 
 export const faqItems = [
   {
-    question: "What is Xevaro?",
+    question: "What is Readiora?",
     answer:
-      "Xevaro is an AI-powered study command center for organizing subjects, managing notes, and turning study material into focused review workflows.",
+      "Readiora is an AI-powered study command center for organizing subjects, managing notes, and turning study material into focused review workflows.",
   },
   {
-    question: "How do Xevaro's AI study tools help me review?",
+    question: "How do Readiora's AI study tools help me review?",
     answer:
-      "Xevaro is designed to convert your content into practical review assets such as summaries, flashcards, quizzes, weak-topic queues, and exam prep prompts.",
+      "Readiora is designed to convert your content into practical review assets such as summaries, flashcards, quizzes, weak-topic queues, and exam prep prompts.",
   },
   {
     question: "Can I upload notes and course materials?",
     answer:
-      "Yes. Xevaro supports a workflow built around bringing your notes and study materials into the platform so they can be organized and used for smarter review.",
+      "Yes. Readiora supports a workflow built around bringing your notes and study materials into the platform so they can be organized and used for smarter review.",
   },
   {
     question: "Is my study data private?",
     answer:
-      "Xevaro treats privacy as a core product expectation. Your workspace is built around your own subjects, notes, and review activity rather than public sharing.",
+      "Readiora treats privacy as a core product expectation. Your workspace is built around your own subjects, notes, and review activity rather than public sharing.",
   },
   {
     question: "Can I organize notes by subject?",
@@ -138,13 +138,13 @@ export const faqItems = [
       "Yes. The landing workflow is centered on creating subject lanes so each class, topic, or exam track has its own organized place.",
   },
   {
-    question: "Does Xevaro work on mobile?",
+    question: "Does Readiora work on mobile?",
     answer:
       "The interface is responsive for desktop, tablet, and mobile access, so your study workspace can travel with you.",
   },
   {
     question: "How does pricing work?",
     answer:
-      "Xevaro is being positioned as a premium study platform. Current pricing details should be shown in-app or announced when plans are finalized.",
+      "Readiora is being positioned as a premium study platform. Current pricing details should be shown in-app or announced when plans are finalized.",
   },
 ];

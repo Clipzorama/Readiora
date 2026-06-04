@@ -3,11 +3,13 @@ import { motion } from "framer-motion";
 import {
   Bell,
   Fingerprint,
+  Palette,
   Settings as SettingsIcon,
   UserRound,
   X,
 } from "lucide-react";
 import ProfileSettingsForm from "../components/ProfileSettingsForm";
+import ThemeToggle from "../components/ThemeToggle";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -169,6 +171,29 @@ export default function Settings({ open = true, onClose, onSaved }) {
                 value="Phone updates use Supabase Auth for secure verification."
               />
             </section>
+
+            <motion.section
+              variants={itemVariants}
+              className="flex flex-col gap-4 rounded-[1.35rem] border border-border bg-background/50 p-4 shadow-xl shadow-black/20 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5"
+            >
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-strong-border bg-button/20 text-primary shadow-[0_0_20px_hsl(var(--button)/0.14)]">
+                  <Palette className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-[0.22em] text-muted">
+                    Appearance
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold leading-tight text-primary">
+                    Color Theme
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-secondary">
+                    Keep Readiora in the mode that fits your workspace.
+                  </p>
+                </div>
+              </div>
+              <ThemeToggle className="w-full sm:w-auto" labelPrefix="Settings" />
+            </motion.section>
 
             <motion.section
               variants={itemVariants}

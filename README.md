@@ -1,6 +1,6 @@
-# Xevaro
+# Readiora
 
-Xevaro is a modern study workspace built with React, Vite, and Supabase. It gives students a focused place to manage subjects, write notes, upload attachments, and track study activity inside a polished command-center style interface.
+Readiora is a modern study workspace built with React, Vite, and Supabase. It gives students a focused place to manage subjects, write notes, upload attachments, and track study activity inside a polished command-center style interface.
 
 ## Overview
 
@@ -8,7 +8,7 @@ The app is a frontend React single-page application with Supabase handling authe
 
 ## Features
 
-- Public landing page for the Xevaro product experience.
+- Public landing page for the Readiora product experience.
 - Email/password authentication with Supabase.
 - Google and GitHub OAuth sign-in.
 - Protected dashboard, subjects, notes, and settings routes.
@@ -70,7 +70,7 @@ npm run dev
 ## Project Structure
 
 ```text
-Xevaro/
+Readiora/
   docs/                  Project documentation
   playform/              Local design and reference assets
   public/                Static assets served directly by Vite
@@ -132,4 +132,4 @@ npm run preview
 
 ## Status
 
-Xevaro is under active development. The current codebase focuses on the React app shell, authentication, subjects, notes, attachments, and profile settings. AI-facing product direction exists in the interface and project context, but no live AI provider integration is currently wired into the application.
+Readiora is under active development. The current codebase focuses on the React app shell, authentication, subjects, notes, attachments, and profile settings. AI-facing product direction exists in the interface and project context, but no live AI provider integration is currently wired into the application.

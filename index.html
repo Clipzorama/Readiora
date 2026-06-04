@@ -8,7 +8,27 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xevaro</title>
+    <title>Readiora</title>
+    <script>
+      (() => {
+        const storageKey = "readiora-theme";
+        const validThemes = new Set(["light", "dark"]);
+        let theme = "";
+
+        try {
+          theme = window.localStorage.getItem(storageKey) || "";
+        } catch {
+          theme = "";
+        }
+
+        if (!validThemes.has(theme)) {
+          theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

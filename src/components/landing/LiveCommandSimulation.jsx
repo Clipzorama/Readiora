@@ -20,17 +20,17 @@ export default function LiveCommandSimulation() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <SectionReveal className="relative z-10 mx-auto w-full max-w-[88rem] px-3 py-16 sm:px-4 sm:py-20 lg:px-5 lg:py-28 xl:px-6">
+    <SectionReveal id="mission-control" className="relative z-10 mx-auto w-full max-w-[88rem] scroll-mt-24 px-3 py-16 sm:px-4 sm:py-20 lg:px-5 lg:py-28 xl:px-6">
       <div className="mx-auto max-w-4xl text-center">
         <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary">
           <BrainCircuit className="h-3.5 w-3.5 text-primary" />
           Live AI Command Simulation
         </div>
         <h2 className="mt-6 text-[clamp(2.2rem,8vw,4.4rem)] font-extrabold leading-[1.05] tracking-normal">
-          Watch Xevaro turn study chaos into a live command system.
+          Watch Readiora turn study chaos into a live command system.
         </h2>
         <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-secondary sm:text-lg">
-          Xevaro analyzes notes, detects weak topics, generates review tools,
+          Readiora analyzes notes, detects weak topics, generates review tools,
           and tracks readiness while your study session moves from raw material
           to a tactical exam plan.
         </p>

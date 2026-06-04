@@ -20,6 +20,7 @@ import {
 import { useProfile } from "../context/ProfileContext";
 import { signOutUser } from "../services/authService";
 import SettingsModal from "../pages/Settings";
+import ThemeToggle from "./ThemeToggle";
 import UserAvatar from "./UserAvatar";
 
 const navItems = [
@@ -124,6 +125,13 @@ function SidebarNav({ onNavigate, onOpenSettings }) {
                 </NavLink>
               );
             })}
+            {section.label === "Account" && (
+              <ThemeToggle
+                fullWidth
+                labelPrefix="Workspace"
+                className="mt-1 border-transparent bg-transparent px-3 text-left hover:border-border hover:bg-card-hover/80 cursor-pointer"
+              />
+            )}
           </div>
         </div>
       ))}
@@ -236,6 +244,7 @@ export function WarRoomShell({ eyebrow, title, description, action, children, hi
             <div className="flex items-center justify-between gap-3">
               <SidebarIdentity className="flex-1 px-1" />
               <div className="flex items-center gap-2">
+                <ThemeToggle compact />
                 <button
                   type="button"
                   onClick={() => setMobileOpen(true)}

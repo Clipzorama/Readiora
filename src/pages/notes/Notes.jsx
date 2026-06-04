@@ -18,6 +18,7 @@ import {
   createAttachmentSignedUrl,
   deleteNoteAttachment,
   extractNoteAttachment,
+  getAttachmentExtraction,
   getAttachmentExtractions,
   getCompletedExtractionAttachmentIds,
   getDocumentChunks,
@@ -65,6 +66,7 @@ export default function Notes() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [workspaceVisible, setWorkspaceVisible] = useState(false);
+  const [libraryHiddenForNewNote, setLibraryHiddenForNewNote] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -181,6 +183,7 @@ export default function Notes() {
     setNotice("");
     setEditorMode("write");
     setWorkspaceVisible(true);
+    setLibraryHiddenForNewNote(false);
   }
 
   function startNewNote() {
@@ -196,6 +199,7 @@ export default function Notes() {
     setNotice("");
     setEditorMode("write");
     setWorkspaceVisible(true);
+    setLibraryHiddenForNewNote(true);
   }
 
   function cancelWorkspace() {
@@ -211,6 +215,7 @@ export default function Notes() {
     setNotice("");
     setEditorMode("write");
     setWorkspaceVisible(false);
+    setLibraryHiddenForNewNote(false);
   }
 
   function resetAfterSuccessfulSave(savedNote) {
@@ -226,6 +231,7 @@ export default function Notes() {
     setNotice(`Saved "${savedNote.title}". Ready for a new note.`);
     setEditorMode("write");
     setWorkspaceVisible(false);
+    setLibraryHiddenForNewNote(false);
   }
 
   async function persistNote() {
@@ -284,6 +290,7 @@ export default function Notes() {
       setPreviewUrls({});
       setSaveStatus("draft");
       setWorkspaceVisible(false);
+      setLibraryHiddenForNewNote(false);
       setNotice("Note deleted.");
     } catch (deleteError) {
       setError(deleteError.message);
@@ -467,8 +474,7 @@ export default function Notes() {
 
   async function getAttachmentExtractionSafe(attachmentId, userId) {
     try {
-      const rows = await getAttachmentExtractions(selectedNoteId, userId);
-      return rows.find((row) => row.attachment_id === attachmentId) ?? null;
+      return await getAttachmentExtraction(attachmentId, userId);
     } catch {
       return null;
     }
@@ -566,14 +572,26 @@ export default function Notes() {
           </CommandCard>
         ) : (
           <div className="grid min-w-0 gap-4 sm:gap-6">
-            <RecentNotesLibrary
-              loading={loading}
-              notes={notes}
-              selectedNoteId={selectedNoteId}
-              summarizingNoteId={summarizingNoteId}
-              onSelect={selectNoteDraft}
-              onSummarize={handleSummarize}
-            />
+            <AnimatePresence initial={false}>
+              {!libraryHiddenForNewNote && (
+                <motion.div
+                  key="recent-notes-library"
+                  variants={workspaceVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <RecentNotesLibrary
+                    loading={loading}
+                    notes={notes}
+                    selectedNoteId={selectedNoteId}
+                    summarizingNoteId={summarizingNoteId}
+                    onSelect={selectNoteDraft}
+                    onSummarize={handleSummarize}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <AnimatePresence initial={false}>
               {workspaceVisible && (

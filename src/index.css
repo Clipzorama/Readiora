@@ -94,6 +94,53 @@
     --animate-fade-in-delay-7: fade-in 0.7s ease-out 1.4s forwards;
 
    }
+
+  [data-theme="dark"] {
+    --background: 220, 42%, 5%;
+    --card: 218, 48%, 8%;
+    --card-hover: 214, 54%, 12%;
+    --button: 195, 100%, 39%;
+    --button-hover: 190, 100%, 42%;
+    --border: 204, 52%, 18%;
+    --strong-border: 195, 97%, 27%;
+    --primary: 190, 76%, 92%;
+    --secondary: 198, 28%, 70%;
+    --muted: 205, 18%, 48%;
+    --emerald: 168, 74%, 39%;
+    --warning: 201, 100%, 36%;
+    --danger: 0, 100%, 24%;
+  }
+
+  [data-theme="light"] {
+    --background: 0, 0%, 100%;
+    --card: 0, 0%, 100%;
+    --card-hover: 210, 43%, 96%;
+    --button: 199, 89%, 48%;
+    --button-hover: 199, 89%, 42%;
+    --border: 213, 35%, 93%;
+    --strong-border: 201, 84%, 78%;
+    --primary: 222, 47%, 11%;
+    --secondary: 215, 25%, 27%;
+    --muted: 215, 16%, 47%;
+    --emerald: 142, 71%, 37%;
+    --warning: 38, 92%, 50%;
+    --danger: 0, 84%, 60%;
+  }
+
+  html {
+    background: hsl(var(--background));
+    color-scheme: dark;
+  }
+
+  html[data-theme="light"] {
+    color-scheme: light;
+  }
+
+  body {
+    min-width: 320px;
+    background: hsl(var(--background));
+    color: hsl(var(--primary));
+  }
 }
 
 html {
@@ -191,7 +238,7 @@ html {
     }
 
     .session-datetime-input {
-        color-scheme: light;
+        color-scheme: inherit;
     }
 
     .session-datetime-input::-webkit-calendar-picker-indicator {
@@ -261,4 +308,3 @@ html {
   @apply bg-primary/80;
 
 }
-

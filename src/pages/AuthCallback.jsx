@@ -62,7 +62,7 @@ export default function AuthCallback() {
           {/* Branding */}
           <div>
             <p className="mb-2 text-xs uppercase tracking-[0.3em] text-secondary">
-              Xevaro
+              Readiora
             </p>
 
             <h1 className="text-2xl font-semibold tracking-tight">

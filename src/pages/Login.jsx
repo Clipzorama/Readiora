@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 
-import xfaviLogo from "../assets/xfavi.webp";
+import readioraFaviconLogo from "../assets/readiora-favicon.webp";
 import {
   signInWithEmail,
   signInWithGoogle,
@@ -138,7 +138,7 @@ export default function Login() {
         <div className="relative z-10 flex w-full flex-col gap-8 xl:gap-20">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-secondary">
-              Xevaro
+              Readiora
             </p>
 
             <motion.h1
@@ -222,8 +222,8 @@ export default function Login() {
         >
           <motion.div variants={itemVariants} className="text-center">
             <img
-              src={xfaviLogo}
-              alt="Xevaro"
+              src={readioraFaviconLogo}
+              alt="Readiora"
               className="mx-auto h-14 w-auto object-contain sm:h-20"
             />
             <h2 className="mt-2 text-xl font-bold sm:mt-3 sm:text-4xl">
@@ -231,7 +231,7 @@ export default function Login() {
             </h2>
 
             <p className="mt-2 text-sm text-secondary sm:mt-3 sm:text-base">
-              Continue your study mission inside Xevaro.
+              Continue your study mission inside Readiora.
             </p>
           </motion.div>
 

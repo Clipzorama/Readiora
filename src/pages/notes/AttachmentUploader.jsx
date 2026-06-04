@@ -25,7 +25,7 @@ function getExtractionStatus(extraction) {
   if (!extraction) {
     return {
       label: "Needs AI scan",
-      detail: "Xevaro will prepare this source for summaries, flashcards, and quizzes.",
+      detail: "Readiora will prepare this source for summaries, flashcards, and quizzes.",
       tone: "text-muted",
       icon: ScanText,
     };
@@ -234,7 +234,7 @@ export default function AttachmentUploader({
       <div className="mt-4 grid gap-3">
         {attachments.length === 0 ? (
           <div className="rounded-2xl border border-border/80 bg-background/55 p-4 text-sm leading-6 text-secondary">
-            Attach lecture PDFs, whiteboard photos, textbook screenshots, or diagrams. Xevaro prepares uploaded sources for summaries, flashcards, and quiz generation automatically.
+            Attach lecture PDFs, whiteboard photos, textbook screenshots, or diagrams. Readiora prepares uploaded sources for summaries, flashcards, and quiz generation automatically.
           </div>
         ) : (
           attachments.map((attachment) => (

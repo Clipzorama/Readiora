@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 
-import xfaviLogo from "../assets/xfavi.webp";
+import readioraFaviconLogo from "../assets/readiora-favicon.webp";
 import {
   signUpWithEmail,
   signInWithGoogle,
@@ -135,8 +135,8 @@ export default function Signup() {
         >
           <motion.div variants={itemVariants} className="text-center">
             <img
-              src={xfaviLogo}
-              alt="Xevaro"
+              src={readioraFaviconLogo}
+              alt="Readiora"
               className="mx-auto h-14 w-auto object-contain sm:h-20"
             />
             <h2 className="mt-2 text-xl font-bold sm:mt-3 sm:text-4xl">
@@ -195,7 +195,7 @@ export default function Signup() {
               whileTap={{ scale: 0.98 }}
               className="w-full rounded-xl bg-button py-2.5 font-semibold text-white transition hover:bg-button-hover sm:py-3"
             >
-              Launch Xevaro
+              Launch Readiora
             </motion.button>
           </form>
 
@@ -274,7 +274,7 @@ export default function Signup() {
         <div className="relative z-10 flex w-full flex-col gap-8 xl:gap-20">
           <motion.div variants={formVariants} initial="hidden" animate="visible">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-secondary">
-              Xevaro
+              Readiora
             </p>
 
             <motion.h1
@@ -288,7 +288,7 @@ export default function Signup() {
               variants={itemVariants}
               className="mt-6 max-w-lg text-base leading-8 text-secondary xl:text-lg"
             >
-              Xevaro helps students move from scattered notes to organized
+              Readiora helps students move from scattered notes to organized
               missions, AI-generated practice, and measurable progress.
             </motion.p>
           </motion.div>

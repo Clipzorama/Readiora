@@ -20,7 +20,7 @@ export function getProfileDisplayName(profile, user) {
     fullName ||
     [authIdentity.firstName, authIdentity.lastName].filter(Boolean).join(" ").trim() ||
     user?.email?.split("@")[0] ||
-    "Xevaro user"
+    "Readiora user"
   );
 }
 

@@ -4,10 +4,10 @@ function TacticalGrid() {
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-0 opacity-[0.18]"
+      className="absolute inset-0 opacity-[0.34]"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px)",
+          "linear-gradient(hsl(var(--primary) / 0.16) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.16) 1px, transparent 1px)",
         backgroundSize: "44px 44px",
         maskImage:
           "linear-gradient(to bottom, transparent, black 10%, black 78%, transparent)",

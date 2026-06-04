@@ -13,7 +13,7 @@ import {
 
 export default function LandingHero() {
   return (
-    <section className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] w-full max-w-[88rem] items-start gap-8 px-3 pb-12 pt-16 sm:min-h-[calc(100vh-104px)] sm:px-4 sm:pb-16 sm:pt-20 md:pt-24 lg:min-h-[calc(100vh-88px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(26rem,0.95fr)] lg:items-center lg:gap-14 lg:px-5 lg:pt-16 xl:gap-20 xl:px-6 xl:pt-20">
+    <section id="overview" className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] scroll-mt-24 w-full max-w-[88rem] items-start gap-8 px-3 pb-12 pt-16 sm:min-h-[calc(100vh-104px)] sm:px-4 sm:pb-16 sm:pt-20 md:pt-24 lg:min-h-[calc(100vh-88px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(26rem,0.95fr)] lg:items-center lg:gap-14 lg:px-5 lg:pt-16 xl:gap-20 xl:px-6 xl:pt-20">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -56,7 +56,7 @@ export default function LandingHero() {
           variants={itemVariants}
           className="mx-auto mt-5 max-w-2xl text-base leading-8 text-secondary sm:text-lg lg:mx-0"
         >
-          Xevaro turns notes, subjects, and revision goals into a polished
+          Readiora turns notes, subjects, and revision goals into a polished
           operating system for focused sessions, AI-assisted practice, and
           measurable exam readiness.
         </motion.p>

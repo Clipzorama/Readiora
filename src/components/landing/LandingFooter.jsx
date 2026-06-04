@@ -1,5 +1,5 @@
 import { CreditCard, LockKeyhole, Smartphone } from "lucide-react";
-import xevaroLogo from "../../assets/xevarologo.webp";
+import readioraLogo from "../../assets/readioralogo.webp";
 
 export default function LandingFooter() {
   return (
@@ -7,7 +7,7 @@ export default function LandingFooter() {
       <div className="mx-auto flex w-full max-w-[88rem] flex-col gap-8">
         <div className="flex flex-col gap-6 rounded-[1.5rem] border border-border bg-card/65 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <img src={xevaroLogo} alt="Xevaro" className="h-8 w-auto object-contain" />
+            <img src={readioraLogo} alt="Readiora" className="h-8 w-auto object-contain" />
             <p className="mt-4 max-w-xl text-sm leading-7 text-secondary">
               An AI-powered study command center for focused notes, smarter
               review, and calmer exam preparation.
@@ -23,7 +23,7 @@ export default function LandingFooter() {
           </div>
         </div>
         <p className="text-center text-xs text-muted">
-          © 2026 Xevaro LLC. All rights reserved.
+          © 2026 Readiora LLC. All rights reserved.
         </p>
       </div>
     </footer>

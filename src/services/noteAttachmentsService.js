@@ -145,7 +145,8 @@ export async function extractNoteAttachment(attachmentId) {
   });
 
   if (error) {
-    throw new Error(error.message || "Could not extract attachment text.");
+    const functionError = await readFunctionError(error);
+    throw new Error(functionError || error.message || "Could not extract attachment text.");
   }
 
   if (data?.error) {
@@ -157,6 +158,22 @@ export async function extractNoteAttachment(attachmentId) {
   }
 
   return data;
+}
+
+async function readFunctionError(error) {
+  const context = error?.context;
+
+  if (!context || typeof context.json !== "function") {
+    return "";
+  }
+
+  try {
+    const response = typeof context.clone === "function" ? context.clone() : context;
+    const body = await response.json();
+    return typeof body?.error === "string" ? body.error : "";
+  } catch {
+    return "";
+  }
 }
 
 export async function createAttachmentSignedUrl(filePath, expiresIn = 3600) {
