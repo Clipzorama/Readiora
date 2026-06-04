@@ -148,8 +148,11 @@ export default function RecentNotesLibrary({
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => onSummarize(note)}
-                    disabled={summarizingNoteId === note.id || !note.content?.trim()}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSummarize(note);
+                    }}
+                    disabled={summarizingNoteId === note.id}
                     className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-strong-border/80 bg-button/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-button/15 transition hover:-translate-y-0.5 hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
                   >
                     {summarizingNoteId === note.id ? (

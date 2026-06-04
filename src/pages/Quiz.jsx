@@ -19,6 +19,7 @@ import {
 } from "../components/WarRoomLayout";
 import { useAuth } from "../hooks/useAuth";
 import { generateQuiz } from "../services/aiService";
+import { getCompletedExtractionAttachmentIds } from "../services/noteAttachmentsService";
 import { getNotes } from "../services/notesService";
 import {
   deleteQuiz,
@@ -225,7 +226,11 @@ export default function Quiz() {
       setGenerating(true);
       setError("");
       setNotice("");
-      const generatedQuiz = await generateQuiz(generator);
+      const sourceNoteIds = generator.noteId
+        ? [generator.noteId]
+        : subjectNotes.map((note) => note.id);
+      const attachmentIds = await getCompletedExtractionAttachmentIds(sourceNoteIds, user.id);
+      const generatedQuiz = await generateQuiz({ ...generator, attachmentIds });
       const nextQuiz = {
         ...generatedQuiz,
         quiz_questions: generatedQuiz.quiz_questions ?? [],

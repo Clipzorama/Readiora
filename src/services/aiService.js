@@ -1,8 +1,8 @@
 import { supabase } from "../lib/supabase";
 
-export async function summarizeNote(noteId) {
+export async function summarizeNote(noteId, { chunkIds = [], attachmentIds = [] } = {}) {
   const { data, error } = await supabase.functions.invoke("summarize-note", {
-    body: { noteId },
+    body: { noteId, chunkIds, attachmentIds },
   });
 
   if (error) {
@@ -20,9 +20,9 @@ export async function summarizeNote(noteId) {
   return data.summary;
 }
 
-export async function generateFlashcards({ subjectId, noteId, setId, count }) {
+export async function generateFlashcards({ subjectId, noteId, setId, count, chunkIds = [], attachmentIds = [] }) {
   const { data, error } = await supabase.functions.invoke("generate-flashcards", {
-    body: { subjectId, noteId, setId, count },
+    body: { subjectId, noteId, setId, count, chunkIds, attachmentIds },
   });
 
   if (error) {
@@ -40,9 +40,9 @@ export async function generateFlashcards({ subjectId, noteId, setId, count }) {
   return data.flashcards;
 }
 
-export async function generateQuiz({ subjectId, noteId, count }) {
+export async function generateQuiz({ subjectId, noteId, count, chunkIds = [], attachmentIds = [] }) {
   const { data, error } = await supabase.functions.invoke("generate-quiz", {
-    body: { subjectId, noteId, count },
+    body: { subjectId, noteId, count, chunkIds, attachmentIds },
   });
 
   if (error) {
