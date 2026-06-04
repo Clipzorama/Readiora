@@ -460,7 +460,12 @@ Deno.serve(async (req) => {
       throw extractionError;
     }
 
-    extraction = upsertedExtraction;
+    if (!upsertedExtraction) {
+      throw new Error("Extraction record could not be created.");
+    }
+
+    const activeExtraction = upsertedExtraction as ExtractionRow;
+    extraction = activeExtraction;
 
     const bucket = (attachment as AttachmentRow).storage_bucket || NOTE_ATTACHMENTS_BUCKET;
     const { data: fileBlob, error: downloadError } = await supabase.storage
@@ -488,7 +493,7 @@ Deno.serve(async (req) => {
     const { error: deleteChunksError } = await supabase
       .from("document_chunks")
       .delete()
-      .eq("extraction_id", extraction.id)
+      .eq("extraction_id", activeExtraction.id)
       .eq("user_id", user.id);
 
     if (deleteChunksError) {
@@ -499,7 +504,7 @@ Deno.serve(async (req) => {
       .from("document_chunks")
       .insert(chunks.map((chunk) => ({
         user_id: user.id,
-        extraction_id: extraction?.id,
+        extraction_id: activeExtraction.id,
         attachment_id: attachment.id,
         note_id: (attachment as AttachmentRow).note_id,
         ...chunk,
@@ -521,7 +526,7 @@ Deno.serve(async (req) => {
         chunk_count: savedChunks?.length ?? chunks.length,
         error: null,
       })
-      .eq("id", extraction.id)
+      .eq("id", activeExtraction.id)
       .eq("user_id", user.id)
       .select()
       .single();
