@@ -17,6 +17,10 @@ import { useAuth } from "../../hooks/useAuth";
 import {
   createAttachmentSignedUrl,
   deleteNoteAttachment,
+  extractNoteAttachment,
+  getAttachmentExtractions,
+  getCompletedExtractionAttachmentIds,
+  getDocumentChunks,
   getNoteAttachments,
   uploadNoteAttachment,
   validateNoteAttachment,
@@ -46,12 +50,16 @@ export default function Notes() {
   const [selectedNoteId, setSelectedNoteId] = useState(null);
   const [draft, setDraft] = useState(emptyDraft);
   const [attachments, setAttachments] = useState([]);
+  const [extractionByAttachmentId, setExtractionByAttachmentId] = useState({});
+  const [chunksByAttachmentId, setChunksByAttachmentId] = useState({});
   const [previewUrls, setPreviewUrls] = useState({});
   const [editorMode, setEditorMode] = useState("write");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [summarizingNoteId, setSummarizingNoteId] = useState(null);
+  const [extractingAttachmentId, setExtractingAttachmentId] = useState(null);
+  const [previewExtractionId, setPreviewExtractionId] = useState(null);
   const [deletingAttachmentId, setDeletingAttachmentId] = useState(null);
   const [saveStatus, setSaveStatus] = useState("draft");
   const [error, setError] = useState("");
@@ -91,6 +99,21 @@ export default function Notes() {
         const rows = await getNoteAttachments(selectedNoteId, user.id);
         setAttachments(rows);
 
+        const extractionRows = await getAttachmentExtractions(selectedNoteId, user.id);
+        const extractionMap = Object.fromEntries(
+          extractionRows.map((extraction) => [extraction.attachment_id, extraction]),
+        );
+        setExtractionByAttachmentId(extractionMap);
+
+        const completedExtractions = extractionRows.filter((extraction) => extraction.status === "completed");
+        const chunkEntries = await Promise.all(
+          completedExtractions.map(async (extraction) => [
+            extraction.attachment_id,
+            await getDocumentChunks(extraction.attachment_id, user.id, 4),
+          ]),
+        );
+        setChunksByAttachmentId(Object.fromEntries(chunkEntries));
+
         const imageRows = rows.filter((item) => item.file_type?.startsWith("image/"));
         const entries = await Promise.all(
           imageRows.map(async (item) => [item.id, await createAttachmentSignedUrl(item.file_path)]),
@@ -128,9 +151,11 @@ export default function Notes() {
         fileType: file_type,
         fileSize: file_size,
         filePath: file_path,
+        extraction: extractionByAttachmentId[id] ?? null,
+        chunks: chunksByAttachmentId[id] ?? [],
       })),
     }),
-    [attachments, draft.content, draft.title, selectedNoteId, selectedSubject?.name],
+    [attachments, chunksByAttachmentId, draft.content, draft.title, extractionByAttachmentId, selectedNoteId, selectedSubject?.name],
   );
 
   function updateDraft(updates) {
@@ -147,7 +172,10 @@ export default function Notes() {
       content: note.content ?? "",
     });
     setAttachments([]);
+    setExtractionByAttachmentId({});
+    setChunksByAttachmentId({});
     setPreviewUrls({});
+    setPreviewExtractionId(null);
     setSaveStatus("saved");
     setError("");
     setNotice("");
@@ -159,7 +187,10 @@ export default function Notes() {
     setSelectedNoteId(null);
     setDraft(emptyDraft);
     setAttachments([]);
+    setExtractionByAttachmentId({});
+    setChunksByAttachmentId({});
     setPreviewUrls({});
+    setPreviewExtractionId(null);
     setSaveStatus("draft");
     setError("");
     setNotice("");
@@ -171,7 +202,10 @@ export default function Notes() {
     setSelectedNoteId(null);
     setDraft(emptyDraft);
     setAttachments([]);
+    setExtractionByAttachmentId({});
+    setChunksByAttachmentId({});
     setPreviewUrls({});
+    setPreviewExtractionId(null);
     setSaveStatus("draft");
     setError("");
     setNotice("");
@@ -183,7 +217,10 @@ export default function Notes() {
     setSelectedNoteId(null);
     setDraft(emptyDraft);
     setAttachments([]);
+    setExtractionByAttachmentId({});
+    setChunksByAttachmentId({});
     setPreviewUrls({});
+    setPreviewExtractionId(null);
     setSaveStatus("draft");
     setError("");
     setNotice(`Saved "${savedNote.title}". Ready for a new note.`);
@@ -301,6 +338,8 @@ export default function Notes() {
       }
 
       setAttachments((current) => [...uploadedRows, ...current]);
+      setExtractionByAttachmentId((current) => ({ ...current }));
+      setChunksByAttachmentId((current) => ({ ...current }));
       setNotes((current) =>
         current.map((note) =>
           note.id === targetNote.id
@@ -317,7 +356,11 @@ export default function Notes() {
       );
       setPreviewUrls((current) => ({ ...current, ...Object.fromEntries(entries) }));
       setSaveStatus("saved");
-      setNotice(`${uploadedRows.length} file${uploadedRows.length === 1 ? "" : "s"} attached.`);
+      setNotice(`${uploadedRows.length} file${uploadedRows.length === 1 ? "" : "s"} attached. Preparing source text for AI.`);
+
+      for (const attachment of uploadedRows) {
+        await runAttachmentExtraction(attachment);
+      }
     } catch (uploadError) {
       setError(uploadError.message);
     } finally {
@@ -340,6 +383,16 @@ export default function Notes() {
       setError("");
       await deleteNoteAttachment(attachment, user.id);
       setAttachments((current) => current.filter((item) => item.id !== attachment.id));
+      setExtractionByAttachmentId((current) => {
+        const next = { ...current };
+        delete next[attachment.id];
+        return next;
+      });
+      setChunksByAttachmentId((current) => {
+        const next = { ...current };
+        delete next[attachment.id];
+        return next;
+      });
       setNotes((current) =>
         current.map((note) =>
           note.id === selectedNoteId
@@ -355,11 +408,90 @@ export default function Notes() {
         delete next[attachment.id];
         return next;
       });
+      if (previewExtractionId === attachment.id) {
+        setPreviewExtractionId(null);
+      }
       setNotice("Attachment removed.");
     } catch (deleteError) {
       setError(deleteError.message);
     } finally {
       setDeletingAttachmentId(null);
+    }
+  }
+
+  async function runAttachmentExtraction(attachment) {
+    if (!attachment?.id || extractingAttachmentId === attachment.id) return;
+
+    try {
+      setExtractingAttachmentId(attachment.id);
+      setError("");
+      setNotice("");
+      setExtractionByAttachmentId((current) => ({
+        ...current,
+        [attachment.id]: {
+          ...(current[attachment.id] ?? {}),
+          attachment_id: attachment.id,
+          status: "processing",
+          error: null,
+        },
+      }));
+
+      const result = await extractNoteAttachment(attachment.id);
+      setExtractionByAttachmentId((current) => ({
+        ...current,
+        [attachment.id]: result.extraction,
+      }));
+      setChunksByAttachmentId((current) => ({
+        ...current,
+        [attachment.id]: result.chunks ?? [],
+      }));
+      setPreviewExtractionId(attachment.id);
+      setNotice(`Extracted source text from "${attachment.file_name}".`);
+    } catch (extractError) {
+      const failedExtraction = await getAttachmentExtractionSafe(attachment.id, user.id);
+      if (failedExtraction) {
+        setExtractionByAttachmentId((current) => ({
+          ...current,
+          [attachment.id]: failedExtraction,
+        }));
+      }
+      setError(extractError.message);
+    } finally {
+      setExtractingAttachmentId(null);
+    }
+  }
+
+  async function handleExtractAttachment(attachment) {
+    await runAttachmentExtraction(attachment);
+  }
+
+  async function getAttachmentExtractionSafe(attachmentId, userId) {
+    try {
+      const rows = await getAttachmentExtractions(selectedNoteId, userId);
+      return rows.find((row) => row.attachment_id === attachmentId) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function handleToggleExtractionPreview(attachmentId) {
+    if (previewExtractionId === attachmentId) {
+      setPreviewExtractionId(null);
+      return;
+    }
+
+    try {
+      setError("");
+      if (!chunksByAttachmentId[attachmentId]?.length && user) {
+        const chunks = await getDocumentChunks(attachmentId, user.id, 4);
+        setChunksByAttachmentId((current) => ({
+          ...current,
+          [attachmentId]: chunks,
+        }));
+      }
+      setPreviewExtractionId(attachmentId);
+    } catch (chunkError) {
+      setError(chunkError.message);
     }
   }
 
@@ -378,7 +510,15 @@ export default function Notes() {
         ),
       );
 
-      const summary = await summarizeNote(note.id);
+      const selectedCompletedAttachmentIds = note.id === selectedNoteId
+        ? Object.values(extractionByAttachmentId)
+          .filter((extraction) => extraction?.status === "completed")
+          .map((extraction) => extraction.attachment_id)
+        : [];
+      const completedAttachmentIds = selectedCompletedAttachmentIds.length
+        ? selectedCompletedAttachmentIds
+        : await getCompletedExtractionAttachmentIds([note.id], user.id);
+      const summary = await summarizeNote(note.id, { attachmentIds: completedAttachmentIds });
 
       setNotes((current) =>
         current.map((item) => (item.id === note.id ? summary : item)),
@@ -473,11 +613,17 @@ export default function Notes() {
                     <AttachmentUploader
                       attachments={attachments}
                       previewUrls={previewUrls}
+                      extractionByAttachmentId={extractionByAttachmentId}
+                      chunksByAttachmentId={chunksByAttachmentId}
                       uploading={uploading}
+                      extractingId={extractingAttachmentId}
+                      previewExtractionId={previewExtractionId}
                       deletingId={deletingAttachmentId}
                       onUpload={handleUpload}
                       onOpen={handleOpenAttachment}
                       onDelete={handleDeleteAttachment}
+                      onExtract={handleExtractAttachment}
+                      onTogglePreview={handleToggleExtractionPreview}
                     />
 
                     <NoteSavePanel content={draft.content} attachments={attachments} aiReadyContext={aiReadyContext} />

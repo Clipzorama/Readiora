@@ -30,6 +30,7 @@ import {
   updateFlashcard,
   updateFlashcardSet,
 } from "../services/flashcardsService";
+import { getCompletedExtractionAttachmentIds } from "../services/noteAttachmentsService";
 import { getNotes } from "../services/notesService";
 import { getSubjects } from "../services/subjectsService";
 
@@ -544,7 +545,11 @@ export default function Flashcards() {
       setGenerating(true);
       setError("");
       setNotice("");
-      const generatedRows = await generateFlashcards(generator);
+      const sourceNoteIds = generator.noteId
+        ? [generator.noteId]
+        : subjectNotes.map((note) => note.id);
+      const attachmentIds = await getCompletedExtractionAttachmentIds(sourceNoteIds, user.id);
+      const generatedRows = await generateFlashcards({ ...generator, attachmentIds });
       const normalizedGeneratedRows = generatedRows.map((card) => ({
         ...card,
         set_id: card.set_id || generator.setId,

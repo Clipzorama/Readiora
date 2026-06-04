@@ -285,7 +285,7 @@ function NextExamCard({ exam, currentTime }) {
               <CalendarClock className="h-4 w-4 text-button-hover" />
               {formatExamDate(exam.date)}
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="inline-flex justify-end gap-2">
               <Clock3 className="h-4 w-4 text-button-hover" />
               {formatExamTime(exam.subject.exam_time)}
             </span>
@@ -400,7 +400,7 @@ function StudyHoursWeeklyPanel({ summary }) {
 
       <p className="mt-4 text-sm leading-6 text-secondary">
         {hasStudyHours
-          ? `${formatHours(weeklyTotal)} logged across the current Sunday-Saturday week. This view resets when the next week begins.`
+          ? "The stats reset when the next week begins."
           : "No completed study sessions logged for this week yet. The weekly chart will reset when the next Sunday-Saturday week begins."}
       </p>
     </CommandCard>
