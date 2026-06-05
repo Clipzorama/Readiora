@@ -8,7 +8,7 @@ export default function LandingFooter() {
   const readioraLogo = theme === "light" ? readioraLightLogo : readioraDarkLogo;
 
   return (
-    <footer className="relative z-10 mt-auto border-t border-border bg-background/95 px-3 py-10 sm:px-4 lg:px-5">
+    <footer className="relative z-10 shrink-0 border-t border-border bg-background/95 px-3 py-10 sm:px-4 lg:px-5">
       <div className="mx-auto flex w-full max-w-352 flex-col gap-8">
         <div className="landing-card-surface flex flex-col gap-6 rounded-3xl border border-border bg-card/65 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
           <div>

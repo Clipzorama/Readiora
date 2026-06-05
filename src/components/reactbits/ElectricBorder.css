@@ -1,9 +1,17 @@
 .electric-border {
-  --electric-light-color: oklch(from var(--electric-border-color) l c h);
+  --electric-border-effective-color: var(--electric-border-color);
+  --electric-border-effective-hover-color: var(--electric-border-color);
+  --electric-light-color: oklch(from var(--electric-border-effective-color) l c h);
+  --electric-hover-light-color: oklch(from var(--electric-border-effective-hover-color) l c h);
   position: relative;
   border-radius: inherit;
   overflow: visible;
   isolation: isolate;
+}
+
+html[data-theme="light"] .electric-border {
+  --electric-border-effective-color: hsl(var(--button));
+  --electric-border-effective-hover-color: hsl(var(--button-hover));
 }
 
 .eb-canvas-container {
@@ -44,12 +52,12 @@
 }
 
 .eb-glow-1 {
-  border: 2px solid oklch(from var(--electric-border-color) l c h / 0.6);
+  border: 2px solid oklch(from var(--electric-border-effective-color) l c h / 0.6);
   filter: blur(1px);
 }
 
 .eb-glow-2 {
-  border: 2px solid var(--electric-light-color);
+  border: 2px solid var(--electric-hover-light-color);
   filter: blur(4px);
 }
 
@@ -59,7 +67,7 @@
     -30deg,
     var(--electric-light-color),
     transparent,
-    var(--electric-border-color)
+    var(--electric-border-effective-hover-color)
   );
   opacity: 0.24;
   filter: blur(30px);

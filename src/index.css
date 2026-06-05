@@ -112,13 +112,13 @@
   }
 
   [data-theme="light"] {
-    --background: 0, 0%, 100%;
-    --card: 0, 0%, 100%;
-    --card-hover: 210, 43%, 96%;
+    --background: 210, 45%, 99%;
+    --card: 210, 34%, 96%;
+    --card-hover: 210, 38%, 94%;
     --button: 199, 89%, 48%;
     --button-hover: 199, 89%, 42%;
-    --border: 213, 35%, 93%;
-    --strong-border: 201, 84%, 78%;
+    --border: 214, 24%, 82%;
+    --strong-border: 199, 74%, 60%;
     --primary: 222, 47%, 11%;
     --secondary: 215, 25%, 27%;
     --muted: 215, 16%, 47%;
@@ -178,6 +178,13 @@ html {
         -webkit-background-clip: text;
         color: transparent;
         animation: gradient-text-pan var(--gradient-text-duration, 8s) ease-in-out infinite;
+    }
+
+    html[data-theme="light"] .rb-gradient-text {
+        background-image: linear-gradient(
+            to right,
+            var(--gradient-light-text-colors, var(--gradient-text-colors))
+        );
     }
 
     .rb-text-type {
@@ -259,9 +266,9 @@ html {
     }
 
     html[data-theme="light"] .landing-page {
-        --landing-card: 210, 40%, 98%;
-        --landing-panel: 210, 50%, 99%;
-        --landing-soft: 214, 48%, 96%;
+        --landing-card: 208, 38%, 95%;
+        --landing-panel: 205, 42%, 97%;
+        --landing-soft: 211, 34%, 93%;
     }
 
     .landing-card-surface {

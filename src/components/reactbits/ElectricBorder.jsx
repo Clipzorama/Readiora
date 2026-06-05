@@ -180,7 +180,10 @@ export default function ElectricBorder({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.scale(dpr, dpr);
 
-      ctx.strokeStyle = color;
+      const effectiveColor = getComputedStyle(container)
+        .getPropertyValue("--electric-border-effective-color")
+        .trim();
+      ctx.strokeStyle = effectiveColor || color;
       ctx.lineWidth = 1;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";

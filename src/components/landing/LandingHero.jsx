@@ -57,6 +57,12 @@ export default function LandingHero() {
           <span className="mt-1 block min-h-[1.05em] max-w-full overflow-hidden lg:mt-0 lg:inline lg:min-h-0">
             <GradientText
               colors={["#e6fbff", "#7dd3fc", "#0eb6d3", "#e6fbff"]}
+              lightColors={[
+                "hsl(var(--button-hover))",
+                "hsl(199 89% 34%)",
+                "hsl(222 47% 24%)",
+                "hsl(var(--button))",
+              ]}
               animationSpeed={7}
               pauseOnHover
               className="inline-block max-w-full overflow-hidden whitespace-nowrap align-bottom"

@@ -20,7 +20,7 @@ export default function ThemeToggle({
       aria-label={label}
       title={label}
       className={[
-        "group inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-card/80 text-sm font-semibold text-secondary shadow-sm shadow-black/5 transition duration-200 hover:border-strong-border hover:bg-card-hover hover:text-primary focus:outline-none focus:ring-2 focus:ring-strong-border/70",
+        "group inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-card/80 text-sm font-semibold text-secondary shadow-sm shadow-black/5 transition duration-200 hover:border-strong-border hover:bg-card-hover hover:text-primary focus:outline-none focus:ring-2 focus:ring-strong-border/70 cursor-pointer",
         compact ? "w-10 px-0" : "px-3 py-2.5",
         fullWidth ? "w-full justify-between" : "",
         className,
