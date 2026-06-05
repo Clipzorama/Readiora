@@ -141,6 +141,15 @@
     background: hsl(var(--background));
     color: hsl(var(--primary));
   }
+
+  @media (hover: hover) and (pointer: fine) {
+    button:not(:disabled),
+    a[href],
+    select:not(:disabled),
+    [role="button"]:not([aria-disabled="true"]) {
+      cursor: pointer;
+    }
+  }
 }
 
 html {
