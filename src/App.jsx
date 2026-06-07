@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyEmail from "./pages/VerifyEmail";
 import AuthCallback from "./pages/AuthCallback";
+import LegalPage from "./pages/LegalPage";
 import Dashboard from "./pages/Dashboard";
 import Subjects from "./pages/Subjects";
 import Notes from "./pages/notes/Notes";
@@ -49,6 +50,8 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/privacy" element={<LegalPage type="privacy" />} />
+        <Route path="/terms" element={<LegalPage type="terms" />} />
 
         {/* Protected App Routes */}
         <Route

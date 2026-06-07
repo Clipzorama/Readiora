@@ -1,4 +1,5 @@
 import { CreditCard, LockKeyhole, Smartphone } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 import readioraDarkLogo from "../../assets/readioradark.webp";
 import readioraLightLogo from "../../assets/readioralight.webp";
@@ -27,9 +28,13 @@ export default function LandingFooter() {
             </div>
           </div>
         </div>
-        <p className="text-center text-xs text-muted">
-          © 2026 Readiora LLC. All rights reserved.
-        </p>
+        <div className="flex flex-col items-center justify-between gap-3 text-xs text-muted sm:flex-row">
+          <p>© 2026 Readiora. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <Link to="/privacy" className="transition hover:text-primary">Privacy</Link>
+            <Link to="/terms" className="transition hover:text-primary">Terms</Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

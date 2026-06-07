@@ -27,6 +27,13 @@ dist-ssr
 supabase/.temp/
 AI_STACK_CONTEXT.md
 *.sql
+!supabase/migrations/
+!supabase/migrations/*.sql
 docs/architecture.md
 docs/file-map.md
 /docs
+public/robots.txt
+.env.example
+supabase/config.toml
+supabase/migrations/20260607160000_production_security_hardening.sql
+public/_headers

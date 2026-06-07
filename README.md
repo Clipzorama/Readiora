@@ -48,8 +48,7 @@ npm install
 Create a local `.env` file in the project root:
 
 ```bash
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+cp .env.example .env
 ```
 
 Start the development server:
@@ -106,9 +105,9 @@ The app expects these Vite environment variables:
 | Variable | Description |
 | --- | --- |
 | `VITE_SUPABASE_URL` | Supabase project URL. |
-| `VITE_SUPABASE_ANON_KEY` | Supabase public anon key. |
+| `VITE_SUPABASE_ANON_KEY` | Supabase publishable/legacy anon key. This value is designed for browser use with RLS enabled. |
 
-Do not commit `.env` files or private credentials.
+`VITE_*` values are bundled into the browser and must never contain service-role keys, OAuth client secrets, OpenAI keys, or other private credentials. Server-only secrets belong in Supabase Edge Function secrets. Do not commit `.env` files or private credentials.
 
 ## Documentation
 
