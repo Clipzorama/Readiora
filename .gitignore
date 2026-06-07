@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
 
 # Editor directories and files
 .vscode/*
@@ -22,13 +25,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.env
 /playform
-supabase/.temp/
+playform/
+deployment/
+docs/
 AI_STACK_CONTEXT.md
-*.sql
+supabase/.temp/
+supabase/sql/
 supabase/migrations/
-docs/architecture.md
-docs/file-map.md
-/docs
-/deployment/
+*.sql
+*.pdf

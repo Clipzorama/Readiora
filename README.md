@@ -1,137 +1,224 @@
 # Readiora
 
-Readiora is a modern study workspace built with React, Vite, and Supabase. It gives students a focused place to manage subjects, write notes, upload attachments, and track study activity inside a polished command-center style interface.
+Readiora is a production-ready study workspace for building, organizing, and reviewing learning material in one place. It combines a React + Vite frontend with Supabase for authentication, data storage, file uploads, and Edge Functions. The app is designed around a focused dashboard experience for subjects, notes, summaries, flashcards, quizzes, study sessions, and account settings.
 
-## Overview
+**Live production site:** `https://readiora.com`
 
-The app is a frontend React single-page application with Supabase handling authentication, database access, and file storage. The codebase is organized around clear page, component, service, hook, and context layers so the project is easy to extend as new study and AI-assisted features are added.
+## Product Summary
 
-## Features
+Readiora gives users a clean command-center interface for managing study work without forcing them to juggle separate tools. The app supports:
 
-- Public landing page for the Readiora product experience.
-- Email/password authentication with Supabase.
-- Google and GitHub OAuth sign-in.
-- Protected dashboard, subjects, notes, and settings routes.
-- Subject creation, editing, and deletion.
-- Markdown-style note editing and previewing.
-- Note attachment uploads through Supabase Storage.
-- Profile settings with avatar and phone support.
-- Responsive app shell with protected navigation.
+- Authentication with email/password, Google, and GitHub.
+- Protected user-specific data for subjects, notes, summaries, flashcards, quizzes, sessions, and uploads.
+- Supabase Storage for avatars and note attachments.
+- AI-assisted workflows through Supabase Edge Functions.
+- Responsive layouts for desktop, tablet, and mobile.
+- Public marketing pages plus protected application routes.
+
+## Core Features
+
+- Landing page with product messaging and CTA flow.
+- Signup, login, email verification, password recovery, and reset flows.
+- Auth callback handling for OAuth and email verification.
+- Dashboard with overview data and study shortcuts.
+- Subjects management.
+- Notes editor with markdown-style composition and attachment support.
+- Summaries, flashcards, and quiz generation.
+- Quiz taking and session tracking.
+- Profile and settings management.
+- Theme support with light/dark transitions.
 
 ## Tech Stack
 
-| Area | Technology |
+| Area | Stack |
 | --- | --- |
-| Frontend | React 19, JavaScript ES modules |
-| Build Tool | Vite 8 |
-| Routing | React Router 7 |
-| Styling | Tailwind CSS 4, CSS |
-| Backend Services | Supabase Auth, Postgres, Storage |
-| Animation | Framer Motion, Motion |
-| Icons | Lucide React |
-| Tooling | ESLint, shadcn config |
+| Frontend | React 19 |
+| Build Tool | Vite |
+| Routing | React Router |
+| Styling | Tailwind CSS 4, custom CSS |
+| Backend | Supabase Auth, Postgres, Storage, Edge Functions |
+| Animation | Framer Motion, Motion, GSAP |
+| UI Utilities | Lucide React, class-variance-authority, clsx, tailwind-merge |
+| Markdown / Math | React Markdown, KaTeX, remark-math, rehype-katex |
+| State | React context, hooks, Zustand |
 
-## Getting Started
+## Production Architecture
 
-### Prerequisites
+Readiora is a frontend-first application with Supabase providing the backend services.
 
-- Node.js
-- npm
-- Supabase project credentials
+- Browser app lives in `src/`.
+- Supabase client is initialized in [`src/lib/supabase.js`](./src/lib/supabase.js).
+- App routes are defined in [`src/App.jsx`](./src/App.jsx).
+- Auth, profile, subject, notes, flashcard, quiz, session, and AI operations are isolated into service modules under `src/services/`.
+- Supabase Edge Functions live in `supabase/functions/`.
+- SQL setup and production hardening scripts live locally under `supabase/`.
 
-### Installation
+### Main App Routes
 
-```bash
-npm install
+| Route | Purpose |
+| --- | --- |
+| `/` | Landing page |
+| `/login` | Login screen |
+| `/signup` | Account creation |
+| `/verify-email` | Email confirmation guidance |
+| `/auth/callback` | OAuth / auth callback handler |
+| `/forgot-password` | Password recovery request |
+| `/reset-password` | Password reset flow |
+| `/dashboard` | Main authenticated dashboard |
+| `/subjects` | Subject management |
+| `/notes` | Notes workspace |
+| `/summaries` | Saved summaries |
+| `/flashcards` | Flashcard view and study flow |
+| `/quiz` | Quiz dashboard |
+| `/quiz/:quizId/start` | Start a quiz session |
+| `/sessions` | Study sessions |
+| `/settings` | Account settings redirect |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
+
+## Repository Layout
+
+```text
+Readiora/
+  src/
+    assets/              Brand images and app assets
+    components/          Shared UI, landing sections, and layout pieces
+    context/             Theme and profile providers
+    hooks/               Reusable React hooks
+    lib/                 Supabase client setup
+    pages/               Route-level screens
+    routes/              Route guards
+    services/            Supabase and app service modules
+  public/                 Static assets and hosting files
+  supabase/               Edge Functions, SQL, and local Supabase config
+  README.md               Project overview and setup
 ```
 
-Create a local `.env` file in the project root:
+## Environment Variables
+
+Only publishable browser-safe values should live in the frontend environment.
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL` | Yes | Supabase project URL used by the browser client. |
+| `VITE_SUPABASE_ANON_KEY` | Yes | Publishable Supabase anon key used by the browser client. |
+
+Do not place service-role keys, OAuth client secrets, email API keys, or other private credentials in frontend env files. Those belong in Supabase dashboard secrets or other server-only configuration.
+
+### Example local setup
 
 ```bash
 cp .env.example .env
 ```
 
-Start the development server:
+Then set:
+
+```bash
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Local Development
+
+### Requirements
+
+- Node.js 18+ recommended
+- npm
+- A configured Supabase project
+
+### Install
+
+```bash
+npm install
+```
+
+### Run locally
 
 ```bash
 npm run dev
 ```
 
-## Available Scripts
-
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the Vite development server. |
-| `npm run build` | Build the production app into `dist/`. |
-| `npm run preview` | Preview the production build locally. |
-| `npm run lint` | Run ESLint checks. |
-
-## Project Structure
-
-```text
-Readiora/
-  docs/                  Project documentation
-  playform/              Local design and reference assets
-  public/                Static assets served directly by Vite
-  src/
-    assets/              Images imported by React components
-    components/          Shared UI components
-    context/             React context providers
-    hooks/               Reusable React hooks
-    lib/                 Shared library setup
-    pages/               Route-level screens
-    routes/              Route guards and routing helpers
-    services/            Supabase service functions
-    App.jsx              Main route table
-    main.jsx             React entry point
-```
-
-## Key Folders
-
-| Path | Purpose |
-| --- | --- |
-| `src/pages/` | Main screens for landing, auth, dashboard, subjects, notes, and settings. |
-| `src/components/` | Reusable UI, layout components, landing sections, and visual effects. |
-| `src/services/` | Supabase-facing functions for auth, profiles, subjects, notes, and attachments. |
-| `src/hooks/` | Shared React hooks such as `useAuth`. |
-| `src/context/` | App-level state providers such as profile context. |
-| `src/lib/` | Shared setup files, including the Supabase client. |
-| `docs/` | Architecture notes and file navigation docs. |
-
-## Environment
-
-The app expects these Vite environment variables:
-
-| Variable | Description |
-| --- | --- |
-| `VITE_SUPABASE_URL` | Supabase project URL. |
-| `VITE_SUPABASE_ANON_KEY` | Supabase publishable/legacy anon key. This value is designed for browser use with RLS enabled. |
-
-Production uses Readiora's project URL and publishable/anon key, configured once by the deployer.
-Application users never provide their own Supabase URL or key.
-
-`VITE_*` values are bundled into the browser and must never contain service-role keys, OAuth client secrets, OpenAI keys, or other private credentials. Server-only secrets belong in Supabase Edge Function secrets. Do not commit `.env` files or private credentials.
-
-## Documentation
-
-- `docs/file-map.md` explains where files live and when to edit them.
-- `docs/architecture.md` documents the current app architecture and route flow.
-- `AI_STACK_CONTEXT.md` summarizes the project stack and technical direction.
-
-## Build
-
-Create a production build:
+### Quality checks
 
 ```bash
+npm run lint
 npm run build
-```
-
-Preview the production build:
-
-```bash
 npm run preview
 ```
 
-## Status
+## Supabase Integration
 
-Readiora is under active development. The current codebase focuses on the React app shell, authentication, subjects, notes, attachments, and profile settings. AI-facing product direction exists in the interface and project context, but no live AI provider integration is currently wired into the application.
+Readiora uses Supabase for:
+
+- Authentication
+- User profiles
+- Subjects
+- Notes
+- Flashcards
+- Quizzes
+- Study sessions
+- Storage uploads
+- AI workflow Edge Functions
+
+The app’s Edge Functions currently include:
+
+- `summarize-note`
+- `generate-flashcards`
+- `generate-quiz`
+- `extract-attachment-text`
+
+## Deployment Notes
+
+Production is served from Cloudflare Pages and connected to the custom domain `readiora.com`.
+
+- Canonical domain: `readiora.com`
+- `www.readiora.com` redirects to the canonical domain
+- SPA routing is configured so refreshes on protected routes do not 404
+- Supabase Auth callback and recovery URLs must point to the production domain
+- DNS is managed through Cloudflare
+
+## Security Notes
+
+- The browser only receives `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+- Private secrets stay server-side.
+- Row Level Security protects user-owned data.
+- Production storage buckets are split by use case and access level.
+- Deployment notes, SQL exports, and internal setup files are kept out of version control.
+
+## Visual References
+
+Add screenshots or diagrams here if you want a richer README for clients, reviewers, or future maintenance work.
+
+### Landing Page
+
+![Landing page screenshot](./docs/images/landing-page.png)
+
+### Dashboard
+
+![Dashboard screenshot](./docs/images/dashboard.png)
+
+### Notes Workspace
+
+![Notes workspace screenshot](./docs/images/notes.png)
+
+### Flashcards and Quiz
+
+![Flashcards screenshot](./docs/images/flashcards.png)
+![Quiz screenshot](./docs/images/quiz.png)
+
+### Mobile Layout
+
+![Mobile screenshot](./docs/images/mobile.png)
+
+> These image paths are placeholders. Add matching files locally if you want the images to render in your copy of the README.
+
+## Maintenance
+
+- Keep `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` aligned with the production Supabase project.
+- Update OAuth redirect URLs whenever the canonical domain changes.
+- Re-run `npm run lint` and `npm run build` before each deployment.
+- Keep SQL migrations, deployment notes, and other operational artifacts local unless you explicitly want them versioned.
+
+## Project Status
+
+Readiora is in production and actively evolving. The current codebase is stable for the core study workflow, authentication, file uploads, and AI-assisted content generation, with additional polish and product work continuing over time.
