@@ -94,30 +94,6 @@ Readiora/
   README.md               Project overview and setup
 ```
 
-## Environment Variables
-
-Only publishable browser-safe values should live in the frontend environment.
-
-| Variable | Required | Description |
-| --- | --- | --- |
-| `VITE_SUPABASE_URL` | Yes | Supabase project URL used by the browser client. |
-| `VITE_SUPABASE_ANON_KEY` | Yes | Publishable Supabase anon key used by the browser client. |
-
-Do not place service-role keys, OAuth client secrets, email API keys, or other private credentials in frontend env files. Those belong in Supabase dashboard secrets or other server-only configuration.
-
-### Example local setup
-
-```bash
-cp .env.example .env
-```
-
-Then set:
-
-```bash
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
 ## Local Development
 
 ### Requirements
@@ -191,30 +167,29 @@ Add screenshots or diagrams here if you want a richer README for clients, review
 
 ### Landing Page
 
-![Landing page screenshot](./docs/images/landing-page.png)
+![Landing page screenshot](./public/images/landing-page.png)
 
 ### Dashboard
 
-![Dashboard screenshot](./docs/images/dashboard.png)
+![Dashboard screenshot](./public/images/dashboard.png)
 
 ### Notes Workspace
 
-![Notes workspace screenshot](./docs/images/notes.png)
+![Notes workspace screenshot](./public/images/notes.png)
 
 ### Flashcards and Quiz
 
-![Flashcards screenshot](./docs/images/flashcards.png)
-![Quiz screenshot](./docs/images/quiz.png)
+![Flashcards screenshot](./public/images/flashcards.png)
+![Quiz screenshot](./public/images/quiz.png)
 
 ### Mobile Layout
 
-![Mobile screenshot](./docs/images/mobile.png)
+![Mobile screenshot](./public/images/mobile.png)
 
-> These image paths are placeholders. Add matching files locally if you want the images to render in your copy of the README.
+> These image paths are placeholders. Add matching files under `public/images/` if you want the images to render in your copy of the README.
 
 ## Maintenance
 
-- Keep `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` aligned with the production Supabase project.
 - Update OAuth redirect URLs whenever the canonical domain changes.
 - Re-run `npm run lint` and `npm run build` before each deployment.
 - Keep SQL migrations, deployment notes, and other operational artifacts local unless you explicitly want them versioned.
