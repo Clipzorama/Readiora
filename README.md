@@ -184,7 +184,7 @@ Add screenshots or diagrams here if you want a richer README for clients, review
 
 ### Mobile Layout
 
-![Mobile screenshot](./public/images/mobile.png)
+<img src="./public/images/mobile.png" alt="Mobile screenshot" width="320" />
 
 > These image paths are placeholders. Add matching files under `public/images/` if you want the images to render in your copy of the README.
 
