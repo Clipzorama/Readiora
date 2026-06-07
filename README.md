@@ -186,8 +186,6 @@ Add screenshots or diagrams here if you want a richer README for clients, review
 
 ![Mobile screenshot](./public/images/mobile.png)
 
-> These image paths are placeholders. Add matching files under `public/images/` if you want the images to render in your copy of the README.
-
 ## Maintenance
 
 - Update OAuth redirect URLs whenever the canonical domain changes.
