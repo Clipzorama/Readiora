@@ -55,6 +55,7 @@
   --animate-fade-in-delay-7: fade-in 0.7s ease-out 1.4s forwards;
 }
 
+
 @layer base {
   :root {
     --background: 220, 42%, 5%;
