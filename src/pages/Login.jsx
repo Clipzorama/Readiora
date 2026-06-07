@@ -250,9 +250,19 @@ export default function Login() {
               name="password"
               type="password"
               placeholder="Password"
+              autoComplete="current-password"
               required
               className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
             />
+
+            <motion.div variants={itemVariants} className="text-right">
+              <Link
+                to="/forgot-password"
+                className="text-sm font-semibold text-button transition hover:text-button-hover"
+              >
+                Forgot password?
+              </Link>
+            </motion.div>
 
             <motion.button
               variants={itemVariants}

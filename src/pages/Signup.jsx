@@ -184,7 +184,9 @@ export default function Signup() {
               variants={itemVariants}
               name="password"
               type="password"
-              placeholder="Password"
+              placeholder="Password (8+ characters)"
+              autoComplete="new-password"
+              minLength={8}
               required
               className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-primary outline-none transition placeholder:text-muted focus:border-strong-border sm:py-3"
             />
