@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -54,7 +54,7 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
 };
 
-function SidebarNav({ onNavigate, onOpenSettings }) {
+function SidebarNav({ onNavigate, onOpenSettings, className = "mt-10" }) {
   const sections = [
     { label: "Core", items: navItems },
     { label: "Study", items: studyNavItems },
@@ -62,7 +62,7 @@ function SidebarNav({ onNavigate, onOpenSettings }) {
   ];
 
   return (
-    <nav className="grid gap-4 mt-10">
+    <nav className={`grid gap-4 ${className}`}>
       {sections.map((section) => (
         <div key={section.label}>
           <p className="px-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-button">
@@ -171,6 +171,17 @@ export function WarRoomShell({ eyebrow, title, description, action, children, hi
   const [mobileOpen, setMobileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
+
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
 
   async function handleSignOut() {
     await signOutUser();
@@ -332,10 +343,11 @@ export function WarRoomShell({ eyebrow, title, description, action, children, hi
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 260, damping: 28 }}
-              className="fixed inset-y-0 left-0 z-50 flex w-[min(22rem,calc(100vw-2rem))] flex-col justify-between border-r border-border bg-card/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl lg:hidden"
+              aria-label="Mobile navigation"
+              className="fixed inset-y-0 left-0 z-50 flex h-dvh max-h-dvh w-[min(22rem,calc(100vw-1rem))] flex-col overflow-hidden border-r border-border bg-card/95 shadow-2xl shadow-black/50 backdrop-blur-xl lg:hidden"
             >
-              <div>
-                <div className="flex items-center justify-between gap-3 rounded-3xl border border-strong-border/70 bg-background/65 p-4">
+              <div className="shrink-0 border-b border-border/70 bg-card/90 p-3 sm:p-4">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-strong-border/70 bg-background/65 p-3 sm:rounded-3xl sm:p-4">
                   <SidebarIdentity className="flex-1" />
                   <button
                     type="button"
@@ -346,25 +358,26 @@ export function WarRoomShell({ eyebrow, title, description, action, children, hi
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-
-                <div className="mt-6">
-                  <div className="mt-3">
-                    <SidebarNav
-                      onNavigate={() => setMobileOpen(false)}
-                      onOpenSettings={openSettings}
-                    />
-                  </div>
-                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-background/70 px-3 py-3 text-sm font-semibold text-secondary transition hover:border-strong-border hover:text-primary"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </button>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 [scrollbar-gutter:stable] sm:px-4">
+                <SidebarNav
+                  className=""
+                  onNavigate={() => setMobileOpen(false)}
+                  onOpenSettings={openSettings}
+                />
+              </div>
+
+              <div className="shrink-0 border-t border-border/70 bg-card/95 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_30px_hsl(var(--background)/0.45)] sm:px-4">
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background/70 px-3 py-3 text-sm font-semibold text-secondary transition hover:border-strong-border hover:bg-card-hover hover:text-primary"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
             </motion.aside>
           </>
         )}
