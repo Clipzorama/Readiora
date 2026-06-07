@@ -243,8 +243,9 @@ export async function getDashboardIntelligence(userId) {
     getQuizAccuracySummary(userId),
     supabase
       .from("flashcards")
-      .select("id, subject_id, status, difficulty")
-      .eq("user_id", userId),
+      .select("id, subject_id, set_id, status, difficulty")
+      .eq("user_id", userId)
+      .not("set_id", "is", null),
     supabase
       .from("quiz_attempts")
       .select("id, subject_id, score, total_questions, accuracy, answers, created_at")

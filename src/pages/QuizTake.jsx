@@ -24,6 +24,8 @@ const shellVariants = {
   visible: { opacity: 1, transition: { duration: 0.35, ease: "easeOut" } },
 };
 
+const MINIMUM_QUIZ_LOADING_MS = 1500;
+
 const panelVariants = {
   hidden: { opacity: 0, y: 18, scale: 0.98 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.42, ease: "easeOut" } },
@@ -144,20 +146,41 @@ export default function QuizTake() {
   useEffect(() => {
     if (!user || !quizId) return;
 
+    let cancelled = false;
+
     async function loadQuiz() {
+      const loadingStartedAt = Date.now();
+
       try {
         setLoading(true);
         setError("");
         const quizRow = await getQuizById(quizId, user.id);
-        setQuiz(quizRow);
+        if (!cancelled) {
+          setQuiz(quizRow);
+        }
       } catch (loadError) {
-        setError(loadError.message);
+        if (!cancelled) {
+          setError(loadError.message);
+        }
       } finally {
-        setLoading(false);
+        const elapsed = Date.now() - loadingStartedAt;
+        const remainingDelay = Math.max(0, MINIMUM_QUIZ_LOADING_MS - elapsed);
+
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, remainingDelay);
+        });
+
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     loadQuiz();
+
+    return () => {
+      cancelled = true;
+    };
   }, [quizId, user]);
 
   useEffect(() => {

@@ -224,7 +224,7 @@ function CountdownUnit({ value, label }) {
   );
 }
 
-function NextExamCard({ exam, currentTime }) {
+function NextExamCard({ exam, currentTime, isNextExam = true }) {
   if (!exam) {
     return (
       <div className="relative overflow-hidden rounded-[1.35rem] border border-strong-border/55 bg-card/80 p-5 shadow-2xl shadow-button/10 backdrop-blur-xl sm:p-6">
@@ -272,7 +272,7 @@ function NextExamCard({ exam, currentTime }) {
       <div className="relative">
         <div className="flex items-center justify-between gap-4">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-            Next Exam
+            {isNextExam ? "Next Exam" : "Selected Exam"}
           </p>
           <div className="grid h-11 w-11 place-items-center rounded-2xl border border-strong-border/60 bg-background/70 text-primary shadow-[0_0_24px_hsl(var(--button)/0.16)]">
             <CalendarClock className="h-5 w-5" />
@@ -607,6 +607,7 @@ export default function Dashboard() {
   const [weakTopics, setWeakTopics] = useState([]);
   const [studyMissions, setStudyMissions] = useState([]);
   const [activeSection, setActiveSection] = useState("overview");
+  const [selectedExamId, setSelectedExamId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [dashboardTime, setDashboardTime] = useState(() => new Date());
@@ -648,11 +649,7 @@ export default function Dashboard() {
   const backendStatus = loading ? "checking" : error ? "disconnected" : "connected";
   const activeWeekKey = useMemo(() => getSundayWeekKey(dashboardTime), [dashboardTime]);
 
-  const scheduledExamCount = useMemo(() => {
-    return subjects.filter((subject) => subject.exam_date).length;
-  }, [subjects]);
-
-  const nextExam = useMemo(() => {
+  const upcomingExams = useMemo(() => {
     const now = dashboardTime.getTime();
 
     return subjects
@@ -661,8 +658,14 @@ export default function Dashboard() {
         date: buildExamDate(subject),
       }))
       .filter((exam) => exam.date && exam.date.getTime() >= now)
-      .sort((first, second) => first.date.getTime() - second.date.getTime())[0] ?? null;
+      .sort((first, second) => first.date.getTime() - second.date.getTime());
   }, [dashboardTime, subjects]);
+
+  const selectedExam = upcomingExams.find((exam) => exam.subject.id === selectedExamId)
+    ?? upcomingExams[0]
+    ?? null;
+  const nextExam = upcomingExams[0] ?? null;
+  const scheduledExamCount = upcomingExams.length;
 
   useEffect(() => {
     if (!user || loading) return;
@@ -773,11 +776,15 @@ export default function Dashboard() {
 
         {activeSection === "exams" && (
           <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
-            <NextExamCard exam={nextExam} currentTime={dashboardTime} />
+            <NextExamCard
+              exam={selectedExam}
+              currentTime={dashboardTime}
+              isNextExam={!selectedExam || selectedExam.subject.id === nextExam?.subject.id}
+            />
             <CommandCard>
               <CardHeader
-                eyebrow="Upcoming Exam"
-                title="Exam Countdown"
+                eyebrow="Exam Schedule"
+                title="Upcoming Exams"
                 icon={CalendarClock}
               />
               <div className="rounded-2xl border border-strong-border bg-background/70 p-5 text-center">
@@ -786,18 +793,44 @@ export default function Dashboard() {
                   {scheduledExamCount === 1 ? "exam scheduled" : "exams scheduled"}
                 </p>
               </div>
-              <div className="mt-4 grid gap-3">
-                {subjects.filter((subject) => subject.exam_date).slice(0, 4).map((subject) => {
-                  const examDate = buildExamDate(subject);
-                  return (
-                    <div key={subject.id} className="rounded-2xl border border-border bg-background/60 p-3">
-                      <p className="font-semibold text-primary">{subject.name}</p>
-                      <p className="mt-1 text-sm text-secondary">
-                        {examDate ? formatExamDate(examDate) : "Date unavailable"}
-                      </p>
-                    </div>
-                  );
-                })}
+              <div className="mt-4 grid max-h-[32rem] gap-3 overflow-y-auto pr-1">
+                {upcomingExams.length === 0 ? (
+                  <EmptyPanel>Add exam dates to your subjects to build your countdown schedule.</EmptyPanel>
+                ) : (
+                  upcomingExams.map((exam, index) => {
+                    const countdown = getCountdownParts(exam.date, dashboardTime);
+                    const selected = exam.subject.id === selectedExam?.subject.id;
+
+                    return (
+                      <button
+                        key={exam.subject.id}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setSelectedExamId(exam.subject.id)}
+                        className={`rounded-2xl border p-3 text-left transition ${
+                          selected
+                            ? "border-strong-border bg-button/20 shadow-lg shadow-button/10"
+                            : "border-border bg-background/60 hover:border-strong-border hover:bg-card-hover"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-primary">{exam.subject.name}</p>
+                            <p className="mt-1 text-sm text-secondary">{formatExamDate(exam.date)}</p>
+                          </div>
+                          {index === 0 && (
+                            <span className="shrink-0 rounded-full border border-success/30 bg-success/15 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-success">
+                              Next
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-3 text-sm font-semibold text-button-hover">
+                          {countdown.days}d {countdown.hours}h {countdown.minutes}m remaining
+                        </p>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </CommandCard>
           </section>

@@ -128,8 +128,9 @@ function SidebarNav({ onNavigate, onOpenSettings }) {
             {section.label === "Account" && (
               <ThemeToggle
                 fullWidth
+                navigation
                 labelPrefix="Workspace"
-                className="mt-1 border-transparent bg-transparent px-3 text-left hover:border-border hover:bg-card-hover/80 cursor-pointer"
+                className="mt-1 border-transparent bg-transparent px-3 text-left shadow-none hover:border-border hover:bg-card-hover/80 cursor-pointer"
               />
             )}
           </div>

@@ -143,6 +143,20 @@
     color: hsl(var(--primary));
   }
 
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  ::view-transition-new(root) {
+    z-index: 2;
+  }
+
   /* automatically adding cursor-pointer to everything that is clickable */
   @media (hover: hover) and (pointer: fine) {
     button:not(:disabled),
@@ -178,6 +192,26 @@ html {
         50% {
             background-position: 100% 50%;
         }
+    }
+
+    @keyframes theme-toggle-icon-in {
+        0% {
+            opacity: 0;
+            transform: rotate(-75deg) scale(0.55);
+        }
+        65% {
+            opacity: 1;
+            transform: rotate(8deg) scale(1.12);
+        }
+        100% {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+    }
+
+    .theme-toggle-icon {
+        animation: theme-toggle-icon-in 450ms cubic-bezier(0.22, 1, 0.36, 1);
+        transform-origin: center;
     }
 
     .rb-gradient-text {
@@ -323,6 +357,10 @@ html {
 
         .rb-spotlight-glow {
             transition: none;
+        }
+
+        .theme-toggle-icon {
+            animation: none;
         }
     }
 
