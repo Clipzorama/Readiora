@@ -27,8 +27,7 @@ dist-ssr
 supabase/.temp/
 AI_STACK_CONTEXT.md
 *.sql
-!supabase/migrations/
-!supabase/migrations/*.sql
+supabase/migrations/
 docs/architecture.md
 docs/file-map.md
 /docs
