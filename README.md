@@ -107,6 +107,9 @@ The app expects these Vite environment variables:
 | `VITE_SUPABASE_URL` | Supabase project URL. |
 | `VITE_SUPABASE_ANON_KEY` | Supabase publishable/legacy anon key. This value is designed for browser use with RLS enabled. |
 
+Production uses Readiora's project URL and publishable/anon key, configured once by the deployer.
+Application users never provide their own Supabase URL or key.
+
 `VITE_*` values are bundled into the browser and must never contain service-role keys, OAuth client secrets, OpenAI keys, or other private credentials. Server-only secrets belong in Supabase Edge Function secrets. Do not commit `.env` files or private credentials.
 
 ## Documentation

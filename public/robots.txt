@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /subjects
+Disallow: /notes
+Disallow: /summaries
+Disallow: /flashcards
+Disallow: /quiz
+Disallow: /sessions
+
+Sitemap: https://readiora.com/sitemap.xml
