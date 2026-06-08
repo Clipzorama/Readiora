@@ -5,6 +5,7 @@ import {
   Image,
   LoaderCircle,
   Sparkles,
+  Trash2,
 } from "lucide-react";
 import AIContentRenderer from "../../components/AIContentRenderer";
 import { CommandCard } from "../../components/WarRoomLayout";
@@ -43,8 +44,10 @@ export default function RecentNotesLibrary({
   notes,
   selectedNoteId,
   summarizingNoteId,
+  deletingNoteId,
   onSelect,
   onSummarize,
+  onDelete,
 }) {
   return (
     <CommandCard className="min-w-0 overflow-hidden p-3 sm:p-5">
@@ -115,7 +118,12 @@ export default function RecentNotesLibrary({
                   </div>
                   <button
                     type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSelect(note);
+                    }}
                     className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border/70 bg-card/70 text-muted transition hover:border-strong-border cursor-pointer"
+                    aria-label={`Open ${note.title}`}
                   >
                     <ExternalLink className="h-4 w-4 text-primary" />
                   </button>
@@ -172,6 +180,23 @@ export default function RecentNotesLibrary({
                       Saved
                     </span>
                   )}
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(note);
+                    }}
+                    disabled={deletingNoteId === note.id}
+                    className="ml-auto inline-flex min-h-10 items-center justify-center rounded-xl border border-danger/35 bg-danger/10 px-3 text-danger transition hover:border-danger hover:bg-danger/15 disabled:cursor-not-allowed disabled:opacity-60"
+                    aria-label={`Delete ${note.title}`}
+                    title="Delete note"
+                  >
+                    {deletingNoteId === note.id ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
               </div>
             );

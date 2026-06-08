@@ -222,6 +222,12 @@ export default function Quiz() {
     event.preventDefault();
     if (!generator.subjectId) return;
 
+    if (subjectNotes.length === 0) {
+      setError("Create a note in this subject before generating a quiz.");
+      setNotice("");
+      return;
+    }
+
     try {
       setGenerating(true);
       setError("");

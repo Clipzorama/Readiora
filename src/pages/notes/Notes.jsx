@@ -59,6 +59,7 @@ export default function Notes() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [summarizingNoteId, setSummarizingNoteId] = useState(null);
+  const [deletingNoteId, setDeletingNoteId] = useState(null);
   const [extractingAttachmentId, setExtractingAttachmentId] = useState(null);
   const [previewExtractionId, setPreviewExtractionId] = useState(null);
   const [deletingAttachmentId, setDeletingAttachmentId] = useState(null);
@@ -273,27 +274,36 @@ export default function Notes() {
     }
   }
 
-  async function handleDelete() {
-    if (!selectedNote) return;
-    const confirmed = window.confirm(`Delete "${selectedNote.title}"?`);
+  async function handleDeleteNote(note) {
+    if (!note || deletingNoteId === note.id) return;
+    const confirmed = window.confirm(`Delete "${note.title}"?`);
     if (!confirmed) return;
 
     try {
+      setDeletingNoteId(note.id);
       setError("");
-      await deleteNote(selectedNote.id, user.id);
-      const remaining = notes.filter((note) => note.id !== selectedNote.id);
-      setNotes(remaining);
+      setNotice("");
+      await deleteNote(note.id, user.id);
+      setNotes((current) => current.filter((item) => item.id !== note.id));
 
-      setSelectedNoteId(null);
-      setDraft(emptyDraft);
-      setAttachments([]);
-      setPreviewUrls({});
-      setSaveStatus("draft");
-      setWorkspaceVisible(false);
-      setLibraryHiddenForNewNote(false);
+      if (selectedNoteId === note.id) {
+        setSelectedNoteId(null);
+        setDraft(emptyDraft);
+        setAttachments([]);
+        setExtractionByAttachmentId({});
+        setChunksByAttachmentId({});
+        setPreviewUrls({});
+        setPreviewExtractionId(null);
+        setSaveStatus("draft");
+        setWorkspaceVisible(false);
+        setLibraryHiddenForNewNote(false);
+      }
+
       setNotice("Note deleted.");
     } catch (deleteError) {
       setError(deleteError.message);
+    } finally {
+      setDeletingNoteId(null);
     }
   }
 
@@ -586,8 +596,10 @@ export default function Notes() {
                     notes={notes}
                     selectedNoteId={selectedNoteId}
                     summarizingNoteId={summarizingNoteId}
+                    deletingNoteId={deletingNoteId}
                     onSelect={selectNoteDraft}
                     onSummarize={handleSummarize}
+                    onDelete={handleDeleteNote}
                   />
                 </motion.div>
               )}
@@ -613,7 +625,7 @@ export default function Notes() {
                       saveStatus={saveStatus}
                       onChangeDraft={updateDraft}
                       onCancel={cancelWorkspace}
-                      onDelete={handleDelete}
+                      onDelete={() => handleDeleteNote(selectedNote)}
                       onSave={handleSave}
                     />
 
