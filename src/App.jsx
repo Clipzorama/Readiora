@@ -38,15 +38,6 @@ export default function App() {
             </Suspense>
           }
         />
-        <Route
-          path="/playform"
-          element={
-            <Suspense fallback={<LandingFallback />}>
-              <Landing />
-            </Suspense>
-          }
-        />
-
         {/* Authenticated Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
