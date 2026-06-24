@@ -22,6 +22,7 @@ export function useAuth() {
     }
 
     loadSession();
+    
 
     const {
       data: { subscription },
