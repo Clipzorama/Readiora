@@ -13,6 +13,7 @@ const EMPTY_FLASHCARD_SUMMARY = {
   masteryPercent: 0,
 };
 
+
 function clampPercent(value) {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(100, Math.round(value)));
