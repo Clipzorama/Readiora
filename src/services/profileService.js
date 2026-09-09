@@ -207,15 +207,3 @@ export async function uploadAvatar({ user, file }) {
   const { data } = supabase.storage.from(AVATARS_BUCKET).getPublicUrl(filePath);
   return data.publicUrl;
 }
-
-export async function updateAuthPhone(phone) {
-  const normalizedPhone = normalizePhoneNumber(phone);
-  if (!normalizedPhone) return null;
-
-  const { data, error } = await supabase.auth.updateUser({
-    phone: normalizedPhone,
-  });
-
-  if (error) throw error;
-  return data.user;
-}

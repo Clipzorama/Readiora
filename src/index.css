@@ -1,8 +1,5 @@
-/* Inter for headings */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-
-/* DM Sans - For paragraphs, Nav, Buttons */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+/* DM Sans - Note editor typography */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 
 
@@ -11,10 +8,7 @@
 
 @theme {
 
-  --font-inter: Inter, sans-serif;
   --font-dm: DM Sans, sans-serif;
-
-  --color-background: hsl(var(--background));
 
   --color-background: hsl(var(--background));
 
@@ -45,14 +39,6 @@
   --color-warning: hsl(var(--warning));
 
   --color-danger: hsl(var(--danger));
-  --animate-fade-in: fade-in 0.7s ease-out forwards;
-  --animate-fade-in-delay-1: fade-in 0.7s ease-out 0.2s forwards;
-  --animate-fade-in-delay-2: fade-in 0.7s ease-out 0.4s forwards;
-  --animate-fade-in-delay-3: fade-in 0.7s ease-out 0.6s forwards;
-  --animate-fade-in-delay-4: fade-in 0.7s ease-out 0.8s forwards;
-  --animate-fade-in-delay-5: fade-in 0.7s ease-out 1.0s forwards;
-  --animate-fade-in-delay-6: fade-in 0.7s ease-out 1.2s forwards;
-  --animate-fade-in-delay-7: fade-in 0.7s ease-out 1.4s forwards;
 }
 
 
@@ -84,15 +70,6 @@
     --warning: 201, 100%, 36%;
 
     --danger: 0, 100%, 24%;
-
-    --animate-fade-in: fade-in 0.7s ease-out forwards;
-    --animate-fade-in-delay-1: fade-in 0.7s ease-out 0.2s forwards;
-    --animate-fade-in-delay-2: fade-in 0.7s ease-out 0.4s forwards;
-    --animate-fade-in-delay-3: fade-in 0.7s ease-out 0.6s forwards;
-    --animate-fade-in-delay-4: fade-in 0.7s ease-out 0.8s forwards;
-    --animate-fade-in-delay-5: fade-in 0.7s ease-out 1.0s forwards;
-    --animate-fade-in-delay-6: fade-in 0.7s ease-out 1.2s forwards;
-    --animate-fade-in-delay-7: fade-in 0.7s ease-out 1.4s forwards;
 
    }
 
@@ -157,6 +134,13 @@
     z-index: 2;
   }
 
+  /* The circular reveal handles the color change while snapshots are active. */
+  html[data-theme-transition="active"] *,
+  html[data-theme-transition="active"] *::before,
+  html[data-theme-transition="active"] *::after {
+    transition: none !important;
+  }
+
   /* automatically adding cursor-pointer to everything that is clickable */
   @media (hover: hover) and (pointer: fine) {
     button:not(:disabled),
@@ -174,17 +158,6 @@ html {
 
 @layer utilities {
 
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     @keyframes gradient-text-pan {
         0%, 100% {
             background-position: 0% 50%;
@@ -197,11 +170,7 @@ html {
     @keyframes theme-toggle-icon-in {
         0% {
             opacity: 0;
-            transform: rotate(-75deg) scale(0.55);
-        }
-        65% {
-            opacity: 1;
-            transform: rotate(8deg) scale(1.12);
+            transform: rotate(-30deg) scale(0.9);
         }
         100% {
             opacity: 1;
@@ -210,7 +179,7 @@ html {
     }
 
     .theme-toggle-icon {
-        animation: theme-toggle-icon-in 450ms cubic-bezier(0.22, 1, 0.36, 1);
+        animation: theme-toggle-icon-in 320ms cubic-bezier(0.4, 0, 0.3, 1);
         transform-origin: center;
     }
 

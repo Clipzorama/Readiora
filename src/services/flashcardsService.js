@@ -185,18 +185,3 @@ export async function updateFlashcard(flashcardId, updates) {
   if (error) throw error;
   return data;
 }
-
-export async function deleteFlashcard(flashcardId, userId) {
-  let query = supabase
-    .from("flashcards")
-    .delete()
-    .eq("id", flashcardId);
-
-  if (userId) {
-    query = query.eq("user_id", userId);
-  }
-
-  const { error } = await query;
-
-  if (error) throw error;
-}

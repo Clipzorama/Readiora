@@ -472,57 +472,6 @@ export function ProgressBar({ value, tone = "button", label }) {
   );
 }
 
-export function RingGauge({ value, label }) {
-  return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-      <div
-        className="grid h-28 w-28 shrink-0 place-items-center rounded-full p-2"
-        style={{
-          background: `conic-gradient(hsl(var(--button-hover)) ${
-            value * 3.6
-          }deg, hsl(var(--border)) 0deg)`,
-        }}
-      >
-        <div className="grid h-full w-full place-items-center rounded-full bg-card">
-          <span className="text-2xl font-bold">{value}%</span>
-        </div>
-      </div>
-      <div>
-        <p className="text-sm uppercase tracking-[0.22em] text-muted">{label}</p>
-        <p className="mt-2 text-sm leading-6 text-secondary">
-          Readiness is calculated from study hours, quiz accuracy, flashcard
-          mastery, weak topics, and exam proximity.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export function MiniBarChart({ data }) {
-  const maxValue = Math.max(1, ...data.map((item) => item.value));
-
-  return (
-    <div className="mt-6 flex h-56 items-end gap-2 sm:gap-3">
-      {data.map((item) => (
-        <div key={item.label} className="flex flex-1 flex-col items-center gap-3">
-          <div className="flex h-44 w-full items-end rounded-t-2xl bg-background/70 px-1.5 sm:px-2">
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: `${Math.max((item.value / maxValue) * 100, 12)}%` }}
-              transition={{ duration: 0.45, ease: "easeOut" }}
-              className="w-full rounded-t-xl bg-linear-to-t from-button to-button-hover shadow-lg shadow-button/20"
-              title={`${item.value} hours`}
-            />
-          </div>
-          <span className="text-xs uppercase tracking-widest text-muted">
-            {item.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function AddButton({ children, className = "", ...props }) {
   return (
     <motion.button

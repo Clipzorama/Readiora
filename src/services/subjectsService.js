@@ -16,17 +16,6 @@ export async function getSubjects(userId) {
   return data;
 }
 
-export async function getSubjectById(subjectId) {
-  const { data, error } = await supabase
-    .from("subjects")
-    .select("*")
-    .eq("id", subjectId)
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
 export async function createSubject({
   userId,
   name,
