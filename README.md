@@ -1,6 +1,6 @@
 # Readiora
 
-Readiora is a production-ready study workspace for building, organizing, and reviewing learning material in one place. It combines a React + Vite frontend with Supabase for authentication, data storage, file uploads, and Edge Functions. The app is designed around a focused dashboard experience for subjects, notes, summaries, flashcards, quizzes, study sessions, and account settings.
+Readiora is a production-ready AI study workspace for building, organizing, and reviewing learning material in one place. It combines a React + Vite frontend with Supabase for authentication, PostgreSQL data storage, file uploads, and serverless Edge Functions, with OpenAI-powered workflows for generating summaries, flashcards, and quizzes.
 
 **Live production site:** `https://readiora.com`
 
@@ -11,7 +11,7 @@ Readiora gives users a clean command-center interface for managing study work wi
 - Authentication with email/password, Google, and GitHub.
 - Protected user-specific data for subjects, notes, summaries, flashcards, quizzes, sessions, and uploads.
 - Supabase Storage for avatars and note attachments.
-- AI-assisted workflows through Supabase Edge Functions.
+- AI-assisted study workflows powered by the OpenAI API through secure Supabase Edge Functions.
 - Responsive layouts for desktop, tablet, and mobile.
 - Public marketing pages plus protected application routes.
 
@@ -37,6 +37,7 @@ Readiora gives users a clean command-center interface for managing study work wi
 | Routing | React Router |
 | Styling | Tailwind CSS 4, custom CSS |
 | Backend | Supabase Auth, Postgres, Storage, Edge Functions |
+| AI | OpenAI API, task-specific prompting, content generation |
 | Animation | Framer Motion, Motion, GSAP |
 | UI Utilities | Lucide React, class-variance-authority, clsx, tailwind-merge |
 | Markdown / Math | React Markdown, KaTeX, remark-math, rehype-katex |
@@ -136,6 +137,12 @@ Readiora uses Supabase for:
 - Storage uploads
 - AI workflow Edge Functions
 
+### AI Integration
+
+Readiora integrates the OpenAI API through server-side Supabase Edge Functions. Academic content provided by users is processed through task-specific AI workflows for summarization, flashcard generation, and quiz generation.
+
+The OpenAI API key remains server-side and is never exposed to the browser.
+
 The app’s Edge Functions currently include:
 
 - `summarize-note`
@@ -194,4 +201,4 @@ Add screenshots or diagrams here if you want a richer README for clients, review
 
 ## Project Status
 
-Readiora is in production and actively evolving. The current codebase is stable for the core study workflow, authentication, file uploads, and AI-assisted content generation, with additional polish and product work continuing over time.
+Readiora is in production and actively evolving. The current codebase is stable for the core study workflow, authentication, file uploads, and isted content generation, with additional polish and product work continuing over time.
